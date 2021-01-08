@@ -844,7 +844,8 @@ dev_python_autogen_rule:
     - zope-testrunner:
         python_compat: python2+ pypy3
     - zstandard:
-        python_compat: python3+
+        compat: '0.14.1'
+        blocker: '!<dev-python/zstandard-0.15.0'
     - cheroot:
         python_compat: python2+ pypy3
     - aiofiles
