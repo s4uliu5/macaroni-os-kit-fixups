@@ -323,6 +323,21 @@ dev_python_compat_rule:
     - zstandard:
         compat: '0.14.1'
         blocker: '!<dev-python/zstandard-0.15.0'
+        desc: Zstandard Bindings for Python
+        homepage: https://pypi.org/project/zstandard/ https://github.com/indygreg/python-zstandard
+        license: BSD
+        iuse: test
+        restrict: '!test? ( test )'
+        rdepend: 'dev-python/cffi:=[${PYTHON_USEDEP}]'
+        depend: 'test? ( dev-python/hypothesis[${PYTHON_USEDEP}] )'
+        body: |
+          python_compile() {
+            local MAKEOPTS=-j1
+            distutils-r1_python_compile
+          }
+          python_test() {
+            esetup.py test
+          }
 
 simple_python_autogen_rule:
   defaults:
