@@ -845,7 +845,7 @@ dev_python_autogen_rule:
         python_compat: python2+ pypy3
     - zstandard:
         compat: '0.14.1'
-        blocker: '!<dev-python/zstandart-0.15.0'
+        blocker: '!<dev-python/zstandard-0.15.0'
     - cheroot:
         python_compat: python2+ pypy3
     - aiofiles
