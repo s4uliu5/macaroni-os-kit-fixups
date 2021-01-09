@@ -67,7 +67,7 @@ source-defs:
       - repo: gentoo-staging-Sep-2020
       - repo: gentoo-staging-late-2020
       - repo: pf4public
-      - repo: s4uliu5-overlay:
+      - repo: s4uliu5-overlay
   - funtoo_release_1.4_bump:
       - repo: flora
       - repo: faustoo
