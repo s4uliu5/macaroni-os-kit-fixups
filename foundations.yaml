@@ -41,7 +41,7 @@ overlays:
       src_sha1: 482287e2e6ed7d56e675092ad9658bebc4be6618
       date: '30 Nov 2020 - 5.28-release'
   - s4uliu5-overlay:
-    url: https://code.funtoo.org/bitbucket/scm/~s4uliu5/funtoo-overlay.git
+      url: https://code.funtoo.org/bitbucket/scm/~s4uliu5/funtoo-overlay.git
 
 source-defs:
   - funtoo_late_2020:
