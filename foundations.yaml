@@ -40,8 +40,6 @@ overlays:
       url: https://code.funtoo.org/bitbucket/scm/core/perl-kit-legacy.git
       src_sha1: 482287e2e6ed7d56e675092ad9658bebc4be6618
       date: '30 Nov 2020 - 5.28-release'
-  - s4uliu5-overlay:
-      url: https://code.funtoo.org/bitbucket/scm/~s4uliu5/funtoo-overlay.git
 
 source-defs:
   - funtoo_late_2020:
@@ -67,7 +65,6 @@ source-defs:
       - repo: gentoo-staging-Sep-2020
       - repo: gentoo-staging-late-2020
       - repo: pf4public
-      - repo: s4uliu5-overlay
   - funtoo_release_1.4_bump:
       - repo: flora
       - repo: faustoo
