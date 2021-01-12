@@ -34,4 +34,4 @@ async def generate(hub, **pkginfo):
 	release_data = await hub.pkgtools.fetch.get_page(f"https://api.github.com/repos/{name}/{name}/releases", is_json=True)
 
 	generate_ebuild(hub, name, release_data, True, **pkginfo)
-	generate_ebuild(hub, name, release_data, False, **pkginfo)
+	# generate_ebuild(hub, name, release_data, False, **pkginfo)
