@@ -17,6 +17,7 @@ KEYWORDS="*"
 
 RDEPEND="
 	dev-python/zipp[${PYTHON_USEDEP}]
+	>=dev-python/typing-extensions-3.6.4[${PYTHON_USEDEP}]
 	$(python_gen_cond_dep '>=dev-python/configparser-3.5[${PYTHON_USEDEP}]' -2)
 	$(python_gen_cond_dep 'dev-python/contextlib2[${PYTHON_USEDEP}]' -2)
 	$(python_gen_cond_dep 'dev-python/pathlib2[${PYTHON_USEDEP}]' -2)
