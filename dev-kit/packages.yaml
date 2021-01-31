@@ -891,7 +891,6 @@ packages:
   - dev-util/bustle
   - dev-util/rebar-bin
   - dev-util/obs-service-git_tarballs
-  - dev-util/bcc
   - dev-util/cloc
   - dev-util/ftnchek
   - dev-util/diffstat
