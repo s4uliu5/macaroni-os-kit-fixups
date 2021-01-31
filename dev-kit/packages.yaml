@@ -873,7 +873,6 @@ packages:
   - dev-libs/libestr
   - dev-libs/gecode
   - dev-libs/qrosscore
-  - dev-libs/libbpf
   - dev-libs/libmodbus
   - dev-libs/volume_key
   - dev-libs/rapidjson
