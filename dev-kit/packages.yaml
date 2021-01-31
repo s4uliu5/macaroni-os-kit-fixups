@@ -1070,7 +1070,6 @@ packages:
   - dev-util/ninka
   - dev-util/cutils
   - dev-util/rpmdevtools
-  - dev-util/bpftrace
   - dev-util/cscope
   - dev-util/sccache
   - dev-util/dropwatch
