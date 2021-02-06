@@ -10,7 +10,7 @@ libbtrfs_soname=0
 
 MY_PV="v${PV/_/-}"
 [[ "${PV}" = *_rc* ]] || \
-KEYWORDS=""
+KEYWORDS="*"
 SRC_URI="https://www.kernel.org/pub/linux/kernel/people/kdave/${PN}/${PN}-${MY_PV}.tar.xz"
 S="${WORKDIR}/${PN}-${MY_PV}"
 
