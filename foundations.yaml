@@ -88,19 +88,19 @@ kit-groups:
           - core-kit
           - core-hw-kit
           - core-server-kit
-          - core-gl-kit:
-              branch: 2.0-release
+          #- core-gl-kit:
+          #    branch: 2.0-release
           - security-kit:
               source: funtoo_release_1.4_bump
-          - browser-kit:
-              source: funtoo_oct_2020
-          - desktop-kit
-          - media-kit
+          #- browser-kit:
+          #    source: funtoo_oct_2020
+          #- desktop-kit
+          #- media-kit
           - editors-kit
           - net-kit
           - text-kit
           - science-kit
-          - games-kit
+          #- games-kit
           - java-kit
           - haskell-kit
           - ml-lang-kit
@@ -111,24 +111,24 @@ kit-groups:
           - dev-kit
           - python-modules-kit
           - nokit
-          - kde-kit:
-              kind: independent
-              branch: 5.20-release
-          - gnome-kit:
-              branch: 3.36-prime
-              kind: independent
-          - gnome-kit:
-              branch: 3.34-prime
-              kind: independent
-          - xfce-kit:
-              kind: independent
-              branch: 4.14-release
-          - qt-kit:
-              kind: independent
-              branch: 5.15.2-release
-          - mate-kit:
-              kind: independent
-              branch: 1.24-prime
+          # - kde-kit:
+          #     kind: independent
+          #     branch: 5.20-release
+          # - gnome-kit:
+          #    branch: 3.36-prime
+          #    kind: independent
+          #- gnome-kit:
+          #    branch: 3.34-prime
+          #    kind: independent
+          #- xfce-kit:
+          #    kind: independent
+          #    branch: 4.14-release
+          #- qt-kit:
+          #    kind: independent
+          #    branch: 5.15.2-release
+          #- mate-kit:
+          #    kind: independent
+          #    branch: 1.24-prime
           - perl-kit:
               branch: 5.32-release
               source: perl-kit-legacy
