@@ -392,6 +392,19 @@ simple_python_autogen_rule:
     python_compat: python3+
   generator: pypi-simple-1
   packages:
+    - bpytop:
+        desc: Linux/OSX/FreeBSD resource monitor
+        homepage: https://github.com/aristocratos/bpytop
+        license: Apache-2.0
+        cat: sys-process
+        pydeps:
+          - psutil
+        body: |
+          src_install() {
+            insinto "/usr/share/${PN}/themes"
+            doins bpytop-themes/*.theme
+            distutils-r1_src_install
+          }
     - dict-toolbox:
         desc: Dict tools for Python projects
         homepage: https://gitlab.com/saltstack/open/dict-toolbox https://pypi.org/project/dict-toolbox/
@@ -538,7 +551,7 @@ simple_python_autogen_rule:
           distutils_enable_sphinx docs dev-python/sphinx-bootstrap-theme
           src_prepare() {
             sed -i -e 's#"docs", "share"#"share"#' setup.py
-            distutils_src_prepare
+            distutils-r1_src_prepare
           }
 
           python_install_all() {
@@ -775,6 +788,13 @@ dev_python_simplified_rule:
     python_compat: python3+
   generator: pypi-compat-1
   packages:
+    - async-property:
+        pypi_name: async_property
+        pydeps:
+          py:all:
+            - pytest-runner
+    - dbus-next:
+        pypi_name: dbus_next
     - setuptools_scm:
         python_compat: python2+
     - setuptools-rust:
