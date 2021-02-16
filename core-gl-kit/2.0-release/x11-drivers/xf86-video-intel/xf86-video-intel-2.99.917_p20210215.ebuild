@@ -1,4 +1,3 @@
-# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,18 +6,14 @@ XORG_DRI=dri
 XORG_EAUTORECONF=yes
 inherit linux-info xorg-3 flag-o-matic
 
-if [[ ${PV} == 9999* ]]; then
-	SRC_URI=""
-else
-	KEYWORDS="~amd64 ~x86"
-	COMMIT_ID="6afed33b2d673d88674f0c76efe500ae414e8e1b"
-	SRC_URI="https://gitlab.freedesktop.org/xorg/driver/xf86-video-intel/-/archive/${COMMIT_ID}/${P}.tar.bz2"
-	S="${WORKDIR}/${PN}-${COMMIT_ID}"
-fi
+KEYWORDS="x86 amd64"
+COMMIT_ID="31486f40f8e8f8923ca0799aea84b58799754564"
+SRC_URI="https://gitlab.freedesktop.org/xorg/driver/xf86-video-intel/-/archive/${COMMIT_ID}/${P}.tar.bz2"
+S="${WORKDIR}/${PN}-${COMMIT_ID}"
 
 DESCRIPTION="X.Org driver for Intel cards"
 
-IUSE="debug +sna tools +udev uxa xvmc"
+IUSE="debug sna tools +udev +uxa xvmc"
 
 REQUIRED_USE="
 	|| ( sna uxa )
@@ -62,6 +57,8 @@ src_configure() {
 	replace-flags -Os -O2
 	XORG_CONFIGURE_OPTIONS=(
 		--disable-dri1
+		--disable-backlight
+		--disable-backlight-helper
 		$(use_enable debug)
 		$(use_enable dri)
 		$(use_enable dri dri3)
