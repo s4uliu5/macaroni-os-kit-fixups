@@ -13,7 +13,7 @@ async def generate(hub, **pkginfo):
 	)
 	json_list = sorted(json_list, key=lambda x: version.parse(x["tag_name"]), reverse=True)
 	for release in json_list:
-		if release["prerelease"] or release["draft"]:
+		if release["prerelease"] or release["draft"] or "rc" in release["tag_name"]:
 			continue
 		tag_name = release["tag_name"][1:]
 		url = release["tarball_url"]
