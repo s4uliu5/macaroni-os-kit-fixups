@@ -11,7 +11,7 @@ async def generate(hub, **pkginfo):
 		f"https://api.github.com/repos/{github_user}/{github_repo}/releases", is_json=True
 	)
 	for release in json_list:
-		if release["prerelease"] or release["draft"] or "rc" in release["tag_name"]:
+		if release["prerelease"] or release["draft"]:
 			continue
 		version = release["tag_name"][1:]
 		if "-rc" in version:
