@@ -44,4 +44,19 @@ async def generate(hub, **pkginfo):
 		**pkginfo
 	)
 
+async def generate(hub, **pkginfo):
+
+	await generate_ebuild(
+		hub, rss_url="https://www.jenkins.io/changelog/rss.xml", war_url="https://get.jenkins.io/war/", **pkginfo
+	)
+
+	pkginfo["name"] = "jenkins-lts-bin"
+	await generate_ebuild(
+		hub,
+		rss_url="https://www.jenkins.io/changelog-stable/rss.xml",
+		war_url="https://get.jenkins.io/war-stable/",
+		**pkginfo,
+	)
+
+
 # vim: ts=4 sw=4 noet
