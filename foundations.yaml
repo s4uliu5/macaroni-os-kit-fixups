@@ -95,7 +95,7 @@ kit-groups:
           #- browser-kit:
           #    source: funtoo_oct_2020
           #- desktop-kit
-          #- media-kit
+          - media-kit
           - editors-kit
           - net-kit
           - text-kit
