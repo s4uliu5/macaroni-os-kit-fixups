@@ -190,7 +190,6 @@ packages:
   - dev-libs/libpcre2
   - dev-libs/libpcre
   - dev-libs/libintl
-  - dev-libs/libgcrypt
   - dev-libs/iniparser
   - dev-libs/npth
   - dev-libs/libusb
