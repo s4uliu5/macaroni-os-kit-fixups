@@ -205,7 +205,6 @@ packages:
   - dev-libs/popt
   - dev-libs/jsoncpp
   - dev-libs/libpipeline
-  - dev-libs/libgpg-error
   - dev-libs/libxslt
   - sys-kernel/spl
   - sys-kernel/dracut
