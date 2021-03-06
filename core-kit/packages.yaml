@@ -181,7 +181,6 @@ packages:
   - app-crypt/pinentry
   - dev-libs/libunistring
   - dev-libs/libgcrypt-compat
-  - dev-libs/libksba
   - dev-libs/libnl
   - dev-libs/libassuan
   - dev-libs/libbsd
