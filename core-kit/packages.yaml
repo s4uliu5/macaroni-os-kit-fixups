@@ -444,7 +444,6 @@ packages:
   - app-eselect/eselect-cblas
   - app-eselect/eselect-blas
   - app-eselect/eselect-audicle
-  - app-eselect/eselect-pinentry
   - app-eselect/eselect-pdftex
   - app-eselect/eselect-repository
   - net-libs/libmnl
