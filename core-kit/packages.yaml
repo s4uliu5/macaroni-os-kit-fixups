@@ -486,7 +486,6 @@ packages:
   - app-portage/elogv
   - app-portage/elogviewer
   - app-portage/euses
-  - app-portage/flaggie
   - app-portage/genlop
   - app-portage/mirrorselect
   - app-portage/porthole
@@ -546,7 +545,6 @@ packages:
   - sys-process/parallel
   - sys-process/tini
   - sys-cluster/galera
-  - sys-cluster/glusterfs
   - sys-cluster/vzctl
   - sys-devel/bin86
   - sys-devel/bmake
