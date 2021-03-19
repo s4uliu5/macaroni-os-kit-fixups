@@ -1,0 +1,4 @@
+packages:
+- gentoo-staging:
+  - www-client/w3m
+  - virtual/w3m
