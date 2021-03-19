@@ -114,7 +114,6 @@ packages:
   - dev-lang/bashforth
   - dev-lang/gprolog
   - dev-lang/hy
-  - dev-lang/elixir
   - dev-lang/open-cobol
   - dev-lang/teyjus
   - dev-lang/ferite
