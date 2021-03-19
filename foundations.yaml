@@ -111,6 +111,7 @@ kit-groups:
           - dev-kit
           - python-modules-kit
           - nokit
+          - s12s-kit
           # - kde-kit:
           #     kind: independent
           #     branch: 5.20-release
