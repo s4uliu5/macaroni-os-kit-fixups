@@ -1139,7 +1139,6 @@ packages:
   - net-libs/libasyncns
   - net-libs/libad9361-iio
   - net-libs/libident
-  - net-libs/libssh
   - net-libs/qxmpp
   - net-libs/ldns
   - net-libs/meanwhile
