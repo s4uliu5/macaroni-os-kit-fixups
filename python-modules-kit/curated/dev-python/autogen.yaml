@@ -1031,7 +1031,7 @@ dev_python_autogen_rule:
         pypi_name: Jinja2
     - lxml:
         python_compat: python2+ pypy3
-        version: 4.6.1
+        version: 4.6.2
     - mako:
         python_compat: python2+ pypy{,3}
     - markupsafe:
