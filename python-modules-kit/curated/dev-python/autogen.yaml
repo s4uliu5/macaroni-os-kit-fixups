@@ -852,8 +852,9 @@ dev_python_simplified_rule:
         pydeps:
           py:all:
             - wheel
-            - semantic_version
+            - semantic_version >= 2.7.0
             - toml
+        revision: 1
     - cryptography:
         compat: '3.3.2'
         blocker: "!<dev-python/cryptography-3.4.2"
