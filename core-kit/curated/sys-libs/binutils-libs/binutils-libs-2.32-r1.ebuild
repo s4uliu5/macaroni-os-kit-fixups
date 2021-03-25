@@ -1,4 +1,3 @@
-# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -6,7 +5,7 @@ EAPI=6
 PATCH_VER=2
 PATCH_DEV=dilfridge
 
-inherit eutils libtool toolchain-funcs multilib-minimal
+inherit eutils libtool toolchain-funcs
 
 MY_PN="binutils"
 MY_P="${MY_PN}-${PV}"
@@ -21,9 +20,9 @@ SRC_URI="mirror://gnu/binutils/${MY_P}.tar.xz
 LICENSE="|| ( GPL-3 LGPL-3 )"
 SLOT="0/${PV}"
 IUSE="64-bit-bfd multitarget nls static-libs"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~amd64-fbsd ~x86-fbsd"
+KEYWORDS="*"
 
-COMMON_DEPEND="sys-libs/zlib[${MULTILIB_USEDEP}]"
+COMMON_DEPEND="sys-libs/zlib"
 DEPEND="${COMMON_DEPEND}
 	>=sys-apps/texinfo-4.7
 	nls? ( sys-devel/gettext )"
@@ -33,10 +32,6 @@ RDEPEND="${COMMON_DEPEND}
 	nls? ( !<sys-devel/gdb-7.10-r1[nls] )"
 
 S="${WORKDIR}/${MY_P}"
-
-MULTILIB_WRAPPED_HEADERS=(
-	/usr/include/bfd.h
-)
 
 src_prepare() {
 	if [[ ! -z ${PATCH_VER} ]] ; then
@@ -58,7 +53,7 @@ pkgversion() {
 	[[ -n ${PATCHVER} ]] && printf " p${PATCHVER}"
 }
 
-multilib_src_configure() {
+src_configure() {
 	local myconf=(
 		--enable-obsolete
 		--enable-shared
@@ -107,12 +102,12 @@ multilib_src_configure() {
 	econf "${myconf[@]}"
 }
 
-multilib_src_install() {
+src_install() {
 	default
 	# Provide libiberty.h directly.
 	dosym libiberty/libiberty.h /usr/include/libiberty.h
 }
 
-multilib_src_install_all() {
+src_install_all() {
 	use static-libs || find "${ED}"/usr -name '*.la' -delete
 }
