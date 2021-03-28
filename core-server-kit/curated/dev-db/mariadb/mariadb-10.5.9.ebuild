@@ -9,7 +9,7 @@ inherit eutils flag-o-matic prefix toolchain-funcs \
 	multiprocessing java-pkg-opt-2 cmake user
 
 # Patch version
-PATCH_SET="https://dev.gentoo.org/~whissi/dist/${PN}/${PN}-10.5.9-patches-03.tar.xz"
+PATCH_SET="https://dev.gentoo.org/~whissi/dist/${PN}/${PN}-10.5.9-patches-04.tar.xz"
 
 SRC_URI="https://downloads.mariadb.org/interstitial/${P}/source/${P}.tar.gz
 	${PATCH_SET}"
@@ -31,7 +31,7 @@ REQUIRED_USE="jdbc? ( extraengine server !static )
 	?? ( tcmalloc jemalloc )
 	static? ( yassl !pam )"
 
-KEYWORDS=""
+KEYWORDS="*"
 
 # Shorten the path because the socket path length must be shorter than 107 chars
 # and we will run a mysql server during test phase
@@ -212,10 +212,6 @@ pkg_setup() {
 	fi
 
 	java-pkg-opt-2_pkg_setup
-	if has test ${FEATURES} && \
-		use server && ! has userpriv ${FEATURES} ; then
-			eerror "Testing with FEATURES=-userpriv is no longer supported by upstream. Tests MUST be run as non-root."
-	fi
 
 	# This should come after all of the die statements
 	enewgroup mysql 60 || die "problem adding 'mysql' group"
@@ -744,16 +740,16 @@ src_install() {
 pkg_preinst() {
 	java-pkg-opt-2_pkg_preinst
 
-	# Here we need to see if the implementation switched client libraries
-	# We check if this is a new instance of the package and a client library already exists
-	local SHOW_ABI_MESSAGE libpath
-	if [[ -z ${REPLACING_VERSIONS} && -e "${EROOT}usr/$(get_libdir)/libmysqlclient.so" ]] ; then
-		libpath=$(readlink "${EROOT}usr/$(get_libdir)/libmysqlclient.so")
-		elog "Due to ABI changes when switching between different client libraries,"
-		elog "revdep-rebuild must find and rebuild all packages linking to libmysqlclient."
-		elog "Please run: revdep-rebuild --library ${libpath}"
-		ewarn "Failure to run revdep-rebuild may cause issues with other programs or libraries"
-	fi
+		# Here we need to see if the implementation switched client libraries
+		# We check if this is a new instance of the package and a client library already exists
+		local SHOW_ABI_MESSAGE libpath
+		if [[ -z ${REPLACING_VERSIONS} && -e "${EROOT}usr/$(get_libdir)/libmysqlclient.so" ]] ; then
+			libpath=$(readlink "${EROOT}usr/$(get_libdir)/libmysqlclient.so")
+			elog "Due to ABI changes when switching between different client libraries,"
+			elog "revdep-rebuild must find and rebuild all packages linking to libmysqlclient."
+			elog "Please run: revdep-rebuild --library ${libpath}"
+			ewarn "Failure to run revdep-rebuild may cause issues with other programs or libraries"
+		fi
 }
 
 pkg_postinst() {

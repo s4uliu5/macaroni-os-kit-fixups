@@ -32,7 +32,7 @@ REQUIRED_USE="jdbc? ( extraengine server !static )
 	?? ( tcmalloc jemalloc )
 	static? ( yassl !pam )"
 
-KEYWORDS=""
+KEYWORDS="*"
 
 # Shorten the path because the socket path length must be shorter than 107 chars
 # and we will run a mysql server during test phase
@@ -210,10 +210,6 @@ pkg_setup() {
 	fi
 
 	java-pkg-opt-2_pkg_setup
-	if has test ${FEATURES} && \
-		use server && ! has userpriv ${FEATURES} ; then
-			eerror "Testing with FEATURES=-userpriv is no longer supported by upstream. Tests MUST be run as non-root."
-	fi
 
 	# This should come after all of the die statements
 	enewgroup mysql 60 || die "problem adding 'mysql' group"
