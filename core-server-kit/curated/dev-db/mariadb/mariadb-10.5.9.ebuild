@@ -117,6 +117,13 @@ RDEPEND="${COMMON_DEPEND}
 		)
 		!prefix? ( dev-db/mysql-init-scripts )
 	)
+	perl? (
+		!dev-db/mytop
+		virtual/perl-Getopt-Long
+		dev-perl/TermReadKey
+		virtual/perl-Term-ANSIColor
+		virtual/perl-Time-HiRes
+	)
 "
 # For other stuff to bring us in
 # dev-perl/DBD-mysql is needed by some scripts installed by MySQL
@@ -205,6 +212,11 @@ pkg_setup() {
 	fi
 
 	java-pkg-opt-2_pkg_setup
+	if has test ${FEATURES} && \
+		use server && ! has userpriv ${FEATURES} ; then
+			eerror "Testing with FEATURES=-userpriv is no longer supported by upstream. Tests MUST be run as non-root."
+	fi
+
 	# This should come after all of the die statements
 	enewgroup mysql 60 || die "problem adding 'mysql' group"
 	enewuser mysql 60 -1 /dev/null mysql || die "problem adding 'mysql' user"
@@ -273,10 +285,10 @@ src_prepare() {
 	sed -i -e 's~add_library(wsrep-lib$~add_library(wsrep-lib STATIC~' \
 		"${S}"/wsrep-lib/src/CMakeLists.txt || die
 
-	# Don't clash with dev-db/mysql-connector-c
-	sed -i -e 's/ my_print_defaults.1//' \
-		-e 's/ perror.1//' \
-		"${S}"/man/CMakeLists.txt || die
+	# # Don't clash with dev-db/mysql-connector-c
+	# sed -i -e 's/ my_print_defaults.1//' \
+	# 	-e 's/ perror.1//' \
+	# 	"${S}"/man/CMakeLists.txt || die
 
 	# Fix galera_recovery.sh script
 	sed -i -e "s~@bindir@/my_print_defaults~${EPREFIX}/usr/libexec/mariadb/my_print_defaults~" \
@@ -309,6 +321,7 @@ src_configure() {
 	mycmakeargs=(
 		-DCMAKE_C_FLAGS_RELWITHDEBINFO="$(usex debug '' '-DNDEBUG')"
 		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="$(usex debug '' '-DNDEBUG')"
+		-DCMAKE_INSTALL_PREFIX="${EPREFIX}/usr"
 		-DMYSQL_DATADIR="${EPREFIX}/var/lib/mysql"
 		-DSYSCONFDIR="${EPREFIX}/etc/mysql"
 		-DINSTALL_BINDIR=bin
@@ -381,6 +394,7 @@ src_configure() {
 		fi
 
 		mycmakeargs+=(
+			-DWITH_JEMALLOC=$(usex jemalloc system)
 			-DWITH_PCRE=system
 			-DPLUGIN_OQGRAPH=$(usex oqgraph DYNAMIC NO)
 			-DPLUGIN_SPHINX=$(usex sphinx YES NO)
@@ -700,16 +714,18 @@ src_install() {
 		fi
 	fi
 
-	# Remove bundled mytop in favor of dev-db/mytop
-	local mytop_file
-	for mytop_file in \
-		"${ED}/usr/bin/mytop" \
-		"${ED}/usr/share/man/man1/mytop.1" \
-	; do
-		if [[ -e "${mytop_file}" ]] ; then
-			rm -v "${mytop_file}" || die
-		fi
-	done
+	# Remove mytop if perl is not selected
+	if ! use perl ; then
+		local mytop_file
+		for mytop_file in \
+			"${ED}/usr/bin/mytop" \
+			"${ED}/usr/share/man/man1/mytop.1" \
+		; do
+			if [[ -e "${mytop_file}" ]] ; then
+				rm -v "${mytop_file}" || die
+			fi
+		done
+	fi
 
 	# Fix a dangling symlink when galera is not built
 	if [[ -L "${ED}/usr/bin/wsrep_sst_rsync_wan" ]] && ! use galera ; then
@@ -727,6 +743,17 @@ src_install() {
 
 pkg_preinst() {
 	java-pkg-opt-2_pkg_preinst
+
+		# Here we need to see if the implementation switched client libraries
+		# We check if this is a new instance of the package and a client library already exists
+		local SHOW_ABI_MESSAGE libpath
+		if [[ -z ${REPLACING_VERSIONS} && -e "${EROOT}usr/$(get_libdir)/libmysqlclient.so" ]] ; then
+			libpath=$(readlink "${EROOT}usr/$(get_libdir)/libmysqlclient.so")
+			elog "Due to ABI changes when switching between different client libraries,"
+			elog "revdep-rebuild must find and rebuild all packages linking to libmysqlclient."
+			elog "Please run: revdep-rebuild --library ${libpath}"
+			ewarn "Failure to run revdep-rebuild may cause issues with other programs or libraries"
+		fi
 }
 
 pkg_postinst() {
