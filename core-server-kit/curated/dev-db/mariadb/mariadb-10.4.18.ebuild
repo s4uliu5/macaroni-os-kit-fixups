@@ -284,10 +284,10 @@ src_prepare() {
 	sed -i -e 's~add_library(wsrep-lib$~add_library(wsrep-lib STATIC~' \
 		"${S}"/wsrep-lib/src/CMakeLists.txt || die
 
-	# # Don't clash with dev-db/mysql-connector-c
-	# sed -i -e 's/ my_print_defaults.1//' \
-	# 	-e 's/ perror.1//' \
-	# 	"${S}"/man/CMakeLists.txt || die
+	# Don't clash with dev-db/mysql-connector-c
+	sed -i -e 's/ my_print_defaults.1//' \
+		-e 's/ perror.1//' \
+		"${S}"/man/CMakeLists.txt || die
 
 	# Fix galera_recovery.sh script
 	sed -i -e "s~@bindir@/my_print_defaults~${EPREFIX}/usr/libexec/mariadb/my_print_defaults~" \
