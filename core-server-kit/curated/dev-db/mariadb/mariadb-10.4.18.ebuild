@@ -6,7 +6,7 @@ SUBSLOT="18"
 JAVA_PKG_OPT_USE="jdbc"
 
 inherit eutils flag-o-matic prefix toolchain-funcs \
-	multiprocessing java-pkg-opt-2 cmake
+	multiprocessing java-pkg-opt-2 cmake user
 
 # Patch version
 PATCH_SET="https://dev.gentoo.org/~whissi/dist/${PN}/${PN}-10.4.18-patches-03.tar.xz"
@@ -109,6 +109,13 @@ RDEPEND="selinux? ( sec-policy/selinux-mysql )
 		!prefix? ( dev-db/mysql-init-scripts )
 		extraengine? ( jdbc? ( >=virtual/jre-1.6 ) )
 	)
+	perl? (
+		!dev-db/mytop
+		virtual/perl-Getopt-Long
+		dev-perl/TermReadKey
+		virtual/perl-Term-ANSIColor
+		virtual/perl-Time-HiRes
+	)
 "
 # For other stuff to bring us in
 # dev-perl/DBD-mysql is needed by some scripts installed by MySQL
@@ -203,6 +210,14 @@ pkg_setup() {
 	fi
 
 	java-pkg-opt-2_pkg_setup
+	if has test ${FEATURES} && \
+		use server && ! has userpriv ${FEATURES} ; then
+			eerror "Testing with FEATURES=-userpriv is no longer supported by upstream. Tests MUST be run as non-root."
+	fi
+
+	# This should come after all of the die statements
+	enewgroup mysql 60 || die "problem adding 'mysql' group"
+	enewuser mysql 60 -1 /dev/null mysql || die "problem adding 'mysql' user"
 }
 
 src_unpack() {
@@ -272,6 +287,11 @@ src_prepare() {
 		"${S}"/wsrep-lib/wsrep-API/CMakeLists.txt || die
 	sed -i -e 's~add_library(wsrep-lib$~add_library(wsrep-lib STATIC~' \
 		"${S}"/wsrep-lib/src/CMakeLists.txt || die
+
+	# # Don't clash with dev-db/mysql-connector-c
+	# sed -i -e 's/ my_print_defaults.1//' \
+	# 	-e 's/ perror.1//' \
+	# 	"${S}"/man/CMakeLists.txt || die
 
 	# Fix galera_recovery.sh script
 	sed -i -e "s~@bindir@/my_print_defaults~${EPREFIX}/usr/libexec/mariadb/my_print_defaults~" \
@@ -375,6 +395,7 @@ src_configure() {
 		fi
 
 		mycmakeargs+=(
+			-DWITH_JEMALLOC=$(usex jemalloc system)
 			-DWITH_PCRE=system
 			-DPLUGIN_OQGRAPH=$(usex oqgraph DYNAMIC NO)
 			-DPLUGIN_SPHINX=$(usex sphinx YES NO)
@@ -652,8 +673,8 @@ src_install() {
 	doins "${TMPDIR}/50-distro-client.cnf"
 
 	cp "${FILESDIR}/90-replication-server.cnf" "${TMPDIR}/90-replication-server.cnf" || die
-        eprefixify "${TMPDIR}/90-replication-server.cnf"
-        doins "${TMPDIR}/90-replication-server.cnf"
+	eprefixify "${TMPDIR}/90-replication-server.cnf"
+	doins "${TMPDIR}/90-replication-server.cnf"
 
 
 	if use server ; then
@@ -696,16 +717,18 @@ src_install() {
 		fi
 	fi
 
-	# Remove bundled mytop in favor of dev-db/mytop
-	local mytop_file
-	for mytop_file in \
-		"${ED}/usr/bin/mytop" \
-		"${ED}/usr/share/man/man1/mytop.1" \
-	; do
-		if [[ -e "${mytop_file}" ]] ; then
-			rm -v "${mytop_file}" || die
-		fi
-	done
+	# Remove bundled mytop if perl is not selected
+	if ! use perl ; then
+		local mytop_file
+		for mytop_file in \
+			"${ED}/usr/bin/mytop" \
+			"${ED}/usr/share/man/man1/mytop.1" \
+		; do
+			if [[ -e "${mytop_file}" ]] ; then
+				rm -v "${mytop_file}" || die
+			fi
+		done
+	fi
 
 	# Fix a dangling symlink when galera is not built
 	if [[ -L "${ED}/usr/bin/wsrep_sst_rsync_wan" ]] && ! use galera ; then
@@ -723,6 +746,17 @@ src_install() {
 
 pkg_preinst() {
 	java-pkg-opt-2_pkg_preinst
+
+	# Here we need to see if the implementation switched client libraries
+	# We check if this is a new instance of the package and a client library already exists
+	local SHOW_ABI_MESSAGE libpath
+	if [[ -z ${REPLACING_VERSIONS} && -e "${EROOT}usr/$(get_libdir)/libmysqlclient.so" ]] ; then
+		libpath=$(readlink "${EROOT}usr/$(get_libdir)/libmysqlclient.so")
+		elog "Due to ABI changes when switching between different client libraries,"
+		elog "revdep-rebuild must find and rebuild all packages linking to libmysqlclient."
+		elog "Please run: revdep-rebuild --library ${libpath}"
+		ewarn "Failure to run revdep-rebuild may cause issues with other programs or libraries"
+	fi
 }
 
 pkg_postinst() {
