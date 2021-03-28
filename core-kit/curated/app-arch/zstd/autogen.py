@@ -1,30 +1,26 @@
 #!/usr/bin/env python3
 
-import packaging.version
+import json
 
 
 async def generate(hub, **pkginfo):
-	github_user = "Kitware"
-	github_repo = "CMake"
+
+	github_user = "facebook"
+	github_repo = "zstd"
 	app = pkginfo["name"]
 	json_list = await hub.pkgtools.fetch.get_page(
 		f"https://api.github.com/repos/{github_user}/{github_repo}/releases", is_json=True
 	)
-	for release in json_list:
+	for release in sorted(json_list, reverse=True, key=lambda x: x["tag_name"]):
 		if release["prerelease"] or release["draft"]:
 			continue
-		version = release["tag_name"][1:]
-		if version != '3.19.7':
-			continue
-		if "-rc" in version:
-			continue
-		url = release["tarball_url"]
+		version = release["tag_name"].replace("v", "")
+		url = f"https://github.com/{github_user}/{github_repo}/releases/download/v{version}/{app}-{version}.tar.gz"
 		break
+
 	ebuild = hub.pkgtools.ebuild.BreezyBuild(
 		**pkginfo,
 		version=version,
-		github_user=github_user,
-		github_repo=github_repo,
 		artifacts=[hub.pkgtools.ebuild.Artifact(url=url, final_name=f"{app}-{version}.tar.gz")],
 	)
 	ebuild.push()

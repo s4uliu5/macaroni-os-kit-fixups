@@ -1,4 +1,3 @@
-# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
@@ -85,7 +84,7 @@ src_compile() {
 
 src_test() {
 	# VALIDATE_ENV is used for extended/web based tests.  Punt on them.
-	emake -j1 check VALIDATE_ENV=true
+	emake check VALIDATE_ENV=true
 }
 
 src_install() {
