@@ -964,7 +964,6 @@ packages:
   - dev-util/obs-service-source_validator
   - dev-util/obs-service-cpanspec
   - dev-util/creduce
-  - dev-util/spirv-llvm-translator
   - dev-util/obs-service-tar_scm
   - dev-util/patdiff
   - dev-util/lockrun
@@ -974,7 +973,6 @@ packages:
   - dev-util/treecc
   - dev-util/bsdiff
   - dev-util/lxqt-build-tools
-  - dev-util/scons
   - dev-util/artifactory-bin
   - dev-util/build
   - dev-util/wxglade
@@ -1001,7 +999,6 @@ packages:
   - dev-util/desktop-file-utils
   - dev-util/meld
   - dev-util/confix
-  - dev-util/rustfmt
   - dev-util/dogtail
   - dev-util/obs-service-update_source
   - dev-util/archdiff
