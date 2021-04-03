@@ -1173,7 +1173,6 @@ packages:
   - net-libs/librsync
   - net-libs/libetpan
   - net-libs/courier-unicode
-  - net-libs/libnftnl
   - net-libs/gnet
   - net-libs/NativeThread
   - net-libs/libosmocore
