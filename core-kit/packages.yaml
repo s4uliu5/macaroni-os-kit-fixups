@@ -396,7 +396,6 @@ packages:
   - virtual/yacc
   - virtual/mta
   - net-firewall/ebtables
-  - net-firewall/nftables
   - sys-cluster/ploop
   - app-eselect/eselect-scala
   - app-eselect/eselect-rust
