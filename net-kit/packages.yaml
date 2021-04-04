@@ -1176,7 +1176,6 @@ packages:
   - net-libs/libssh2
   - net-libs/libcrafter
   - net-libs/miniupnpc
-  - net-libs/libnetfilter_conntrack
   - net-libs/libflowmanager
   - net-libs/libnids
   - net-libs/libvncserver
