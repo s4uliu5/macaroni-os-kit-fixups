@@ -395,7 +395,6 @@ packages:
   - virtual/libffi
   - virtual/yacc
   - virtual/mta
-  - net-firewall/ebtables
   - sys-cluster/ploop
   - app-eselect/eselect-scala
   - app-eselect/eselect-rust
