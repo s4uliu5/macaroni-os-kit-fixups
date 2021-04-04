@@ -973,7 +973,6 @@ packages:
   - virtual/mda
   - virtual/httpd-cgi
   - virtual/inetd
-  - net-firewall/arptables
   - net-firewall/psad
   - net-firewall/firehol
   - net-firewall/arno-iptables-firewall
