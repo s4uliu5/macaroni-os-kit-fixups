@@ -988,7 +988,6 @@ packages:
   - net-firewall/xtables-addons
   - net-firewall/shorewall
   - net-firewall/ipt_netflow
-  - net-firewall/conntrack-tools
   - net-firewall/nfacct
   - net-firewall/ufw
   - net-firewall/pglinux
