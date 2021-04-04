@@ -985,7 +985,6 @@ packages:
   - net-firewall/firewalld
   - net-firewall/fwknop
   - net-firewall/quicktables
-  - net-firewall/xtables-addons
   - net-firewall/shorewall
   - net-firewall/ipt_netflow
   - net-firewall/nfacct
