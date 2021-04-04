@@ -992,7 +992,6 @@ packages:
   - net-firewall/conntrack-tools
   - net-firewall/nfacct
   - net-firewall/ufw
-  - net-firewall/ipset
   - net-firewall/pglinux
   - net-firewall/itval
   - net-firewall/ferm
