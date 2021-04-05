@@ -2,7 +2,7 @@
 
 EAPI=7
 
-inherit bash-completion-r1 prefix rust-toolchain toolchain-funcs multilib-minimal
+inherit bash-completion-r1 prefix rust-toolchain toolchain-funcs
 
 MY_P="rust-${PV}"
 
@@ -50,9 +50,7 @@ patchelf_for_bin() {
 	fi
 }
 
-multilib_src_install() {
-	if multilib_is_native_abi; then
-
+src_install() {
 	# start native abi install
 	pushd "${S}" >/dev/null || die
 	local analysis std
@@ -148,14 +146,6 @@ multilib_src_install() {
 	doins "${T}/provider-${P}"
 	popd >/dev/null || die
 	#end native abi install
-
-	else
-		local rust_target
-		rust_target="$(rust_abi $(get_abi_CHOST ${v##*.}))"
-		dodir "/opt/${P}/lib/rustlib"
-		cp -vr "${WORKDIR}/rust-${PV}-${rust_target}/rust-std-${rust_target}/lib/rustlib/${rust_target}"\
-			"${ED}/opt/${P}/lib/rustlib" || die
-	fi
 
 	# BUG: installs x86_64 binary on other arches
 	rm -f "${ED}/opt/${P}/lib/rustlib/"*/bin/rust-llvm-dwp || die
