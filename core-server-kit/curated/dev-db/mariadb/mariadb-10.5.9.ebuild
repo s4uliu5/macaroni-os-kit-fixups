@@ -9,7 +9,7 @@ inherit eutils flag-o-matic prefix toolchain-funcs \
 	multiprocessing java-pkg-opt-2 cmake user
 
 # Patch version
-PATCH_SET="https://dev.gentoo.org/~whissi/dist/${PN}/${PN}-10.5.9-patches-03.tar.xz"
+PATCH_SET="https://dev.gentoo.org/~whissi/dist/${PN}/${PN}-10.5.9-patches-04.tar.xz"
 
 SRC_URI="https://downloads.mariadb.org/interstitial/${P}/source/${P}.tar.gz
 	${PATCH_SET}"
@@ -117,6 +117,13 @@ RDEPEND="${COMMON_DEPEND}
 		)
 		!prefix? ( dev-db/mysql-init-scripts )
 	)
+	perl? (
+		!dev-db/mytop
+		virtual/perl-Getopt-Long
+		dev-perl/TermReadKey
+		virtual/perl-Term-ANSIColor
+		virtual/perl-Time-HiRes
+	)
 "
 # For other stuff to bring us in
 # dev-perl/DBD-mysql is needed by some scripts installed by MySQL
@@ -205,6 +212,7 @@ pkg_setup() {
 	fi
 
 	java-pkg-opt-2_pkg_setup
+
 	# This should come after all of the die statements
 	enewgroup mysql 60 || die "problem adding 'mysql' group"
 	enewuser mysql 60 -1 /dev/null mysql || die "problem adding 'mysql' user"
@@ -309,6 +317,7 @@ src_configure() {
 	mycmakeargs=(
 		-DCMAKE_C_FLAGS_RELWITHDEBINFO="$(usex debug '' '-DNDEBUG')"
 		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="$(usex debug '' '-DNDEBUG')"
+		-DCMAKE_INSTALL_PREFIX="${EPREFIX}/usr"
 		-DMYSQL_DATADIR="${EPREFIX}/var/lib/mysql"
 		-DSYSCONFDIR="${EPREFIX}/etc/mysql"
 		-DINSTALL_BINDIR=bin
@@ -381,6 +390,7 @@ src_configure() {
 		fi
 
 		mycmakeargs+=(
+			-DWITH_JEMALLOC=$(usex jemalloc system)
 			-DWITH_PCRE=system
 			-DPLUGIN_OQGRAPH=$(usex oqgraph DYNAMIC NO)
 			-DPLUGIN_SPHINX=$(usex sphinx YES NO)
@@ -700,16 +710,18 @@ src_install() {
 		fi
 	fi
 
-	# Remove bundled mytop in favor of dev-db/mytop
-	local mytop_file
-	for mytop_file in \
-		"${ED}/usr/bin/mytop" \
-		"${ED}/usr/share/man/man1/mytop.1" \
-	; do
-		if [[ -e "${mytop_file}" ]] ; then
-			rm -v "${mytop_file}" || die
-		fi
-	done
+	# Remove mytop if perl is not selected
+	if ! use perl ; then
+		local mytop_file
+		for mytop_file in \
+			"${ED}/usr/bin/mytop" \
+			"${ED}/usr/share/man/man1/mytop.1" \
+		; do
+			if [[ -e "${mytop_file}" ]] ; then
+				rm -v "${mytop_file}" || die
+			fi
+		done
+	fi
 
 	# Fix a dangling symlink when galera is not built
 	if [[ -L "${ED}/usr/bin/wsrep_sst_rsync_wan" ]] && ! use galera ; then
@@ -727,6 +739,17 @@ src_install() {
 
 pkg_preinst() {
 	java-pkg-opt-2_pkg_preinst
+
+		# Here we need to see if the implementation switched client libraries
+		# We check if this is a new instance of the package and a client library already exists
+		local SHOW_ABI_MESSAGE libpath
+		if [[ -z ${REPLACING_VERSIONS} && -e "${EROOT}usr/$(get_libdir)/libmysqlclient.so" ]] ; then
+			libpath=$(readlink "${EROOT}usr/$(get_libdir)/libmysqlclient.so")
+			elog "Due to ABI changes when switching between different client libraries,"
+			elog "revdep-rebuild must find and rebuild all packages linking to libmysqlclient."
+			elog "Please run: revdep-rebuild --library ${libpath}"
+			ewarn "Failure to run revdep-rebuild may cause issues with other programs or libraries"
+		fi
 }
 
 pkg_postinst() {

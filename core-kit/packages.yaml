@@ -294,7 +294,6 @@ packages:
   - sys-fs/fuse-exfat
   - sys-fs/hfsplusutils
   - sys-fs/inotify-tools
-  - sys-fs/squashfs-tools
   - sys-fs/lufs
   - sys-fs/reiserfsprogs
   - sys-fs/archivemount
@@ -479,7 +478,6 @@ packages:
   - app-shells/push
   - app-shells/quoter
   - app-shells/tmux-bash-completion
-  - app-shells/zsh-completions
   - app-portage/cfg-update
   - app-portage/cpuid2cpuflags
   - app-portage/elogv
