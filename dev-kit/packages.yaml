@@ -839,7 +839,6 @@ packages:
   - dev-libs/poco
   - dev-libs/libnatspec
   - dev-libs/darts
-  - dev-libs/mongo-c-driver
   - dev-libs/protobuf
   - dev-libs/nanomsg
   - dev-libs/libbulletml
