@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import json
-
-
 async def generate(hub, **pkginfo):
 
 	github_user = "mongodb"
@@ -13,6 +10,18 @@ async def generate(hub, **pkginfo):
 
 	for rel in json_list:
 		version = rel["tag_name"]
+
+		# skip release if {version} contains prerelease string
+		skip = len(list(filter(
+			lambda n: n > -1,
+			map(
+				lambda s : version.find(s),
+				["alpha", "beta", "rc"]
+			)
+		))) > 0
+		if skip:
+			continue
+
 		if rel["draft"] == False and rel["prerelease"] == False:
 			break
 
