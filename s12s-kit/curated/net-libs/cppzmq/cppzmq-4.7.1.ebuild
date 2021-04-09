@@ -23,7 +23,7 @@ DEPEND="${RDEPEND}
 	)"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-disable-static.patch"
+	"${FILESDIR}/${PN}-${PV}-disable-static.patch"
 	"${FILESDIR}/${PN}-use-system-catch2.patch"
 )
 
