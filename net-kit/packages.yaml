@@ -332,6 +332,7 @@ packages:
   - net-misc/ofono
   - net-misc/wol
   - net-misc/clockspeed
+  - net-misc/teamviewer
   - net-nntp/ubh
   - net-nntp/suck
   - net-nntp/sabnzbd
@@ -1100,7 +1101,6 @@ packages:
   - net-libs/stem
   - net-libs/libtrace
   - net-libs/rabbitmq-c
-  - net-libs/serf
   - net-libs/zmqpp
   - net-libs/libnetfilter_cttimeout
   - net-libs/libmrss
