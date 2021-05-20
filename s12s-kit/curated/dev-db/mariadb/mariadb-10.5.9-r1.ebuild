@@ -114,7 +114,7 @@ RDEPEND="${COMMON_DEPEND}
 			sst-rsync? ( sys-process/lsof )
 			sst-mariabackup? ( net-misc/socat[ssl] )
 		)
-		!prefix? ( dev-db/mysql-init-scripts acct-group/mysql acct-user/mysql )
+		!prefix? ( dev-db/mysql-init-scripts )
 	)
 "
 # For other stuff to bring us in
