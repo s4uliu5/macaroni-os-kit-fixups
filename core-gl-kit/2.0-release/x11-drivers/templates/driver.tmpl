@@ -6,7 +6,11 @@ EAPI=7
 PYTHON_COMPAT=( {{python_compat}} )
 {%- endif %}
 
+{%- if inherit is defined %}
 inherit autotools linux-info flag-o-matic {{inherit}}
+{%- else %}
+inherit autotools linux-info flag-o-matic
+{%- endif %}
 
 DESCRIPTION="Driver for xorg-server"
 KEYWORDS="*"
@@ -42,7 +46,7 @@ WANT_AUTOMAKE="latest"
 AUTOTOOLS_AUTORECONF="1"
 
 pkg_setup() {
-	{%- if 'python-single-r1' in inherit %}
+	{%- if inherit is defined and 'python-single-r1' in inherit %}
 	python-single-r1_pkg_setup
 	{%- endif %}
 	append-ldflags -Wl,-z,lazy
