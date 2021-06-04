@@ -18,7 +18,7 @@ EMULTILIB_PKG="true"
 PATCH_VER=1
 PATCH_DEV=dilfridge
 
-KEYWORDS="*"
+KEYWORDS="* -arm64"
 SRC_URI="mirror://gnu/glibc/${P}.tar.xz"
 SRC_URI+=" https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${P}-patches-${PATCH_VER}.tar.xz"
 
@@ -1265,7 +1265,7 @@ glibc_do_src_install() {
 		)
 		;;
 	esac
-	if [[ ${SYMLINK_LIB} == "yes" ]] && [[ ! -e ${ED}/$(alt_prefix)/lib ]] ; then
+	if [[ ! -e ${ED}/$(alt_prefix)/lib ]] ; then
 		dosym $(get_abi_LIBDIR ${DEFAULT_ABI}) $(alt_prefix)/lib
 	fi
 	for (( i = 0; i < ${#ldso_abi_list[@]}; i += 2 )) ; do
@@ -1383,6 +1383,18 @@ src_install() {
 	fi
 
 	foreach_abi glibc_do_src_install
+
+	# arm-64bit gets two separate /lib and /lib64 dirs, which is wrong. This should fix it.
+	if [ "$ARCH" == "arm64" ] && [ ! -h $D/lib ]; then
+		echo "Attempting to fix split /lib..."
+		# we have both /lib and /lib64 as regular directories. Need to fix. Sync everything to /lib.
+		rsync -av $D/lib64/ $D/lib/ || exit 23
+		# Now, remove lib64.
+		rm -rf $D/lib64 || exit 24
+		# Now, we rename the /lib dir as /lib64, and make /lib a symlink that points to it:
+		mv $D/lib $D/lib64 || exit 30
+		ln -s lib64 $D/lib || exit 31
+	fi
 
 	if ! use static-libs ; then
 		einfo "Not installing static glibc libraries"
