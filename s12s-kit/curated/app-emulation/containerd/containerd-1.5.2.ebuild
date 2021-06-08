@@ -25,7 +25,7 @@ DEPEND="
 
 RDEPEND="
 	${DEPEND}
-	~app-emulation/runc-1.0.0_rc93
+	~app-emulation/runc-1.0.0_rc95
 "
 
 BDEPEND="
