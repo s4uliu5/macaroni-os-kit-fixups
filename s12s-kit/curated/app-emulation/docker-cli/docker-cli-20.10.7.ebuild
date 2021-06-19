@@ -32,16 +32,17 @@ src_compile() {
 	export GOPATH="${WORKDIR}/${P}"
 	# setup CFLAGS and LDFLAGS for separate build target
 	# see https://github.com/tianon/docker-overlay/pull/10
-	export CGO_CFLAGS="-I${ROOT}/usr/include"
-	export CGO_LDFLAGS="-L${ROOT}/usr/$(get_libdir)"
+	export CGO_CFLAGS="-I${ESYSROOT}/usr/include"
+	export CGO_LDFLAGS="-L${ESYSROOT}/usr/$(get_libdir)"
 		emake \
 		LDFLAGS="$(usex hardened '-extldflags -fno-PIC' '')" \
-		VERSION="${MY_PV}" \
+		VERSION="$(cat VERSION)" \
 		GITCOMMIT="${GIT_COMMIT}" \
 		dynbinary
 
 	# build man pages
 	# see "cli/scripts/docs/generate-man.sh" (which also does "go get" for go-md2man)
+	mkdir -p ./man/man1 || die "mkdir failed"
 	go build -o "${T}"/gen-manpages ./man ||
 		die 'build gen-manpages failed'
 	"${T}"/gen-manpages --root "$(pwd)" --target "$(pwd)"/man/man1 ||
