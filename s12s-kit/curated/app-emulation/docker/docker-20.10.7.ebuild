@@ -1,7 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-EGO_PN="github.com/moby/moby"
+EGO_PN="github.com/docker/docker"
 GIT_COMMIT=b0f5bc36fea9dfb9672e1e9b1278ebab797b9ee0
 
 inherit bash-completion-r1 golang-base golang-vcs-snapshot linux-info systemd udev user
@@ -27,7 +27,7 @@ DEPEND="
 # https://github.com/moby/moby/blob/master/project/PACKAGERS.md#runtime-dependencies
 # https://github.com/moby/moby/blob/master/project/PACKAGERS.md#optional-dependencies
 # https://github.com/moby/moby/tree/master//hack/dockerfile/install
-# make sure containerd, docker-proxy, runc and tini pinned to exact versions from ^,
+# make sure docker-proxy is pinned to exact version from ^,
 # for appropriate branchch/version of course
 RDEPEND="
 	${DEPEND}
@@ -36,9 +36,8 @@ RDEPEND="
 	>=dev-vcs/git-1.7
 	>=app-arch/xz-utils-4.9
 	dev-libs/libltdl
-	~app-emulation/containerd-1.5.2[apparmor?,btrfs?,device-mapper?,seccomp?]
-	~app-emulation/runc-1.0.0_rc95[seccomp?]
-	~app-emulation/docker-proxy-0.8.0_p20201215
+	>=app-emulation/containerd-1.4.6[apparmor?,btrfs?,device-mapper?,seccomp?]
+	~app-emulation/docker-proxy-0.8.0_p20210525
 	cli? ( app-emulation/docker-cli )
 	container-init? ( >=sys-process/tini-0.19.0[static] )
 "
@@ -49,17 +48,22 @@ BDEPEND="
 	dev-go/go-md2man
 	virtual/pkgconfig
 "
-# https://bugs.gentoo.org/748984 https://github.com/etcd-io/etcd/pull/12552
-PATCHES=( "${FILESDIR}/etcd-F_OFD_GETLK-fix.patch" )
-
-RESTRICT="installsources strip"
+# tests require running dockerd as root and downloading containers
+RESTRICT="installsources strip test"
 
 S="${WORKDIR}/${P}/src/${EGO_PN}"
+
+# https://bugs.gentoo.org/748984 https://github.com/etcd-io/etcd/pull/12552
+PATCHES=(
+	"${FILESDIR}/etcd-F_OFD_GETLK-fix.patch"
+	"${FILESDIR}/ppc64-buildmode.patch"
+)
 
 # see "contrib/check-config.sh" from upstream's sources
 CONFIG_CHECK="
 	~NAMESPACES ~NET_NS ~PID_NS ~IPC_NS ~UTS_NS
 	~CGROUPS ~CGROUP_CPUACCT ~CGROUP_DEVICE ~CGROUP_FREEZER ~CGROUP_SCHED ~CPUSETS ~MEMCG
+	~CGROUP_NET_PRIO
 	~KEYS
 	~VETH ~BRIDGE ~BRIDGE_NETFILTER
 	~IP_NF_FILTER ~IP_NF_TARGET_MASQUERADE ~NETFILTER_XT_MARK
@@ -76,7 +80,7 @@ CONFIG_CHECK="
 	~CGROUP_PERF
 	~CGROUP_HUGETLB
 	~NET_CLS_CGROUP
-	~CFS_BANDWIDTH ~FAIR_GROUP_SCHED ~RT_GROUP_SCHED
+	~CFS_BANDWIDTH ~FAIR_GROUP_SCHED
 	~IP_VS ~IP_VS_PROTO_TCP ~IP_VS_PROTO_UDP ~IP_VS_NFCT ~IP_VS_RR
 
 	~VXLAN
@@ -101,27 +105,6 @@ ERROR_XFRM_ALGO="CONFIG_XFRM_ALGO: is optional for secure networks"
 ERROR_XFRM_USER="CONFIG_XFRM_USER: is optional for secure networks"
 
 pkg_setup() {
-	if kernel_is lt 3 10; then
-		ewarn ""
-		ewarn "Using Docker with kernels older than 3.10 is unstable and unsupported."
-		ewarn " - http://docs.docker.com/engine/installation/binaries/#check-kernel-dependencies"
-	fi
-
-	if kernel_is le 3 18; then
-		CONFIG_CHECK+="
-			~RESOURCE_COUNTERS
-		"
-	fi
-
-	if kernel_is le 3 13; then
-		CONFIG_CHECK+="
-			~NETPRIO_CGROUP
-		"
-	else
-		CONFIG_CHECK+="
-			~CGROUP_NET_PRIO
-		"
-	fi
 
 	if kernel_is lt 4 5; then
 		CONFIG_CHECK+="
@@ -184,11 +167,12 @@ pkg_setup() {
 src_compile() {
 	export DOCKER_GITCOMMIT="${GIT_COMMIT}"
 	export GOPATH="${WORKDIR}/${P}"
+	export VERSION=${PV}
 
 	# setup CFLAGS and LDFLAGS for separate build target
 	# see https://github.com/tianon/docker-overlay/pull/10
-	export CGO_CFLAGS="-I${ROOT}/usr/include"
-	export CGO_LDFLAGS="-L${ROOT}/usr/$(get_libdir)"
+	export CGO_CFLAGS="-I${ESYSROOT}/usr/include"
+	export CGO_LDFLAGS="-L${ESYSROOT}/usr/$(get_libdir)"
 
 	# let's set up some optional features :)
 	export DOCKER_BUILDTAGS=''
@@ -213,9 +197,6 @@ src_compile() {
 	fi
 
 	# build daemon
-	mkdir ${GOPATH}/src/github.com/docker || die "mkdir failed"
-	ln -rsT ${GOPATH}/src/github.com/moby/moby ${GOPATH}/src/github.com/docker/docker
-	VERSION="${MY_PV}" \
 	./hack/make.sh dynbinary || die 'dynbinary failed'
 }
 
