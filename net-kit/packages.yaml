@@ -1011,7 +1011,6 @@ packages:
   - net-fs/openafs-kernel
   - net-fs/openafs
   - net-fs/docker-volume-netshare
-  - net-fs/sshfs
   - net-fs/smbnetfs
   - net-fs/nfstest
   - net-fs/ncpfs
