@@ -44,7 +44,6 @@ COMMON_DEPEND="
 	>=sys-apps/texinfo-4.7-r1
 	sys-libs/ncurses:0=
 	>=sys-libs/zlib-1.2.3:0=
-	virtual/libcrypt:=
 	!bindist? (
 		sys-libs/binutils-libs:0=
 		>=sys-libs/readline-4.1:0=

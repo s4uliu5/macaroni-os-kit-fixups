@@ -30,7 +30,7 @@ REQUIRED_USE="jdbc? ( extraengine server !static )
 	?? ( tcmalloc jemalloc )
 	static? ( yassl !pam )"
 
-KEYWORDS="*"
+KEYWORDS=""
 
 # Shorten the path because the socket path length must be shorter than 107 chars
 # and we will run a mysql server during test phase
@@ -102,7 +102,7 @@ RDEPEND="${COMMON_DEPEND}
 	!dev-db/mariadb:10.2
 	!dev-db/mariadb:10.3
 	!dev-db/mariadb:10.4
-	!dev-db/mariadb:10.6
+	!dev-db/mariadb:10.5
 	!<virtual/mysql-5.6-r11
 	!<virtual/libmysqlclient-18-r1
 	selinux? ( sec-policy/selinux-mysql )
