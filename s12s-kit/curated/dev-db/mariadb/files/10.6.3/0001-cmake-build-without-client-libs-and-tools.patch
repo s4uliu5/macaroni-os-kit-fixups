@@ -1,3 +1,4 @@
+Date: Sun, 11 Jul 2021 21:28:50 +0300
 Subject: [PATCH] cmake: build without client libs and tools
 
 ---
@@ -7,12 +8,12 @@ Subject: [PATCH] cmake: build without client libs and tools
  libmariadb/CMakeLists.txt            |  4 ++--
  libmariadb/include/CMakeLists.txt    |  2 ++
  libmariadb/libmariadb/CMakeLists.txt | 23 +++++++++++++++--------
- scripts/CMakeLists.txt               | 14 ++++++++++++++
+ scripts/CMakeLists.txt               |  9 +++++++--
  scripts/mysql_install_db.sh          |  4 ++--
  scripts/mysqld_safe.sh               |  8 +++++++-
  scripts/wsrep_sst_common.sh          |  5 ++++-
  support-files/CMakeLists.txt         |  6 ++++--
- 11 files changed, 70 insertions(+), 23 deletions(-)
+ 11 files changed, 63 insertions(+), 25 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index d6cf9897..653febb0 100644
@@ -200,20 +201,20 @@ index cf96b9e9..56afd04f 100644
  
  IF(MSVC)
 diff --git a/scripts/CMakeLists.txt b/scripts/CMakeLists.txt
-index 02595e8b..440f5558 100644
+index 02595e8b..ef0f89cd 100644
 --- a/scripts/CMakeLists.txt
 +++ b/scripts/CMakeLists.txt
-@@ -344,6 +344,20 @@ ELSE()
+@@ -337,13 +337,18 @@ ELSE()
+     mariadb-convert-table-format
+     mariadb-find-rows
+     mariadb-dumpslow
+-    mysql_config
+-    mytop
+     mariadb-hotcopy
+     ${SERVER_SCRIPTS}
      ${WSREP_SCRIPTS}
    )
  
-+  IF(NOT WITHOUT_CLIENTLIBS)
-+    SET(BIN_SCRIPTS
-+      ${BIN_SCRIPTS}
-+      mysql_config
-+    )
-+  ENDIF(NOT WITHOUT_CLIENTLIBS)
-+
 +  IF(NOT WITHOUT_CLIENTLIBS)
 +    SET(BIN_SCRIPTS
 +      ${BIN_SCRIPTS}
