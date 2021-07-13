@@ -9,10 +9,11 @@ inherit eutils systemd flag-o-matic prefix toolchain-funcs \
 	multiprocessing java-pkg-opt-2 cmake user
 
 # Patch version
-PATCH_SET="https://dev.gentoo.org/~whissi/dist/${PN}/${PN}-10.5.10-patches-01.tar.xz"
-
-SRC_URI="https://downloads.mariadb.org/interstitial/${P}/source/${P}.tar.gz
-	${PATCH_SET}"
+# PATCH_SET="https://dev.gentoo.org/~whissi/dist/${PN}/${PN}-10.5.10-patches-01.tar.xz"
+#
+#SRC_URI="https://downloads.mariadb.org/interstitial/${P}/source/${P}.tar.gz
+#	${PATCH_SET}"
+SRC_URI="https://downloads.mariadb.org/interstitial/${P}/source/${P}.tar.gz"
 
 HOMEPAGE="https://mariadb.org/"
 DESCRIPTION="An enhanced, drop-in replacement for MySQL"
@@ -217,7 +218,7 @@ src_unpack() {
 }
 
 src_prepare() {
-	# eapply "${WORKDIR}"/mariadb-patches
+	eapply "${FILESDIR}"/10.6.3/0001-cmake-build-without-client-libs-and-tools.patch
 
 	eapply_user
 
@@ -387,7 +388,7 @@ src_configure() {
 			-DPLUGIN_SPIDER=$(usex extraengine YES NO)
 			-DPLUGIN_S3=$(usex s3 YES NO)
 			-DPLUGIN_COLUMNSTORE=$(usex columnstore YES NO)
-			-DPLUGIN_CONNECT=$(usex extraengine YES NO)
+			-DPLUGIN_CONNECT=$(usex extraengine DYNAMIC NO)
 			-DCONNECT_WITH_MYSQL=1
 			-DCONNECT_WITH_LIBXML2=$(usex xml)
 			-DCONNECT_WITH_ODBC=$(usex odbc)
