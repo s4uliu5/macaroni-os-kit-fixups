@@ -32,6 +32,7 @@ kernel_gen:
   packages:
     - debian-sources-lts:
         ummask_match: '4.19.'
+        release_name: stable-sec
         patches:
           - xfs-libcrc32c-fix.patch
           - mcelog.patch
@@ -42,10 +43,6 @@ kernel_gen:
           - extra_cpu_optimizations.patch
         versions:
           latest:
-            unmasked: True
-          4.19.160_p2:
-            unmasked: True
-          4.19.181_p1:
             unmasked: True
     - debian-sources:
         patches:
@@ -59,8 +56,4 @@ kernel_gen:
           latest:
             unmasked: False
           5.10.46_p2:
-            unmasked: True
-          5.10.46_p1:
-            unmasked: True
-          5.10.40_p1:
             unmasked: True
