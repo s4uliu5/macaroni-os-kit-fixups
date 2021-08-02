@@ -23,6 +23,7 @@ DEPEND="app-arch/xz-utils
 	dev-lang/tcl
 	dev-libs/libuv
 	dev-libs/lzo
+	>=dev-util/xdelta-3.0[lzma(+)]
 	net-dns/dnsmasq[dhcp,ipv6?]"
 RDEPEND="${DEPEND}
 	net-firewall/ebtables
