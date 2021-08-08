@@ -1,7 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit go-module systemd
+inherit go-module systemd user
+
 MY_PV="v${PV/_rc/-rc.}"
 NODE_EXPORTER_COMMIT=26645363b486e12be40af7ce4fc91e731a33104e
 
@@ -606,9 +607,9 @@ src_compile() {
 	promu build -v --prefix node_exporter || die
 }
 
-pkg_preinst() {
+pkg_setup() {
 	enewgroup node_exporter 459
-	enewuser node_exporter 459 -1 /var/lib/node_exporter node_exporter
+	enewuser node_exporter 459 -1 -1 node_exporter
 }
 
 src_install() {
