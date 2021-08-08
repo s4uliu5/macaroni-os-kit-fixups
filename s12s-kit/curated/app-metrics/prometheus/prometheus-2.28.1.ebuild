@@ -1612,7 +1612,7 @@ src_install() {
 	fowners prometheus:prometheus /var/log/prometheus /var/lib/prometheus
 }
 
-pkg_preinst() {
+pkg_setup() {
 	enewgroup prometheus 430
 	enewuser prometheus 430 -1 /var/lib/prometheus prometheus
 }

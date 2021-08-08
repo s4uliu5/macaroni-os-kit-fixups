@@ -2,9 +2,9 @@
 
 EAPI=7
 
-inherit go-module systemd
+inherit go-module systemd user
 
-GIT_COMMIT=5ad7a10
+GIT_COMMIT=44f8adc06af5101ad64bd8b9c8b18273f2922051
 MY_PV="${PV/_rc/-rc.}"
 
 DESCRIPTION="Alertmanager for alerts sent by client applications such as Prometheus"
@@ -783,9 +783,9 @@ src_compile() {
 	promu build -v --prefix bin || die
 }
 
-pkg_preinst() {
+pkg_setup() {
 	enewgroup alertmanager 294
-	enewuser alertmanager 294 -1 /var/lib/alertmanager alertmanager
+	enewuser alertmanager 294 -1 -1 alertmanager
 }
 
 src_install() {

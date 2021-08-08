@@ -1,7 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit go-module
+inherit go-module user
 # uncomment the first setting of MY_PV for a normal release
 # MY_PV="v${PV/_rc/-rc.}"
 # set MY_PV to the full commit hash for a snapshot release
@@ -42,7 +42,7 @@ src_compile() {
 }
 
 
-pkg_preinst() {
+pkg_setup() {
 	enewgroup mysqld_exporter 308
 	enewuser mysqld_exporter 308 -1 /var/lib/mysqld_exporter mysqld_exporter
 }
