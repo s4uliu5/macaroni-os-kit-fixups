@@ -24,9 +24,7 @@ REQUIRED_USE="pcre-jit? ( pcre )
 	device-atlas? ( pcre )
 	?? ( slz zlib )"
 
-BDEPEND="virtual/pkgconfig"
 DEPEND="
-	crypt? ( virtual/libcrypt:= )
 	pcre? (
 		dev-libs/libpcre
 		pcre-jit? ( dev-libs/libpcre[jit] )
