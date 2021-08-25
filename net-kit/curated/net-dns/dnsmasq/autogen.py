@@ -25,7 +25,7 @@ def get_latest_version(hub):
 		if len(rtt) < 3:
 			continue
 
-		if rtt[2].startswith("v") and not rtt[2].endswith("^{}"):
+		if rtt[2].startswith("v") and not rtt[2].endswith("^{}") and not "rc" in rtt[2]:
 			tags.append(rtt[2].lstrip("v"))
 
 	tags = sorted(tags, key=lambda t: version.parse(t))
