@@ -1123,6 +1123,7 @@ dev_python_simplified_rule:
         blocker: "!<dev-python/setuptools_scm-6.0.0"
         python_compat: python3+
         du_setuptools: rdepend
+        depend: ">=dev-python/tomli-1.0"
     - setuptools-rust:
         pydeps:
           py:all:
@@ -1305,6 +1306,7 @@ dev_python_autogen_rule:
         python_compat: python2+
     - toml:
         python_compat: python2+ pypy3
+    - tomli
     - twine:
         version: 3.4.1
         python_compat: python3+ pypy3
