@@ -1305,6 +1305,7 @@ dev_python_autogen_rule:
         python_compat: python2+
     - toml:
         python_compat: python2+ pypy3
+    - tomli
     - twine:
         version: 3.4.1
         python_compat: python3+ pypy3
