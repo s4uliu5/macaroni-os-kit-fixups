@@ -122,15 +122,12 @@ _distutils_set_globals() {
 	case ${DISTUTILS_USE_SETUPTOOLS} in
 		no|manual)
 			;;
-		bdepend)
+		bdepend|autostub)
 			bdep+=" ${setuptools_dep}"
 			;;
 		rdepend)
 			bdep+=" ${setuptools_dep}"
 			rdep+=" ${setuptools_dep}"
-			;;
-		pyproject.toml)
-			bdep+=' dev-python/pyproject2setuppy[${PYTHON_USEDEP}]'
 			;;
 		*)
 			die "Invalid DISTUTILS_USE_SETUPTOOLS=${DISTUTILS_USE_SETUPTOOLS}"
@@ -464,8 +461,8 @@ _distutils_verify_use_setuptools() {
 	[[ ${DISTUTILS_OPTIONAL} ]] && return
 	[[ ${DISTUTILS_USE_SETUPTOOLS} == manual ]] && return
 	[[ ${DISTUTILS_USE_SETUPTOOLS} == pyproject.toml ]] && return
-
-	# ok, those are cheap greps.  we can try toimprove them if we hit
+	[[ ${DISTUTILS_USE_SETUPTOOLS} == autostub ]] && return
+	# ok, those are cheap greps.  we can try to improve them if we hit
 	# false positives.
 	local expected=no
 	if [[ ${CATEGORY}/${PN} == dev-python/setuptools ]]; then
@@ -596,19 +593,26 @@ _distutils-r1_disable_ez_setup() {
 # Generate setup.py for pyproject.toml if requested.
 _distutils-r1_handle_pyproject_toml() {
 	if [[ ! -f setup.py && -f pyproject.toml ]]; then
-		if [[ ${DISTUTILS_USE_SETUPTOOLS} == pyproject.toml ]]; then
-			cat > setup.py <<-EOF || die
-				#!/usr/bin/env python
-				from pyproject2setuppy.main import main
-				main()
-			EOF
-			chmod +x setup.py || die
+		if [ "$DISTUTILS_USE_SETUPTOOLS" = "autostub" ]; then
+			cat > setup.py <<EOF || die
+#!/usr/bin/env python
+import setuptools
+if __name__ == "__main__":
+	setuptools.setup(
+		name="$PN",
+		version="$PV",
+		packages=setuptools.find_packages(),
+	)
+EOF
 		else
-			eerror "No setup.py found but pyproject.toml is present.  In order to enable"
-			eerror "pyproject.toml support in distutils-r1, set:"
-			eerror "  DISTUTILS_USE_SETUPTOOLS=pyproject.toml"
-			die "No setup.py found and DISTUTILS_USE_SETUPTOOLS!=pyproject.toml"
+			cat > setup.py <<EOF || die
+#!/usr/bin/env python
+import setuptools
+if __name__ == "__main__":
+	setuptools.setup()
+EOF
 		fi
+		chmod +x setup.py || die
 	fi
 }
 
