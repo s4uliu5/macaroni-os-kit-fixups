@@ -1,0 +1,2 @@
+# This trick requires that the arch is selected *first*
+ACCEPT_KEYWORDS="~${ARCH} ${ARCH}"
