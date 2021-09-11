@@ -7,9 +7,9 @@ go_gen:
   packages:
     - go:
         versions:
-          1.17:
+          1.17.1:
             unmasked: True
-          1.16.7:
+          1.16.8:
             unmasked: True
           1.15.15:
             unmasked: True
