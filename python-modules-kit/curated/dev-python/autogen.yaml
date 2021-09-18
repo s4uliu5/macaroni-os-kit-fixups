@@ -503,6 +503,28 @@ simple_python_autogen_rule:
           distutils_enable_tests pytest
           distutils_enable_sphinx docs \
             dev-python/sphinx_rtd_theme
+    - beautifulsoup:
+        pypi_name: beautifulsoup4
+        desc: Pythonic idioms for iterating, searching, and modifying an HTML/XML parse tree
+        homepage: https://www.crummy.com/software/BeautifulSoup/bs4/
+        license: MIT
+        python_compat: python3+ pypy3
+        pydeps:
+          py:all:
+            - soupsieve
+            - html5lib
+            - lxml
+        rdepend: |
+          !dev-python/beautifulsoup:4
+    - booleanOperations:
+        desc: Boolean operations on paths
+        homepage: https://github.com/typemytype/booleanOperations
+        license: MIT
+        pydeps:
+          py:all:
+            - fonttools
+            - pyclipper
+            - wheel
     - bpytop:
         desc: Linux/OSX/FreeBSD resource monitor
         homepage: https://github.com/aristocratos/bpytop
@@ -591,6 +613,15 @@ simple_python_autogen_rule:
         desc: ANSI escape character sequences for colored terminal text & cursor positioning
         homepage: https://github.com/tartley/colorama https://pypi.org/project/colorama/
         license: BSD
+    - defcon:
+        desc: A set of UFO based objects for use in font editing applications
+        homepage: https://github.com/robotools/defcon
+        license: MIT
+        pydeps:
+          py:all:build:
+            - fonttools
+          py:all:
+            - setuptools_scm
     - fetchcord:
         cat: net-im
         pypi_name: FetchCord
@@ -606,6 +637,36 @@ simple_python_autogen_rule:
           app-misc/neofetch
           x11-apps/mesa-progs
         python_compat: python3+
+    - fonttools:
+        desc: Library for manipulating TrueType, OpenType, AFM and Type1 fonts
+        homepage: https://github.com/fonttools/fonttools/
+        license: BSD
+        python_compat: python3+
+        pydeps:
+          py:all:build:
+            - cython
+          py:all:
+            - fs
+        body: |
+          src_configure() {
+            DISTUTILS_ARGS=( --with-cython )
+          }
+    - fs:
+        desc: Filesystem abstraction layer
+        homepage: https://pypi.org/project/fs/ https://docs.pyfilesystem.org https://www.willmcgugan.com/tag/fs/
+        license: MIT
+        python_compat: python3+
+        pydeps:
+          py:all:
+            - appdirs
+            - pytz
+            - six
+        body: |
+          pkg_postinst() {
+            echo "S3 support dev-python/boto"
+            echo "SFTP support dev-python/paramiko"
+            echo "Browser support dev-python/wxpython"
+          }
     - khal:
         cat: app-misc
         desc: A CalDAV based calendar
@@ -641,11 +702,49 @@ simple_python_autogen_rule:
               doins misc/__khal
             fi
           }
+    - nototools:
+        pypi_name: notofonttools
+        desc: Noto fonts support tools and scripts plus web site generation
+        homepage: https://github.com/googlefonts/nototools
+        license: Apache-2.0 OFL-1.1
+        pydeps:
+          py:all:
+            - booleanOperations
+            - defcon
+            - fonttools
+            - pillow
+            - pyclipper
+        rdepend: |
+          media-gfx/scour
     - rfc3986:
         desc: A Python implementation of RFC 3986 including validation and authority parsing
         homepage: http://rfc3986.readthedocs.io/ https://pypi.org/project/rfc3986/
         license: Apache-2.0
         python_compat: python2+ pypy{,3}
+    - soupsieve:
+        desc: A modern CSS selector implementation for BeautifulSoup
+        homepage: https://github.com/facelessuser/soupsieve/ https://pypi.org/project/soupsieve/
+        license: MIT
+        python_compat: python3+ pypy3
+    - ufoLib:
+        pypi_name: ufoLib2
+        desc: A UFO font library
+        homepage: https://github.com/fonttools/ufoLib2
+        license: Apache-2.0
+        python_compat: python3+
+        pydeps:
+          py:all:
+            - attrs
+            - fonttools
+            - fs
+            - lxml
+        bdepend: |
+          app-arch/unzip
+        body: |
+          python_prepare_all() {
+            sed -e '/\<wheel\>/d' -i setup.cfg || die
+            distutils-r1_python_prepare_all
+          }
     - hg-git:
         cat: dev-vcs
         homepage: https://hg-git.github.io  https://pypi.org/project/hg-git/
