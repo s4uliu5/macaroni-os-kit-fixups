@@ -196,7 +196,7 @@ src_test() {
 }
 
 src_install() {
-	meson_src_install completiondir="$(get_bashcompdir)"
+	meson_src_install
 	keepdir /usr/$(get_libdir)/gio/modules
 	einstalldocs
 
