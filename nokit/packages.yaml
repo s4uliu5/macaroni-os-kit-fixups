@@ -91,7 +91,6 @@ packages:
   - app-admin/gnome-abrt
   - app-admin/gnome-system-log
   - app-admin/go-updater
-  - app-admin/gopass
   - app-admin/graylog2
   - app-admin/hardening-check
   - app-admin/hardinfo
@@ -770,7 +769,6 @@ packages:
   - app-misc/actkbd
   - app-misc/aldo
   - app-misc/anki
-  - app-misc/asciinema
   - app-misc/astrolog
   - app-misc/astrolog-ephemeris
   - app-misc/away
@@ -925,7 +923,6 @@ packages:
   - app-misc/muttprint
   - app-misc/mvcase
   - app-misc/mx5000tools
-  - app-misc/nnn
   - app-misc/no-more-secrets
   - app-misc/notary
   - app-misc/note
@@ -1349,7 +1346,6 @@ packages:
   - sys-apps/ifplugd
   - sys-apps/init-system-helpers
   - sys-apps/input-utils
-  - sys-apps/inxi
   - sys-apps/iotools
   - sys-apps/ipmicfg
   - sys-apps/ipmitool
@@ -1476,7 +1472,6 @@ packages:
   - sys-auth/authenticator
   - sys-auth/docker_auth
   - sys-auth/fingerprint-gui
-  - sys-auth/google-authenticator
   - sys-auth/google-authenticator-libpam-hardened
   - sys-auth/google-authenticator-wrappers
   - sys-auth/icmpdn
