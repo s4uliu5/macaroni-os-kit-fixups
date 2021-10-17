@@ -2,13 +2,9 @@
 
 import re
 
-def get_release(releases_data, target_asset):
-	"""
-	FL-8961 documents an issue where VSCodium had a release that did not include the x64 linux asset we use.
-	To address this, this code was 'robustified' and will look in the assets in a release and only select it
-	if it offers the asset we need.
-	"""
-	bad_versions = ["1.55.1"]
+def get_release(releases_data, target_asset, bad_versions=None):
+	if bad_versions is None:
+		bad_versions = set()
 	for release in releases_data:
 		if release["prerelease"] or release["draft"]:
 			continue
@@ -23,19 +19,18 @@ def get_release(releases_data, target_asset):
 	return None
 
 async def generate(hub, **pkginfo):
-	user = "VSCodium"
-	name = pkginfo["name"]
-	repo = name.rstrip("-bin")
+	user = "numactl"
+	repo = "numactl"
 	releases_data = await hub.pkgtools.fetch.get_page(
 		f"https://api.github.com/repos/{user}/{repo}/releases", is_json=True
 	)
-	target_asset = f"{user}-linux-x64-([0-9.]+).tar.gz"
+	target_asset = f"numactl-([0-9.]+)\\.tar\\.gz"
 	result = get_release(releases_data, target_asset)
 	if result is None:
 		raise hub.pkgtools.ebuild.BreezyError(f"Can't find a suitable release of {repo}")
 	version, asset_url, asset_name = result
-	ass_data = await hub.pkgtools.fetch.get_page(asset_url, is_json=True)
-	artifact_url = ass_data["browser_download_url"]
+	ass_fetch = await hub.pkgtools.fetch.get_page(asset_url, is_json=True)
+	artifact_url = ass_fetch["browser_download_url"]
 	ebuild = hub.pkgtools.ebuild.BreezyBuild(
 		**pkginfo,
 		version=version,
@@ -47,3 +42,5 @@ async def generate(hub, **pkginfo):
 		],
 	)
 	ebuild.push()
+
+# vim: ts=4 sw=4 noet
