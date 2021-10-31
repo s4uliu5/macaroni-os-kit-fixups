@@ -4,8 +4,8 @@ from packaging import version
 
 
 async def generate(hub, **pkginfo):
-	github_user = "mongodb-js"
-	github_repo = "compass"
+	github_user = "dandavison"
+	github_repo = "delta"
 
 	release_data = await hub.pkgtools.fetch.get_page(
 		f"https://api.github.com/repos/{github_user}/{github_repo}/releases",
@@ -29,23 +29,24 @@ async def generate(hub, **pkginfo):
 	tag_name = latest_release["tag_name"]
 	latest_version = tag_name.lstrip("v")
 
-	source_name = f"{pkginfo.get('name')}_{latest_version}_amd64.deb"
-
-	source_asset = next(
-		asset for asset in latest_release["assets"] if asset["name"] == source_name
-	)
-	source_url = source_asset["browser_download_url"]
+	source_url = latest_release["tarball_url"]
+	source_name = f"{github_repo}-{latest_version}.tar.gz"
 
 	source_artifact = hub.pkgtools.ebuild.Artifact(
 		url=source_url, final_name=source_name
 	)
 
+	cargo_artifacts = await hub.pkgtools.rust.generate_crates_from_artifact(
+		source_artifact
+	)
+
 	ebuild = hub.pkgtools.ebuild.BreezyBuild(
 		**pkginfo,
 		version=latest_version,
-		artifacts=[source_artifact],
 		github_user=github_user,
 		github_repo=github_repo,
+		crates=cargo_artifacts["crates"],
+		artifacts=[source_artifact, *cargo_artifacts["crates_artifacts"]],
 	)
 	ebuild.push()
 
