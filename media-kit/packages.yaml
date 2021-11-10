@@ -168,7 +168,6 @@ packages:
   - media-libs/leptonica
   - media-libs/ming
   - media-libs/libpng
-  - media-libs/libwebp
   - media-libs/t1lib
   - media-libs/libpagemaker
   - media-libs/libldac
@@ -511,7 +510,6 @@ packages:
   - media-video/google2srt
   - media-video/unifi-video
   - media-video/bluray_info
-  - media-video/libva-utils
   - media-video/subliminal
   - media-video/ttcut
   - media-video/luvcview
