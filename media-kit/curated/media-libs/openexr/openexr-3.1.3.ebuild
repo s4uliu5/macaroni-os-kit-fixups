@@ -8,7 +8,7 @@ MY_PN=OpenEXR
 
 DESCRIPTION="ILM's OpenEXR high dynamic-range image file format libraries"
 HOMEPAGE="https://www.openexr.com/"
-SRC_URI="{{artifacts[0].src_uri}}"
+SRC_URI="https://api.github.com/repos/AcademySoftwareFoundation/openexr/tarball/refs/tags/v3.1.3 -> openexr-3.1.3-697cc449cc589ed780acda88e79e6145ddcd121f.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
@@ -20,7 +20,7 @@ RESTRICT="!test? ( test )"
 RDEPEND="
 	>=dev-libs/imath-3.1.0:=
 	sys-libs/zlib
-	!media-libs/openexr:2
+	!!media-libs/openexr:2
 "
 
 DEPEND="${RDEPEND}"
@@ -35,7 +35,7 @@ PATCHES=(
 DOCS=( CHANGES.md GOVERNANCE.md PATENTS README.md SECURITY.md docs/SymbolVisibility.md )
 
 post_src_unpack() {
-	mv "${WORKDIR}/"{{github_user}}-{{github_repo}}* "${S}" || die
+	mv "${WORKDIR}/"AcademySoftwareFoundation-openexr* "${S}" || die
 }
 
 src_prepare() {
