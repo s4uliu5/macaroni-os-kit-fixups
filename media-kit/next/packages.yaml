@@ -85,6 +85,7 @@ packages:
         - media-libs/libzen
         - media-libs/libmediainfo
         - media-libs/id3lib
+        - media-libs/libid3tag
     audio:
       general:
         - media-sound/gsm
@@ -100,12 +101,14 @@ packages:
         - media-sound/cdparanoia
         - media-sound/lame
         - media-sound/mpg123
+        - media-sound/portaudio
         - media-sound/jack-audio-connection-kit
         - media-sound/wavpack
       formats:
         - media-libs/speex
         - media-libs/speexdsp
         - media-libs/sbc
+        - media-libs/openal
         - media-libs/opus
         - media-libs/faad2
         - media-libs/libvorbis
@@ -169,13 +172,17 @@ packages:
         - media-fonts/symbola
         - media-fonts/unifont
 - gentoo-staging-nov-2021:
+    audio:
+      - media-sound/sndio
     gstreamer_and_friends:
+      - net-libs/libnice
       - media-libs/gstreamer
       - media-libs/gstreamer-editing-services
       - media-libs/gst-plugins-ugly
       - media-libs/gst-plugins-base
       - media-libs/gst-plugins-bad
       - media-libs/gst-plugins-good
+      - media-plugins/gst-plugins-libnice
       - media-plugins/gst-plugins-oss
       - media-plugins/gst-plugins-v4l2
       - media-plugins/gst-plugins-x265
