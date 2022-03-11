@@ -635,6 +635,22 @@ simple_python_autogen_rule:
             distutils-r1_python_prepare_all
             sed -i -e "s|data_files=\[('share/doc/asciinema|&-${PVR}|" setup.py || die
           }
+    - astor:
+        homepage: https://pypi.org/project/astor/
+        license: BSD
+        python_compat: python2+ pypy
+        pydeps:
+          py:all:
+            - dev-python/setuptools
+        body: |
+          python_prepare_all() {
+            #avoid file collisions picked up by the eclass
+            sed -e s":find_packages():find_packages(exclude=['tests']):" -i setup.py || die
+            distutils-r1_python_prepare_all
+          }
+          python_test() {
+            "${PYTHON}" -m unittest discover || die "tests failed under ${EPYTHON}"
+          }
     - atomicwrites:
         homepage: https://github.com/untitaker/python-atomicwrites
         license: MIT
@@ -1217,6 +1233,7 @@ salt_misc_deps_rule:
         pydeps:
           - h11
           - sniffio
+          - anyio
     - httpx:
         pydeps:
           - httpcore
@@ -1238,6 +1255,15 @@ io_stuff_rule:
           - typing-extensions
           - curio >= 1.4
           - trio >= 0.16
+        revision:
+          3.5.0: 1
+        body: |
+          src_prepare() {
+            default
+            # See FL-9522
+            cd ${S}/src/anyio/_core || die
+            ( cat ${FILESDIR}/get_asynclib_thread_fix.patch | patch -p0 ) || die
+          }
     - async-generator:
         license: '|| ( Apache-2.0 MIT )'
         pypi_name: async_generator

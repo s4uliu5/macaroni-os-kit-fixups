@@ -1,9 +1,0 @@
-prometheus-bin:
-  generator: github-1
-  packages:
-    - prometheus-bin:
-        tarball: prometheus-{version}.linux-amd64.tar.gz
-        github:
-          user: prometheus
-          repo: prometheus
-          query: releases

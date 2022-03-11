@@ -1,9 +1,0 @@
-memcached_exporter-bin:
-  generator: github-1
-  packages:
-    - memcached_exporter-bin:
-        tarball: memcached_exporter-{version}.linux-amd64.tar.gz
-        github:
-          user: prometheus
-          repo: memcached_exporter
-          query: releases

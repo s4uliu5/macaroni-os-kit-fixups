@@ -40,7 +40,6 @@ packages:
   - net-misc/midentd
   - net-misc/grdesktop
   - net-misc/putty
-  - net-misc/hylafaxplus
   - net-misc/udpxy
   - net-misc/electrum-ltc
   - net-misc/gvrpcd
@@ -182,7 +181,6 @@ packages:
   - net-misc/lcr
   - net-misc/icecast
   - net-misc/bfgminer
-  - net-misc/netifrc
   - net-misc/vncsnapshot
   - net-misc/proxytunnel
   - net-misc/bgpq3
@@ -418,7 +416,6 @@ packages:
   - net-wireless/portapack-havoc
   - net-wireless/kismet-rest
   - net-wireless/bladerf
-  - net-wireless/iwd
   - net-wireless/gr-specest
   - net-wireless/yatebts
   - net-wireless/soapyuhd
@@ -964,7 +961,7 @@ packages:
   - virtual/mda
   - virtual/httpd-cgi
   - virtual/inetd
-  - net-firewall/psad
+  - net-firewall/arptables
   - net-firewall/firehol
   - net-firewall/arno-iptables-firewall
   - net-firewall/dshieldpy
