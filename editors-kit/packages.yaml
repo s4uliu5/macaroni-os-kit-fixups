@@ -1,7 +1,6 @@
 packages:
 - flora:
   - app-editors/vscode-bin
-  - app-editors/featherpad
   - app-editors/dhex
   - app-editors/qhexedit2
 - fusion809:
@@ -232,7 +231,6 @@ packages:
   - app-editors/hexcurse
   - app-editors/ersatz-emacs
   - app-editors/jove
-  - app-editors/nvi
   - app-editors/juffed
   - app-editors/qemacs
   - app-editors/gummi

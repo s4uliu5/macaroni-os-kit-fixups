@@ -102,7 +102,6 @@ packages:
   - sys-block/parted
   - sys-block/thin-provisioning-tools
   - net-dns/openresolv
-  - net-dns/bind-tools
   - net-mail/mailbase
   - app-misc/c_rehash
   - app-misc/editor-wrapper
@@ -447,7 +446,6 @@ packages:
   - sys-auth/realtime-base
   - app-shells/bash-completion
   - app-shells/fzf
-  - app-shells/gentoo-bashcomp
   - app-shells/gentoo-zsh-completions
   - app-shells/mpv-bash-completion
   - app-shells/push
@@ -460,7 +458,6 @@ packages:
   - app-portage/euses
   - app-portage/genlop
   - app-portage/mirrorselect
-  - app-portage/porthole
   - app-portage/ufed
   - app-admin/augeas
   - app-admin/cgmanager
