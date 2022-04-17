@@ -143,12 +143,14 @@ packages:
         - media-libs/openjpeg
         - media-libs/libwebp
         - media-libs/libwmf
+        - media-libs/netpbm
     video:
       vlc-support:
         - media-libs/libdvbpsi
         - media-libs/libmatroska
       apps:
         - virtual/ffmpeg
+        - media-video/ffmpegthumbnailer # dep for xfce4-meta
       formats:
         - media-libs/xvid
         - media-libs/a52dec

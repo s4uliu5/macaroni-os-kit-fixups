@@ -20,20 +20,19 @@ simple_autogen_rule:
     - metatools:
         pypi_name: funtoo-metatools
         desc: "Funtoo's metatools -- autogeneration framework."
+        rdepend: |
+          app-arch/unzip
         pydeps:
           py:all:build:
             - subpop >= 2.0.0
           py:all:
-            - aiofiles
-            - aiodns
-            - aiohttp
             - beautifulsoup
             - dict-toolbox
+            - httpx
             - jinja >= 3
             - packaging
             - pymongo
             - toml
-            - www-servers/tornado
             - xmltodict
             - colorama
 
@@ -44,29 +43,22 @@ gnu_core_rule:
     compression: 'xz'
   generator: gnu-1
   packages:
+    - coreutils:
+        python_compat: 'python3+'
     - diffutils:
         version: '3.7'
     - findutils:
         version: '4.8.0'
     - gawk:
         version: '5.1.0'
+    - gdbm:
+        cat: sys-libs
+        compression: 'gz'
     - grep:
         version: '3.6'
-    - sed:
-        version: '4.8'
-    - texinfo:
-        version: '6.7'
-    - tar:
-        cat: app-arch
-        version: '1.34'
     - gzip:
         cat: app-arch
         version: '1.10'
-# See FL-8418: gstreamer-1.4.14 and potentially others rely on 'older' backslash handling of make 4.2.1 -- make 4.3 is different.
-#    - make:
-#        cat: sys-devel
-#        compression: gz
-#        version: '4.3'
     - patch:
         cat: sys-devel
         version: '2.7.6'
@@ -76,6 +68,10 @@ gnu_core_rule:
         cat: app-misc
         compression: 'gz'
         python_compat: 'python3+'
-    - gdbm:
-        cat: sys-libs
-        compression: 'gz'
+    - sed:
+        version: '4.8'
+    - texinfo:
+        version: '6.7'
+    - tar:
+        cat: app-arch
+        version: '1.34'

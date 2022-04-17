@@ -25,7 +25,7 @@ BDEPEND="
 	virtual/pkgconfig
 "
 COMMON_DEPEND="${PYTHON_DEPS}
-	>=app-text/poppler-0.57.0:=[cairo]
+	<=app-text/poppler-22.03.0:=[cairo]
 	>=dev-cpp/cairomm-1.12
 	>=dev-cpp/glibmm-2.54.1
 	dev-cpp/gtkmm:3.0

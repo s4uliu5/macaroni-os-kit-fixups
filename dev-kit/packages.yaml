@@ -543,7 +543,6 @@ packages:
   - dev-cpp/metslib
   - dev-cpp/rttr
   - dev-cpp/tree
-  - dev-cpp/yaml-cpp
   - dev-cpp/sourcetrail
   - dev-cpp/gstreamermm
   - dev-cpp/glog
@@ -583,7 +582,6 @@ packages:
   - dev-libs/replicant
   - dev-libs/msgpack
   - dev-libs/libbegemot
-  - dev-libs/libxmlb
   - dev-libs/libspnav
   - dev-libs/libmowgli
   - dev-libs/xxhash
@@ -648,7 +646,6 @@ packages:
   - dev-libs/Ice
   - dev-libs/libIDL
   - dev-libs/libmaa
-  - dev-libs/libdnet
   - dev-libs/ding-libs
   - dev-libs/marisa
   - dev-libs/librep
@@ -914,9 +911,7 @@ packages:
   - dev-util/packer
   - dev-util/qmtest
   - dev-util/icmake
-  - dev-util/android-studio
   - dev-util/ftjam
-  - dev-util/Orange
   - dev-util/checkbashisms
   - dev-util/buildbot-grid-view
   - dev-util/yuicompressor

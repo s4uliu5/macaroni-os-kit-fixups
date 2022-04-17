@@ -88,70 +88,6 @@ tornado_stuff:
           - cryptography
           - six
 
-# Work in Progress -- we currently have botocore forked and not autogenned. Needs more testing.
-# (drobbins, 2020-10-30)
-
-botostuff:
-  defaults:
-    cat: dev-python
-    python_compat: python3+
-  generator: pypi-simple-1
-  packages:
-    - awscli:
-        license: Apache-2.0
-        pydeps:
-          - botocore
-          - colorama
-          - docutils
-          - jmespath
-          - rsa
-          - s3transfer
-          - pyyaml
-        body: |
-          python_install_all() {
-              newbashcomp bin/aws_bash_completer aws
-
-              insinto /usr/share/zsh/site-functions
-              newins bin/aws_zsh_completer.sh _aws
-
-              distutils-r1_python_install_all
-
-              rm "${ED}"/usr/bin/{aws.cmd,aws_bash_completer,aws_zsh_completer.sh} || die
-          }
-    - boto3:
-        license: Apache-2.0
-        pydeps:
-          - botocore
-          - jmespath
-          - s3transfer
-    - botocore:
-        license: Apache-2.0
-        pydeps:
-          py:all:
-            - jmespath
-            - python-dateutil
-            - urllib3
-          py:all:build:
-            - tomli
-    - behave:
-        license: BSD
-        pydeps:
-          - cucumber-tag-expressions >= 1.1.2
-          - parse >= 1.18.0
-          - parse_type >= 0.4.2
-          - six >= 1.12.0
-          - colorama
-    - cucumber-tag-expressions
-    - jmespath
-    - s3transfer:
-        license: Apache-2.0
-        pydeps:
-          py:2:
-            - futures >= 2.2.0
-            - futures < 4.0.0
-    - parse:
-        license: MIT
-
 github_stuff:
   generator: python-github-1
   defaults:
@@ -381,6 +317,23 @@ dev_python_compat_rule:
         pydeps:
           py:3,pypy3:
             - importlib_metadata
+    - mako:
+        compat: '1.1.6'
+        blocker: "!<dev-python/mako-1.2.0-r1"
+        revision:
+          1.2.0: 1
+        pypi_name: Mako
+        inherit:
+          - eutils
+        python_compat: python2+
+        pydeps:
+          - importlib_metadata
+          - markupsafe
+        body: |
+          pkg_postinst() {
+            elog "Optional dependencies:"
+            optfeature "caching support" dev-python/beaker
+          }
     - more-itertools:
         compat: '4.3.0'
         blocker: '!<dev-python/more-itertools-8'
@@ -513,8 +466,6 @@ dev_python_compat_rule:
 
           }
     - setuptools:
-        # FL-9220: 60.0+ currently breaks python rebuilds and other things:
-        version: '59.7.0'
         du_setuptools: 'no'
         desc: Collection of extensions to Distutils
         license: MIT
@@ -525,16 +476,13 @@ dev_python_compat_rule:
           https://pypi.org/project/setuptools/
         compat: '44.1.1'
         python_compat: python3+ pypy3
-        revision:
-          58.0.2: 1
         pydeps:
           py:all:post:
             - certifi >= 2016.9.26
-          py:all:build:
-            - packaging > 20
         depend: |
           app-arch/unzip
         body: |
+          SETUPTOOLS_USE_DISTUTILS=stdlib
           python_install() {
             export DISTRIBUTE_DISABLE_VERSIONED_EASY_INSTALL_SCRIPT=1
             distutils-r1_python_install
@@ -626,6 +574,44 @@ dev_python_compat_rule:
           py:all:
             - toml
             - setuptools_scm
+    - pip:
+        inherit:
+          - bash-completion-r1
+        du_setuptools: rdepend
+        compat: 20.3.4
+        blocker: '!<dev-python/pip-21.0'
+        restrict: test
+        iuse: vanilla
+        body: |
+          python_prepare_all() {
+            if ! use vanilla; then
+              # Running pip without --target, --prefix, --root, or --user will result
+              # in packages being installed systemwide. This has a tendency to break
+              # python-exec if setuptools gets installed or upgraded.
+              sed -e 's|options.upgrade_strategy|options.upgrade_strategy\n\n        if not options.use_user_site and not options.target_dir and not options.root_path and not options.prefix_path:\n            raise CommandError("(Gentoo) Please run pip with the --user option to avoid breaking python-exec")\n|' \
+                -i src/pip/_internal/commands/install.py || die
+            fi
+            distutils-r1_python_prepare_all
+          }
+          python_install_all() {
+            # Prevent dbus auto-launch
+            # https://bugs.gentoo.org/692178
+            export DBUS_SESSION_BUS_ADDRESS="disabled:"
+            local DOCS=( AUTHORS.txt docs/html/**/*.rst )
+            distutils-r1_python_install_all
+            if [ "$PN" == "pip" ]; then
+              COMPLETION="${T}"/completion.tmp
+              # 'pip completion' command embeds full $0 into completion script, which confuses
+              # 'complete' and causes QA warning when running as "${PYTHON} -m pip".
+              # This trick sets correct $0 while still calling just installed pip.
+              local pipcmd='import sys; sys.argv[0] = "pip"; __file__ = ""; from pip._internal.cli.main import main; sys.exit(main())'
+              ${EPYTHON} -c "${pipcmd}" completion --bash > "${COMPLETION}" || die
+              newbashcomp "${COMPLETION}" ${PN}
+              ${EPYTHON} -c "${pipcmd}" completion --zsh > "${COMPLETION}" || die
+              insinto /usr/share/zsh/site-functions
+              newins "${COMPLETION}" _pip
+            fi
+          }
 
 
 simple_python_autogen_rule:
@@ -913,6 +899,32 @@ simple_python_autogen_rule:
             - net-libs/stem
         rdepend: |
           net-vpn/tor
+    - paramiko:
+        python_compat: python2+
+        license: LGPL-2.1
+        restrict: test
+        iuse: examples server
+        pydeps:
+          - bcrypt >= 3.1.3
+          - cryptography >= 2.5
+          - pynacl >= 1.0.1
+          - pyasn1 >= 0.1.7
+          - six
+        body: |
+          src_prepare() {
+            local PATCHES=( )
+            if ! use server; then
+              PATCHES+=( "${FILESDIR}/${PN}-2.4.2-disable-server.patch" )
+            fi
+            distutils-r1_src_prepare
+          }
+          python_install_all() {
+            distutils-r1_python_install_all
+            if use examples; then
+              docinto examples
+              dodoc -r demos/*
+            fi
+          }
     - pycodestyle:
         python_compat: python2+
         desc: Python style guide checker (fka pep8)
@@ -925,11 +937,28 @@ simple_python_autogen_rule:
           https://github.com/PyCQA/pyflakes
           https://pypi.org/project/pyflakes/
         license: MIT
+    - python-pam:
+        desc: Python3 module for PAM authentication
+        homepage: https://github.com/FirefighterBlu3/python-pam
+        license: MIT
+        python_compat: python3+
     - soupsieve:
         desc: A modern CSS selector implementation for BeautifulSoup
         homepage: https://github.com/facelessuser/soupsieve/ https://pypi.org/project/soupsieve/
         license: MIT
         python_compat: python3+ pypy3
+        # 2.3.2 and up use pyproject.toml which doesn't work yet on Funtoo
+        version: 2.3.1
+    - jeepney:
+        python_compat: python3+
+        py:all:build:
+          - setuptools
+    - tqdm:
+        python_compat: python2+
+        pydeps:
+          py:all:build:
+            - setuptools
+            - setuptools_scm
     - ufoLib:
         pypi_name: ufoLib2
         desc: A UFO font library
@@ -1479,6 +1508,8 @@ dev_python_simplified_rule:
             - packaging > 20
           py:3:build:
             - tomli >= 1.0
+          py:3:
+            - tomli >= 1.0
           py:2:build:
             - toml
     - setuptools-rust:
@@ -1764,8 +1795,6 @@ dev_python_autogen_rule:
         python_compat: python2+ pypy{,3}
     - ipy:
         python_compat: python2+ pypy{,3}
-    - jeepney:
-        python_compat: python3+ pypy3
     - matplotlib:
         python_compat: python3+ pypy3
     - pandas
@@ -1780,8 +1809,6 @@ dev_python_autogen_rule:
     - python-dateutil:
         python_compat: python2+
     - toml:
-        python_compat: python2+ pypy3
-    - tqdm:
         python_compat: python2+ pypy3
     - testresources:
         python_compat: python2+ pypy{,3}
@@ -1825,8 +1852,6 @@ dev_python_autogen_rule:
         python_compat: python2+ pypy{,3}
     - lxml:
         python_compat: python2+ pypy3
-    - mako:
-        python_compat: python2+ pypy{,3}
     - pyblake2:
         python_compat: python2+ pypy{,3}
     - pycparser:
@@ -1896,7 +1921,7 @@ dev_python_autogen_rule:
     - wcwidth:
         python_compat: python2+ pypy3
     - werkzeug:
-        python_compat: python2+ pypy3
+        python_compat: python3+ pypy3
     - wstools:
         python_compat: python2+
     - yarl

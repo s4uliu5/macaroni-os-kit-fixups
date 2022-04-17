@@ -728,7 +728,6 @@ packages:
   - app-laptop/nvidiabl
   - app-laptop/pbbuttonsd
   - app-laptop/pommed
-  - app-laptop/radeontool
   - app-laptop/spicctrl
   - app-metrics/alertmanager
   - app-metrics/bind_exporter
@@ -763,7 +762,6 @@ packages:
   - app-misc/acdctl
   - app-misc/actkbd
   - app-misc/aldo
-  - app-misc/anki
   - app-misc/astrolog
   - app-misc/astrolog-ephemeris
   - app-misc/away

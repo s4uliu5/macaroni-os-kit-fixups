@@ -1,7 +1,6 @@
-# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit multilib-minimal xdg
 
 DESCRIPTION="An implementation of the Interactive Connectivity Establishment standard (ICE)"
@@ -10,7 +9,7 @@ SRC_URI="https://nice.freedesktop.org/releases/${P}.tar.gz"
 
 LICENSE="|| ( MPL-1.1 LGPL-2.1 )"
 SLOT="0"
-KEYWORDS="*"
+KEYWORDS="next"
 IUSE="+gnutls +introspection libressl +upnp"
 
 RDEPEND="
