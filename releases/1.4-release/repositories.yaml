@@ -78,9 +78,9 @@ release:
 
   remotes:
     dev:
-      url: https://code.funtoo.org/bitbucket/scm/s4uliu5/{repo}
+      url: https://code.funtoo.org/bitbucket/scm/~s4uliu5/{repo}
     prod:
-      url: ssh://git@code.funtoo.org:7999/s4uliu5/{repo}
+      url: ssh://git@code.funtoo.org:7999/~s4uliu5/{repo}
       mirrors:
         - ssh://git@gitlab.com:s12s/funtoo/{repo}
   kit-definitions:
