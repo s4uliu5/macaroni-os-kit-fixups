@@ -82,7 +82,7 @@ release:
     prod:
       url: ssh://git@code.funtoo.org:7999/~s4uliu5/{repo}
       mirrors:
-        - ssh://git@gitlab.com:s12s/funtoo/{repo}
+        - ssh://git@gitlab.com/s12s/funtoo/{repo}
   kit-definitions:
     defaults:
       masters:
