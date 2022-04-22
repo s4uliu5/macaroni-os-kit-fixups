@@ -142,6 +142,7 @@ release:
       - dev-kit
       - python-modules-kit
       - nokit
+      - s12s-kit
       - perl-kit:
           kind: sourced
           source:

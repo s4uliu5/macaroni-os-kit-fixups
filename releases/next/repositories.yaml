@@ -143,6 +143,7 @@ release:
       - lang-kit
       - dev-kit
       - python-modules-kit
+      - s12s-kit
       - perl-kit:
           kind: sourced
           source:
