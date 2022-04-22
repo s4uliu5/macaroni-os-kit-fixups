@@ -79,11 +79,11 @@ release:
   # Have all of our remote configurations defined in one place for ease of maintenance
   remotes:
     dev:
-      url: https://code.funtoo.org/bitbucket/scm/auto/{repo}
+      url: https://code.funtoo.org/bitbucket/scm/~s4uliu5/{repo}
     prod:
-      url: ssh://git@code.funtoo.org:7999/auto/{repo}
+      url: ssh://git@code.funtoo.org:7999/~s4uliu5/{repo}
       mirrors:
-        - ssh://git@github.com/funtoo/{repo}
+        - ssh://git@gitlab.com/s12s/funtoo/{repo}
   kit-definitions:
     defaults:
       masters:
@@ -127,15 +127,15 @@ release:
       - core-gl-kit
       - security-kit:
           source: funtoo_release_1.4_bump
-      - browser-kit:
-          source: funtoo_oct_2020
-      - desktop-kit
+      # - browser-kit:
+      #     source: funtoo_oct_2020
+      # - desktop-kit
       - media-kit
       - editors-kit
       - net-kit
       - text-kit
       - science-kit
-      - games-kit
+      # - games-kit
       - java-kit
       - haskell-kit
       - ml-lang-kit
@@ -149,36 +149,36 @@ release:
             url: https://code.funtoo.org/bitbucket/scm/core/perl-kit-sources.git
             branch: 5.32-release
           branch: next
-      - kde-kit:
-          kind: sourced
-          source:
-            url: https://code.funtoo.org/bitbucket/scm/core/kde-kit-sources.git
-            branch: 5.23-testing
-          branch: 5.23-testing
-      - gnome-kit:
-          kind: sourced
-          source:
-            url: https://code.funtoo.org/bitbucket/scm/core/gnome-kit-sources.git
-            branch: 3.36-prime
-          branch: next-3.36-prime
-      - xfce-kit:
-          kind: sourced
-          source:
-            url: https://code.funtoo.org/bitbucket/scm/core/xfce-kit-sources.git
-            branch: 4.16-release
-          branch: next-4.16-release
-      - qt-kit:
-          kind: sourced
-          source:
-            url: https://code.funtoo.org/bitbucket/scm/core/qt-kit-sources.git
-            branch: 5.15.2-release
-          branch: next-5.15.2-release
-      - mate-kit:
-          kind: sourced
-          source:
-            url: https://code.funtoo.org/bitbucket/scm/core/mate-kit-sources.git
-            branch: 1.24-prime
-          branch: next-1.24-prime
+      # - kde-kit:
+      #     kind: sourced
+      #     source:
+      #       url: https://code.funtoo.org/bitbucket/scm/core/kde-kit-sources.git
+      #       branch: 5.23-testing
+      #     branch: 5.23-testing
+      # - gnome-kit:
+      #     kind: sourced
+      #     source:
+      #       url: https://code.funtoo.org/bitbucket/scm/core/gnome-kit-sources.git
+      #       branch: 3.36-prime
+      #     branch: next-3.36-prime
+      # - xfce-kit:
+      #     kind: sourced
+      #     source:
+      #       url: https://code.funtoo.org/bitbucket/scm/core/xfce-kit-sources.git
+      #       branch: 4.16-release
+      #     branch: next-4.16-release
+      # - qt-kit:
+      #     kind: sourced
+      #     source:
+      #       url: https://code.funtoo.org/bitbucket/scm/core/qt-kit-sources.git
+      #       branch: 5.15.2-release
+      #     branch: next-5.15.2-release
+      # - mate-kit:
+      #     kind: sourced
+      #     source:
+      #       url: https://code.funtoo.org/bitbucket/scm/core/mate-kit-sources.git
+      #       branch: 1.24-prime
+      #     branch: next-1.24-prime
       - ruby-kit:
           branch: next
           source: funtoo_late_2020
