@@ -240,12 +240,12 @@ kit-groups:
           - security-kit:
               source: funtoo_release_1.4_bump
               branch: next
-          - browser-kit:
-              source: funtoo_oct_2020
-              branch: next
-          - desktop-kit:
-              source: funtoo_next
-              branch: next
+          # - browser-kit:
+          #     source: funtoo_oct_2020
+          #     branch: next
+          # - desktop-kit:
+          #     source: funtoo_next
+          #     branch: next
           - media-kit:
               source: funtoo_next
               branch: next
@@ -261,9 +261,9 @@ kit-groups:
           - science-kit:
               source: funtoo_next
               branch: next
-          - games-kit:
-              source: funtoo_next
-              branch: next
+          # - games-kit:
+          #     source: funtoo_next
+          #     branch: next
           - java-kit:
               source: funtoo_next
               branch: next
@@ -288,26 +288,26 @@ kit-groups:
           - python-modules-kit:
               source: funtoo_next
               branch: next
-          - kde-kit:
-              kind: sourced
-              source: kde-kit-sources-next
-              branch: 5.23-testing
-          - gnome-kit:
-              kind: sourced
-              source: gnome-kit-sources
-              branch: next-3.36-prime
-          - xfce-kit:
-              kind: sourced
-              source: xfce-kit-sources
-              branch: next-4.16-release
-          - qt-kit:
-              kind: sourced
-              source: qt-kit-sources
-              branch: next-5.15.2-release
-          - mate-kit:
-              kind: sourced
-              source: mate-kit-sources
-              branch: next-1.24-prime
+          # - kde-kit:
+          #     kind: sourced
+          #     source: kde-kit-sources-next
+          #     branch: 5.23-testing
+          # - gnome-kit:
+          #     kind: sourced
+          #     source: gnome-kit-sources
+          #     branch: next-3.36-prime
+          # - xfce-kit:
+          #     kind: sourced
+          #     source: xfce-kit-sources
+          #     branch: next-4.16-release
+          # - qt-kit:
+          #     kind: sourced
+          #     source: qt-kit-sources
+          #     branch: next-5.15.2-release
+          # - mate-kit:
+          #     kind: sourced
+          #     source: mate-kit-sources
+          #     branch: next-1.24-prime
           - perl-kit:
               kind: sourced
               branch: next
