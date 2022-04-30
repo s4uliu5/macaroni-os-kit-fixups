@@ -5,7 +5,6 @@ dev_python_autogen_rule:
   generator: pypi-simple-1
   packages:
     - borgbackup:
-        iuse: libressl
         pydeps:
           py:all:
             - llfuse
@@ -14,16 +13,17 @@ dev_python_autogen_rule:
             - setuptools_scm
             - cython
         depend: |
+          ${DEPEND}
+        rdepend: |
           !!app-office/borg
           app-arch/lz4
           virtual/acl
-          !libressl? ( dev-libs/openssl:0= )
-          libressl? ( dev-libs/libressl:0= )
-        rdepend: |
-          ${DEPEND}
+          dev-python/pyfuse3[${PYTHON_USEDEP}]
+          =dev-python/msgpack-1.0.3[${PYTHON_USEDEP}]
+          dev-libs/openssl:0=
         body: |
-          python_prepare_all() {
-            # allow use of new (renamed) msgpack
-            sed -i "s|'msgpack-python.*',||g" setup.py || die
-            distutils-r1_python_prepare_all
+          export BORG_OPENSSL_PREFIX='/usr'
+          src_install() {
+            distutils-r1_src_install
+            doman docs/man/*
           }
