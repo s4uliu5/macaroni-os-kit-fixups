@@ -14,8 +14,7 @@ LICENSE="GPL-2 LGPL-2.1 LGPL-3"
 SLOT="0"
 IUSE="apparmor +caps doc io-uring man pam seccomp selinux +ssl +tools"
 
-RDEPEND="acct-group/lxc
-	acct-user/lxc
+RDEPEND="
 	app-misc/pax-utils
 	sys-apps/util-linux
 	sys-libs/libcap
