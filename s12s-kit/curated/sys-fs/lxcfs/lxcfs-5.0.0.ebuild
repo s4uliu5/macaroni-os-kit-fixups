@@ -12,7 +12,10 @@ LICENSE="Apache-2.0 LGPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND="sys-fs/fuse:3"
+RDEPEND="
+sys-fs/fuse:3
+dev-python/jinja
+"
 DEPEND="${RDEPEND}"
 BDEPEND="sys-apps/help2man"
 
