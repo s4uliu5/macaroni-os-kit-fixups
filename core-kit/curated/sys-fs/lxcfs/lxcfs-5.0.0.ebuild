@@ -13,11 +13,13 @@ SLOT="0"
 KEYWORDS=""
 
 RDEPEND="
-sys-fs/fuse:3
-dev-python/jinja
+	sys-fs/fuse:3
 "
 DEPEND="${RDEPEND}"
-BDEPEND="sys-apps/help2man"
+BDEPEND="
+	sys-apps/help2man
+	dev-python/jinja
+"
 
 # Looks like these won't ever work in a container/chroot environment. #764620
 RESTRICT="test"
