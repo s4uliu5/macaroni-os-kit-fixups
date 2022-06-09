@@ -13,7 +13,7 @@ LICENSE="Apache-2.0"
 SLOT="2"
 KEYWORDS="*"
 
-RDEPEND=">=app-containers/docker-cli-20.10.3"
+RDEPEND=">=app-emulation/docker-cli-20.10.3"
 
 S="${WORKDIR}/compose-${MY_PV}"
 
