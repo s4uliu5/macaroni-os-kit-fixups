@@ -82,6 +82,8 @@ overlays:
       url: https://code.funtoo.org/bitbucket/scm/core/qt-kit-sources.git
   - mate-kit-sources:
       url: https://code.funtoo.org/bitbucket/scm/core/mate-kit-sources.git
+  - s4uliu5-perl-kit-sources:
+      url: https://code.funtoo.org/bitbucket/scm/s4uliu5/perl-kit-sources.git
 
 
 source-defs:
@@ -133,6 +135,9 @@ source-defs:
   - perl-kit-sources:
       - repo: perl-kit-sources
         branch: 5.32-release
+  - s4uliu5-perl-kit-sources:
+      - repo: perl-kit-sources
+        branch: 5.36-release
   - python-kit-sources:
       - repo: python-kit-sources
         branch: 3.7-release
@@ -211,8 +216,8 @@ kit-groups:
               branch: 1.24-prime
           - perl-kit:
               kind: sourced
-              source: perl-kit-sources
-              branch: 5.32-release
+              source: s4uliu5-perl-kit-sources
+              branch: 5.36-release
           - ruby-kit:
               branch: 2.7-prime
               source: funtoo_late_2020
