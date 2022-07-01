@@ -222,7 +222,7 @@ dev_python_compat_rule:
           - pytz
     - chardet:
         compat: '4.0.0'
-        blocker: '!<dev-python-chardet-5.0.0-r1'
+        blocker: '!<dev-python/chardet-5.0.0-r1'
         revision:
           5.0.0: 1
     - entrypoints:
@@ -359,6 +359,7 @@ dev_python_compat_rule:
             optfeature "caching support" dev-python/beaker
           }
     - more-itertools:
+        version: '8.12.0'
         compat: '4.3.0'
         blocker: '!<dev-python/more-itertools-8'
         homepage: 'https://pypi.org/project/more-itertools/'
@@ -1540,11 +1541,13 @@ dev_python_simplified_rule:
         python_compat: python2+ pypy{,3}
     - setuptools_scm:
         revision:
-          6.3.1: 2
+          7.0.2: 2
         compat: '5.0.2'
-        blocker: "!<dev-python/setuptools_scm-6.0.0"
+        blocker: "!<=dev-python/setuptools_scm-7.0.2"
         python_compat: python3+
         du_setuptools: rdepend
+        patches:
+          - setuptools_scm-7.0.2-importlib-metadata.patch
         pydeps:
           py:all:build:
             - packaging > 20
