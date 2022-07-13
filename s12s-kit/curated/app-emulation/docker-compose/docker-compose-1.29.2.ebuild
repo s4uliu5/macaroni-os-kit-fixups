@@ -18,8 +18,7 @@ KEYWORDS="*"
 IUSE="test"
 RESTRICT="!test? ( test )"
 
-RDEPEND="dev-python/setuptools[${PYTHON_USEDEP}]
-	>=dev-python/cached-property-1.2.0[${PYTHON_USEDEP}]
+RDEPEND="
 	>=dev-python/distro-1.5.0[${PYTHON_USEDEP}]
 	>=dev-python/docker-py-5[${PYTHON_USEDEP}]
 	>=dev-python/dockerpty-0.4.1[${PYTHON_USEDEP}]
@@ -42,6 +41,8 @@ DEPEND="${RDEPEND}
 
 S="${WORKDIR}/compose-${MY_PV}"
 
+distutils_enable_tests pytest
+
 PATCHES=(
 	# Bug #679968 -- https://bugs.gentoo.org/679968
 	# Bug #681002 -- https://bugs.gentoo.org/681002
@@ -59,7 +60,7 @@ src_prepare() {
 
 python_test() {
 	distutils_install_for_testing
-	${PYTHON} -m pytest tests/unit/ || die "tests failed under ${EPYTHON}"
+	epytest tests/unit/
 }
 
 python_install_all() {
