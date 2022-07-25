@@ -1,8 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-inherit autotools db-use eapi7-ver flag-o-matic preserve-libs ssl-cert toolchain-funcs tmpfiles user
+inherit autotools db-use flag-o-matic preserve-libs ssl-cert toolchain-funcs tmpfiles user
 
 BIS_PN=rfc2307bis.schema
 BIS_PV=20140524
@@ -61,7 +61,6 @@ COMMON_DEPEND="
 		dev-libs/libltdl
 		sys-fs/e2fsprogs
 		>=dev-db/lmdb-0.9.18:=
-		crypt? ( virtual/libcrypt:= )
 		tcpd? ( sys-apps/tcp-wrappers )
 		odbc? ( !iodbc? ( dev-db/unixODBC )
 			iodbc? ( dev-db/libiodbc ) )
@@ -721,6 +720,7 @@ src_install() {
 		sed -e "s,/usr/lib/,/usr/$(get_libdir)/," "${FILESDIR}"/slapd-initd-2.4.40-r2 > "${T}"/slapd || die
 		doinitd "${T}"/slapd
 		newconfd "${FILESDIR}"/slapd-confd-2.4.28-r1 slapd
+		newtmpfiles "${FILESDIR}"/slapd.tmpfilesd slapd.conf
 
 		# Built without SLP, we don't need to be before avahi
 		sed -i \
@@ -833,9 +833,9 @@ pkg_postinst() {
 		fi
 
 		# These lines force the permissions of various content to be correct
-		if [[ -d "${EROOT}"/var/run/openldap ]]; then
-			use prefix || { chown ldap:ldap "${EROOT}"/var/run/openldap || die; }
-			chmod 0755 "${EROOT}"/var/run/openldap || die
+		if [[ -d "${EROOT}"/run/openldap ]]; then
+			use prefix || { chown ldap:ldap "${EROOT}"/run/openldap || die; }
+			chmod 0755 "${EROOT}"/run/openldap || die
 		fi
 		use prefix || chown root:ldap "${EROOT}"/etc/openldap/slapd.conf{,.default}
 		chmod 0640 "${EROOT}"/etc/openldap/slapd.conf{,.default} || die

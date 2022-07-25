@@ -1,8 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-inherit autotools eapi7-ver flag-o-matic preserve-libs ssl-cert toolchain-funcs tmpfiles user
+inherit autotools flag-o-matic preserve-libs ssl-cert toolchain-funcs tmpfiles user
 
 MY_PV="$(ver_rs 1-2 _)"
 
@@ -21,7 +21,7 @@ S="${WORKDIR}"/${PN}-OPENLDAP_REL_ENG_${MY_PV}
 LICENSE="OPENLDAP GPL-2"
 # Subslot added for bug #835654
 SLOT="0/$(ver_cut 1-2)"
-KEYWORDS=""
+KEYWORDS="next"
 
 IUSE_DAEMON="argon2 +cleartext crypt experimental minimal samba tcpd"
 IUSE_OVERLAY="overlays perl autoca"
@@ -56,7 +56,6 @@ COMMON_DEPEND="
 		sys-fs/e2fsprogs
 		>=dev-db/lmdb-0.9.18:=
 		argon2? ( app-crypt/argon2:= )
-		crypt? ( virtual/libcrypt:= )
 		tcpd? ( sys-apps/tcp-wrappers )
 		odbc? ( !iodbc? ( dev-db/unixODBC )
 			iodbc? ( dev-db/libiodbc ) )
@@ -440,6 +439,10 @@ src_configure() {
 		"${myconf[@]}"
 
 	sed -i \
+		-e 's:^runstatedir=.*:runstatedir=${EPREFIX}/run:' \
+		configure contrib/ldapc++/configure contrib/ldaptcl/configure || die 'could not set runstatedir'
+
+	sed -i \
 		-e "s:/var/run/sasl2/mux:${EPREFIX}/run/sasl2/mux:" \
 		doc/guide/admin/security.sdf || die 'could not fix run path in doc'
 
@@ -614,8 +617,8 @@ src_install() {
 		sed -e "s,/usr/lib/,/usr/$(get_libdir)/," "${FILESDIR}"/slapd-initd-2.4.40-r2 > "${T}"/slapd || die
 		doinitd "${T}"/slapd
 		newconfd "${FILESDIR}"/slapd-confd-2.6.1 slapd
-
-		# Built without SLP, we don't need to be before avahi
+		newtmpfiles "${FILESDIR}"/slapd.tmpfilesd slapd.conf
+		# If built without SLP, we don't need to be before avahi
 		sed -i \
 			-e '/before/{s/avahi-daemon//g}' \
 			"${ED}"/etc/init.d/slapd \
