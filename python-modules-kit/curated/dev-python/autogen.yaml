@@ -93,6 +93,25 @@ github_stuff:
   defaults:
     python_compat: python3+
   packages:
+    - docker-py:
+        github:
+          query: tags
+          user: docker
+        license: BSD
+        desc: Python client for Docker
+        homepage: https://github.com/docker/docker-py
+        pydeps:
+          - requests >= 2.24.0
+          - six >= 1.4.0
+          - websocket-client >= 0.32.0
+        body: |
+          distutils_enable_sphinx docs 'dev-python/recommonmark' '>=dev-python/sphinx-1.4.6'
+          src_prepare() {
+            default
+            # localhost has a better chance of being in /etc/hosts
+            sed -i -e 's:socket[.]gethostname():"localhost":' tests/unit/api_test.py || die
+            distutils-r1_src_prepare
+          }
     - parse_type:
         github:
           query: tags
@@ -1985,6 +2004,18 @@ pep517_compliance_rule:
           - pyrsistent
           - six
           - tomlkit
+    - python-dotenv:
+        du_pep517: setuptools
+        body: |
+          DOCS=( CHANGELOG.md README.md )
+          python_install() {
+            distutils-r1_install
+            ln -s dotenv "${D}$(python_get_scriptdir)"/python-dotenv || die
+          }
+          src_install() {
+            distutils-r1_src_install
+            mv "${ED}"/usr/bin/{,python-}dotenv || die
+          }
     - gpep517:
         du_pep517: 'no'
         pydeps:
