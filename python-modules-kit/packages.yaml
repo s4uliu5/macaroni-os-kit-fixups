@@ -320,7 +320,6 @@ packages:
   - dev-python/id3-py
   - dev-python/google-apitools
   - dev-python/pyinotify
-  - dev-python/ovs
   - dev-python/diskcache
   - dev-python/serpent
   - dev-python/webassets
@@ -672,7 +671,6 @@ packages:
   - dev-python/ramlfications
   - dev-python/rope
   - dev-python/strict-rfc3339
-  - dev-python/m2r
   - dev-python/whoosh
   - dev-python/python-magic
   - dev-python/django-timezone-field
