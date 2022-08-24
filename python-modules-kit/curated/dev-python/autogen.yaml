@@ -1555,7 +1555,11 @@ dev_python_simplified_rule:
             - pykerberos
 
     - m2r:
-        python_compat: python2+ python3+ pypy
+        python_compat: python3+ pypy
+        compat: '0.2.1'
+        revision:
+          0.2.1: 1
+        blocker: "!<=dev-python/m2r-0.2.1"
         pydeps:
           py:all:build:
             - setuptools
@@ -1968,12 +1972,16 @@ pep517_compliance_rule:
           - tomli
     - hatchling:
         du_pep517: standalone
+        rdepend: '${DEPEND}'
         pydeps:
-          - editables
-          - packaging
-          - pathspec
-          - pluggy
-          - tomli
+          py:all:
+            - editables
+            - tomli
+          py:all:build:
+            - pathspec
+            - packaging
+            - pluggy
+            - installer
     - hatch-vcs:
         pypi_name: hatch_vcs
         du_pep517: hatchling

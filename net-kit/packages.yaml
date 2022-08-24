@@ -442,7 +442,6 @@ packages:
   - net-wireless/osmocom-bb
   - net-dns/dnssec-tools
   - net-dns/s6-dns
-  - net-dns/dnssec-root
   - net-dns/ez-ipupdate
   - net-dns/mydns
   - net-dns/djbdns
@@ -487,7 +486,6 @@ packages:
   - net-dns/ndu
   - net-dns/dnssec-validator
   - net-p2p/bisq
-  - net-p2p/transmission-remote-gtk
   - net-p2p/bitcoin-cli
   - net-p2p/fms
   - net-p2p/mktorrent
@@ -647,7 +645,6 @@ packages:
   - www-misc/bookmarksync
   - www-misc/surl
   - www-misc/litmus
-  - www-misc/zoneminder
   - www-misc/vdradmin-am
   - www-misc/log-toolkit
   - www-misc/xxv
@@ -824,7 +821,6 @@ packages:
   - net-irc/rbot
   - net-irc/nebula
   - net-irc/atheme-services
-  - net-irc/inspircd
   - net-irc/ircstats
   - net-irc/ngircd
   - net-irc/bnc
