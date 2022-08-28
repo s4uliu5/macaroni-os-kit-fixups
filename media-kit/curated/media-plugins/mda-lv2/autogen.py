@@ -12,7 +12,7 @@ async def generate(hub, **pkginfo):
 		f"https://gitlab.com/api/v4/projects/{project_path}/repository/tags", is_json=True
 	)
 	version = tags_dict[0]["name"].lstrip("v")
-	url = f"http://download.drobilla.net/{repo}-{version}.tar.bz2"
+	url = f"http://download.drobilla.net/{repo}-{version}.tar.xz"
 	ebuild = hub.pkgtools.ebuild.BreezyBuild(
 		**pkginfo,
 		version=version,
