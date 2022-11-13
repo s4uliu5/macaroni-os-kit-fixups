@@ -66,4 +66,16 @@ autogens:
         compat: 1.2.0
         blocker: '!<dev-python/zipp-0.8'
 
+pypi_simple_rule:
+  generator: pypi-simple-1
+  packages:
+    - pyicu:
+        pypi_name: PyICU
+        python_compat: python3+
+        patches:
+          - pyicu-2.10-fix_displayoptions.patch
+        rdepend: |
+          dev-libs/icu:=
+        body: |
+          DOCS=( CHANGES CREDITS README.md )
 

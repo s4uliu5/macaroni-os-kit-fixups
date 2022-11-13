@@ -1,7 +1,6 @@
 packages:
 - flora:
   - net-misc/livestreamer
-  - net-misc/turbovnc
   - net-misc/dropbox-cli
   - www-apps/zerobin
   - mail-client/s-nail
@@ -450,7 +449,6 @@ packages:
   - net-dns/hash-slinger
   - net-dns/opendnssec
   - net-dns/dnstop
-  - net-dns/pdns
   - net-dns/pdns-ldap-backend
   - net-dns/maradns
   - net-dns/dnscap
@@ -464,7 +462,6 @@ packages:
   - net-dns/getdns
   - net-dns/nsd
   - net-dns/validns
-  - net-dns/dnsdist
   - net-dns/https_dns_proxy
   - net-dns/knot
   - net-dns/libidn
@@ -480,7 +477,6 @@ packages:
   - net-dns/c-ares
   - net-dns/resolv_wrapper
   - net-dns/ldns-utils
-  - net-dns/pdns-recursor
   - net-dns/dnsimple-dyndns
   - net-dns/ddclient
   - net-dns/ndu
@@ -1229,7 +1225,6 @@ packages:
   - net-analyzer/sguil-client
   - net-analyzer/tcpreen
   - net-analyzer/rain
-  - net-analyzer/iftop
   - net-analyzer/bing
   - net-analyzer/bwping
   - net-analyzer/nagios-check_mysql_health
@@ -1403,7 +1398,6 @@ packages:
   - net-analyzer/zniper
   - net-analyzer/synscan
   - net-analyzer/egressor
-  - net-analyzer/openbsd-netcat
   - net-analyzer/namebench
   - net-analyzer/prettyping
   - net-analyzer/dhcp_probe
@@ -1463,7 +1457,6 @@ packages:
   - net-vpn/vpnc
   - net-vpn/vpncwatch
   - net-vpn/i2p
-  - net-vpn/strongswan
   - net-vpn/networkmanager-vpnc
   - net-vpn/vtun
   - net-vpn/openconnect
@@ -1476,7 +1469,6 @@ packages:
   - net-vpn/corkscrew
   - net-vpn/ipsec-tools
   - net-vpn/nstx
-  - net-vpn/networkmanager-strongswan
   - net-vpn/wireguard
   - net-vpn/libreswan
   - net-vpn/isatapd
@@ -1485,13 +1477,11 @@ packages:
   - net-vpn/freelan
   - net-vpn/i2pd
   - mail-client/bower
-  - mail-client/mutt
   - mail-client/etpan-ng
   - mail-client/mailx-support
   - mail-client/novell-groupwise-client
   - mail-client/alpine
   - mail-client/biabam
-  - mail-client/mailx
   - mail-client/hap
   - mail-client/pinepgp
   - mail-client/mail-notification

@@ -449,7 +449,7 @@ dev_python_compat_rule:
           }
     - pyyaml:
         compat: '5.4.1'
-        blocker: '<dev-python/pyyaml-6.0.0'
+        blocker: '!<dev-python/pyyaml-6.0.0'
         python_compat: python3+ pypy3
         pypi_name: PyYAML
         desc: YAML parser and emitter for Python
@@ -700,11 +700,14 @@ dev_python_compat_rule:
           use:ssl:
             - cryptography >= 1.3.4
             - pyopenssl >= 0.14
+        revision:
+          2.28.1: 1
         body: |
-          # FL-7939: relax deps for idna
+          # FL-7939, FL-10662: relax deps for idna, charset_normalizer: requests sets "cautionary upper masks" which can break:
           src_prepare() {
-            sed -i -e '/^idna/c idna' requests.egg-info/requires.txt || die
-            sed -i -e "s/'idna.*$/'idna',/" setup.py || die
+            sed -i -e '/^idna/c idna' -e '/^charset_normalizer/c charset_normalizer' requests.egg-info/requires.txt || die
+            sed -i -e 's/idna.*/idna/' -e 's/charset_normalizer.*/charset_normalizer/' setup.cfg || die
+            sed -i -e 's/"idna.*$/"idna",/' -e 's/"charset_normalizer.*$/"charset_normalizer",/' setup.py || die
             distutils-r1_src_prepare
           }
 
@@ -853,11 +856,6 @@ simple_python_autogen_rule:
             touch ${S}/requirements/base.txt || die
             default
           }
-    - colorama:
-        python_compat: python2+ pypy3
-        desc: ANSI escape character sequences for colored terminal text & cursor positioning
-        homepage: https://github.com/tartley/colorama https://pypi.org/project/colorama/
-        license: BSD
     - defcon:
         desc: A set of UFO based objects for use in font editing applications
         homepage: https://github.com/robotools/defcon
@@ -1038,6 +1036,25 @@ simple_python_autogen_rule:
         homepage: https://github.com/FirefighterBlu3/python-pam
         license: MIT
         python_compat: python3+
+    - pytz:
+        python_compat: python2+
+        pydeps:
+          - setuptools
+        rdepend: |
+          sys-libs/timezone-data
+        depend: |
+          sys-libs/timezone-data
+          app-arch/unzip
+        body: |
+          src_prepare() {
+              default
+              # configure the source code to grab zoneinfo files from /usr/share/zoneinfo by default:
+              sed -i -e "/zoneinfo_dir = os.environ.get/s:None:'/usr/share/zoneinfo':" $S/pytz/__init__.py || die
+          }
+          post_src_install() {
+              # Remove all bundled zoneinfo data:
+              find "$D" -type d -name zoneinfo -exec rm -rf {} \; 2>/dev/null
+          }
     - soupsieve:
         desc: A modern CSS selector implementation for BeautifulSoup
         homepage: https://github.com/facelessuser/soupsieve/ https://pypi.org/project/soupsieve/
@@ -1541,6 +1558,16 @@ dev_python_simplified_rule:
         pydeps:
           py:all:
             - pytest-runner
+    - colorama:
+        python_compat: python2+ pypy3
+        desc: ANSI escape character sequences for colored terminal text & cursor positioning
+        homepage: https://github.com/tartley/colorama https://pypi.org/project/colorama/
+        license: BSD
+        du_pep517: hatchling
+        compat: 0.4.4
+        blocker: "!<dev-python/colorama-0.4.6-r1"
+        revision:
+          0.4.6: 1
     - cppy:
         revision:
           1.2.1: 1
@@ -1854,17 +1881,19 @@ aiohttp_new_stuff:
         pydeps:
           - frozenlist
     - aiohttp:
+        desc: Async http client/server framework (asyncio)
         pydeps:
           py:all:
             - async_timeout > 3
             - attrs > 17.3.0
-            - chardet
             - multidict > 4.5.0
             - yarl > 1
             - idna-ssl
             - typing-extensions
             - aiosignal
             - aiodns
+            - charset_normalizer
+            - frozenlist
           py:all:build:
             - setuptools
             - cython
@@ -1872,6 +1901,9 @@ aiohttp_new_stuff:
           src_prepare() {
             default
             rm ${S}/examples/__init__.py
+
+            # Drop runtime dep to asynctest used for tests
+            sed -e '/^\tasynctest.*/d' -i ${S}/setup.cfg
           }
     - frozenlist
 
@@ -2142,6 +2174,7 @@ dev_python_autogen_rule:
     - pandas
     - psutil:
         python_compat: python2+ pypy{,3}
+        version: 5.9.2
     - pycares:
         python_compat: python3+ pypy3
     - pyproject2setuppy:
@@ -2201,8 +2234,6 @@ dev_python_autogen_rule:
         python_compat: python2+ pypy{,3}
     - pyopenssl:
         python_compat: python2+ pypy{,3}
-    - pytz:
-        python_compat: python2+ pypy3
     - secretstorage:
         python_compat: python3+ pypy3
     - six:
@@ -2275,14 +2306,17 @@ dev_python_autogen_rule:
     - zope-exceptions:
         python_compat: python2+ pypy3
     - zope-hookable:
+        version: "5.2"
         python_compat: python2+ pypy3
     - zope-interface:
         python_compat: python2+ pypy3
     - zope-i18nmessageid:
+        version: "5.0.1"
         python_compat: python2+ pypy3
     - zope-location:
         python_compat: python2+ pypy3
     - zope-proxy:
+        version: 4.5.0
         python_compat: python2+ pypy3
     - zope-schema:
         python_compat: python2+ pypy3
@@ -2310,6 +2344,10 @@ stuff_from_next:
   generator: pypi-compat-1
   packages:
     - wheel:
+        compat: '0.37.1'
+        blocker: '!<dev-python/wheel-0.38.2-r1'
+        revision:
+          0.38.2: 1
         pydeps:
           - packaging
         body: |

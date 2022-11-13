@@ -165,7 +165,6 @@ packages:
   - dev-libs/libunistring
   - dev-libs/libgcrypt-compat
   - dev-libs/libnl
-  - dev-libs/libassuan
   - dev-libs/libbsd
   - dev-libs/jansson
   - dev-libs/libtasn1
@@ -174,7 +173,6 @@ packages:
   - dev-libs/libpcre
   - dev-libs/libintl
   - dev-libs/iniparser
-  - dev-libs/npth
   - dev-libs/libusb
   - dev-libs/libltdl
   - dev-libs/libusb-compat
@@ -248,7 +246,6 @@ packages:
   - sys-fs/simple-mtpfs
   - sys-fs/lde
   - sys-fs/iprutils
-  - sys-fs/jfsutils
   - sys-fs/cryptsetup
   - sys-fs/ufsutils
   - sys-fs/xfsprogs
@@ -331,7 +328,6 @@ packages:
   - sys-apps/usbutils
   - sys-apps/gptfdisk
   - app-admin/syslog-ng
-  - app-admin/eselect
   - app-admin/mcelog
   - app-portage/repoman
   - app-portage/elt-patches

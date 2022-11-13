@@ -404,7 +404,6 @@ packages:
   - media-libs/gnonlin
   - media-libs/sdl-net
   - media-libs/netpbm
-  - media-libs/vo-amrwbenc
   - media-libs/webrtc-audio-processing
   - media-libs/lcms
   - media-libs/libtheora
@@ -464,7 +463,6 @@ packages:
   - media-video/sonic-snap
   - media-video/vamps
   - media-video/griffith
-  - media-video/rtmpdump
   - media-video/cpvts
   - media-video/alevt
   - media-video/smtube
@@ -529,7 +527,6 @@ packages:
   - media-video/gpac
   - media-video/photofilmstrip
   - media-video/mjpegtools
-  - media-video/mkvtoolnix
   - media-video/syncplay
   - media-video/asfrecorder
   - media-video/ffcast

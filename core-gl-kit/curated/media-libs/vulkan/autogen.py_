@@ -76,6 +76,11 @@ async def generate(hub, **pkginfo):
 			'github_repo' : name,
 			**pkginfo,
 		}
+
+		if name == "glslang":
+			revision = { "1.3.231.0_p20221013": 1 }
+			catpkg_info['revision'] = revision
+
 		catpkg_info.update(catpkgs[name])
 		catpkg_info.update(await github_gen[catpkg_info['query']](hub, **catpkg_info))
 
