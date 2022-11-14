@@ -14,7 +14,7 @@
 # written in the go programming language that uses modules.
 # If the software you are packaging has a file named go.mod in its top level
 # directory, it uses modules.
-# 
+#
 # Modules have been the preferred method of tracking dependencies in software
 # written in Go since version 1.16,
 # so if the software isn't using modules, it should be updated.
@@ -64,6 +64,8 @@ case ${EAPI} in
 esac
 
 if [[ -z ${_GO_MODULE} ]]; then
+
+inherit xdg-utils
 
 _GO_MODULE=1
 
@@ -116,13 +118,13 @@ RESTRICT+=" strip"
 #
 # You can use some combination of sed/awk/cut to extract the
 # contents of EGO_SUM or use the dev-go/get-ego-vendor tool.
-# 
+#
 # One manual way to do this is the following:
 #
 # @CODE
 #
 # cat go.sum | cut -d" " -f1,2 | awk '{print "\t\"" $0 "\""}'
-# 
+#
 # @CODE
 #
 # The format of go.sum is described upstream here:
@@ -357,6 +359,13 @@ go-module_src_unpack() {
 		default
 	fi
 }
+
+go-module_src_prepare() {
+	# See Funtoo Linux bug FL-6885,FL-9561 for why this is needed:
+	xdg_environment_reset
+	default
+}
+
 
 # @FUNCTION: _go-module_src_unpack_gosum
 # @DEPRECATED: none
