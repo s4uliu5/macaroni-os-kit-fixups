@@ -1,5 +1,5 @@
 async def generate(hub, **pkginfo):
-	for pv, unmasked in [ ("5.6", True) ("5.7", False) ]:
+	for pv, unmasked in [ ("5.6", True), ("5.7", False) ]:
 		url=f"https://linuxcontainers.org/downloads/lxd/lxd-{pv}.tar.gz"
 		ebuild = hub.pkgtools.ebuild.BreezyBuild(
 			**pkginfo,
