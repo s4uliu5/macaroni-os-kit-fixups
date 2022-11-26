@@ -99,7 +99,7 @@ RDEPEND="${COMMON_DEPEND}
 	!dev-db/mariadb:10.2
 	!dev-db/mariadb:10.3
 	!dev-db/mariadb:10.4
-        !dev-db/mariadb:10.5
+	!dev-db/mariadb:10.5
 	!<virtual/mysql-5.6-r11
 	!<virtual/libmysqlclient-18-r1
 	selinux? ( sec-policy/selinux-mysql )
@@ -126,13 +126,6 @@ RDEPEND="${COMMON_DEPEND}
 # dev-perl/DBD-mysql is needed by some scripts installed by MySQL
 # percona-xtrabackup-bin causes a circular dependency if DBD-mysql is not already installed
 PDEPEND="perl? ( >=dev-perl/DBD-mysql-2.9004 )"
-
-#PATCHES=(
-#        "${FILESDIR}/10.6/0001-cmake-build-without-client-libs-and-tools.patch"
-#        "${FILESDIR}/10.6/0002-libmariadb-fix-mysql_st-API-regression.patch"
-#        "${FILESDIR}/10.6/0003-libmariadb-cmake-find-GSSAPI-via-pkg-config.patch"
-#        "${FILESDIR}/10.6/0004-cmake-don-t-install-mysql-d-.service-symlinks.patch"
-#)
 
 mysql_init_vars() {
 	MY_SHAREDSTATEDIR=${MY_SHAREDSTATEDIR="${EPREFIX}/usr/share/mariadb"}
@@ -229,10 +222,11 @@ src_unpack() {
 }
 
 src_prepare() {
+
 	eapply "${FILESDIR}/10.6/0001-cmake-build-without-client-libs-and-tools.patch"
-        eapply "${FILESDIR}/10.6/0002-libmariadb-fix-mysql_st-API-regression.patch"
-        eapply "${FILESDIR}/10.6/0003-libmariadb-cmake-find-GSSAPI-via-pkg-config.patch"
-        eapply "${FILESDIR}/10.6/0004-cmake-don-t-install-mysql-d-.service-symlinks.patch"
+	eapply "${FILESDIR}/10.6/0002-libmariadb-fix-mysql_st-API-regression.patch"
+	eapply "${FILESDIR}/10.6/0003-libmariadb-cmake-find-GSSAPI-via-pkg-config.patch"
+	eapply "${FILESDIR}/10.6/0004-cmake-don-t-install-mysql-d-.service-symlinks.patch"
 	eapply "${FILESDIR}/10.6/0005-libmariadb-plugins-auth-CMakeLists-txt.patch"
 
 	eapply_user
