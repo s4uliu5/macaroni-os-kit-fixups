@@ -571,22 +571,35 @@ src_test() {
 	# create directories because mysqladmin might run out of order
 	mkdir -p "${T}"/var-tests{,/log} || die
 
+	if [[ ! -f "${S}/mysql-test/unstable-tests" ]] ; then
+		touch "${S}"/mysql-test/unstable-tests || die
+	fi
+
 	cp "${S}"/mysql-test/unstable-tests "${T}/disabled.def" || die
 
 	local -a disabled_tests
 	disabled_tests+=( "compat/oracle.plugin;0;Needs example plugin which Gentoo disables" )
+	disabled_tests+=( "innodb_gis.1;25095;Known rounding error with latest AMD processors" )
+	disabled_tests+=( "innodb_gis.gis;25095;Known rounding error with latest AMD processors" )
+	disabled_tests+=( "main.gis;25095;Known rounding error with latest AMD processors" )
 	disabled_tests+=( "main.explain_non_select;0;Sporadically failing test" )
 	disabled_tests+=( "main.func_time;0;Dependent on time test was written" )
+	disabled_tests+=( "main.mysql_upgrade;27044;Sporadically failing test" )
 	disabled_tests+=( "main.plugin_auth;0;Needs client libraries built" )
+	disabled_tests+=( "main.selectivity_no_engine;26320;Sporadically failing test" )
 	disabled_tests+=( "main.stat_tables;0;Sporadically failing test" )
 	disabled_tests+=( "main.stat_tables_innodb;0;Sporadically failing test" )
 	disabled_tests+=( "main.upgrade_MDEV-19650;25096;Known to be broken" )
 	disabled_tests+=( "mariabackup.*;0;Broken test suite" )
 	disabled_tests+=( "perfschema.nesting;23458;Known to be broken" )
+	disabled_tests+=( "perfschema.prepared_statements;0;Broken test suite" )
+	disabled_tests+=( "perfschema.privilege_table_io;27045;Sporadically failing test" )
 	disabled_tests+=( "plugins.auth_ed25519;0;Needs client libraries built" )
 	disabled_tests+=( "plugins.cracklib_password_check;0;False positive due to varying policies" )
 	disabled_tests+=( "plugins.two_password_validations;0;False positive due to varying policies" )
 	disabled_tests+=( "roles.acl_statistics;0;False positive due to a user count mismatch caused by previous test" )
+	disabled_tests+=( "spider.*;0;Fails with network sandbox" )
+	disabled_tests+=( "sys_vars.wsrep_on_without_provider;25625;Known to be broken" )
 
 	if ! use latin1 ; then
 		disabled_tests+=( "funcs_1.is_columns_mysql;0;Requires USE=latin1" )
