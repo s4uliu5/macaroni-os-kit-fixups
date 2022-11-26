@@ -1,36 +1,33 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
-SUBSLOT="18"
+SUBSLOT="8"
 
 JAVA_PKG_OPT_USE="jdbc"
 
-inherit eutils systemd flag-o-matic prefix toolchain-funcs \
+inherit eutils flag-o-matic prefix toolchain-funcs \
 	multiprocessing java-pkg-opt-2 cmake user
 
-# Patch version
-PATCH_SET="https://dev.gentoo.org/~whissi/dist/${PN}/${PN}-10.5.10-patches-01.tar.xz"
-
-SRC_URI="https://downloads.mariadb.org/interstitial/${P}/source/${P}.tar.gz
-	${PATCH_SET}"
+SRC_URI="https://archive.mariadb.org/${P}/source/${P}.tar.gz"
 
 HOMEPAGE="https://mariadb.org/"
 DESCRIPTION="An enhanced, drop-in replacement for MySQL"
 LICENSE="GPL-2 LGPL-2.1+"
-SLOT="10.5/${SUBSLOT:-0}"
+SLOT="$(ver_cut 2)/${SUBSLOT:-0}"
 IUSE="+backup bindist columnstore cracklib debug extraengine galera innodb-lz4
-	innodb-lzo innodb-snappy jdbc jemalloc kerberos latin1 mroonga
+	innodb-lzo innodb-snappy jdbc jemalloc kerberos latin1 libressl mroonga
 	numa odbc oqgraph pam +perl profiling rocksdb selinux +server sphinx
-	sst-rsync sst-mariabackup static systemd systemtap s3 tcmalloc
+	sst-rsync sst-mariabackup static systemtap s3 tcmalloc
 	test xml yassl"
 
-RESTRICT="!bindist? ( bindist ) !test? ( test )"
+# Tests always fail when libressl is enabled due to hard-coded ciphers in the tests
+RESTRICT="!bindist? ( bindist ) libressl? ( test ) !test? ( test )"
 
 REQUIRED_USE="jdbc? ( extraengine server !static )
 	?? ( tcmalloc jemalloc )
 	static? ( yassl !pam )"
 
-KEYWORDS="*"
+KEYWORDS=""
 
 # Shorten the path because the socket path length must be shorter than 107 chars
 # and we will run a mysql server during test phase
@@ -76,13 +73,13 @@ COMMON_DEPEND="
 		oqgraph? ( >=dev-libs/boost-1.40.0:0= dev-libs/judy:0= )
 		pam? ( sys-libs/pam:0= )
 		s3? ( net-misc/curl )
-		systemd? ( sys-apps/systemd:= )
 	)
 	systemtap? ( >=dev-util/systemtap-1.3:0= )
 	tcmalloc? ( dev-util/google-perftools:0= )
 	yassl? ( net-libs/gnutls:0= )
 	!yassl? (
-		>=dev-libs/openssl-1.0.0:0=
+		!libressl? ( >=dev-libs/openssl-1.0.0:0= )
+		libressl? ( dev-libs/libressl:0= )
 	)
 "
 BDEPEND="virtual/yacc
@@ -90,25 +87,29 @@ BDEPEND="virtual/yacc
 "
 DEPEND="${COMMON_DEPEND}
 	server? (
-		extraengine? ( jdbc? ( >=virtual/jdk-1.8 ) )
+		extraengine? ( jdbc? ( >=virtual/jdk-1.6 ) )
 	)
 	static? ( sys-libs/ncurses[static-libs] )
 "
 RDEPEND="${COMMON_DEPEND}
-	!dev-db/mysql !dev-db/mariadb-galera !dev-db/percona-server !dev-db/mysql-cluster
+	!dev-db/mysql-community !dev-db/mariadb-galera !dev-db/percona-server !dev-db/mysql-cluster
 	!dev-db/mariadb:0
 	!dev-db/mariadb:5.5
 	!dev-db/mariadb:10.1
 	!dev-db/mariadb:10.2
 	!dev-db/mariadb:10.3
 	!dev-db/mariadb:10.4
+	!dev-db/mariadb:10.5
 	!dev-db/mariadb:10.6
+	!dev-db/mariadb:10.7
+	!dev-db/mariadb:10.9
+	!dev-db/mariadb:10.10
 	!<virtual/mysql-5.6-r11
 	!<virtual/libmysqlclient-18-r1
 	selinux? ( sec-policy/selinux-mysql )
 	server? (
 		columnstore? ( dev-db/mariadb-connector-c )
-		extraengine? ( jdbc? ( >=virtual/jre-1.8 ) )
+		extraengine? ( jdbc? ( >=virtual/jre-1.6 ) )
 		galera? (
 			sys-apps/iproute2
 			=sys-cluster/galera-26*
@@ -117,9 +118,17 @@ RDEPEND="${COMMON_DEPEND}
 		)
 		!prefix? ( dev-db/mysql-init-scripts )
 	)
+	perl? (
+		!dev-db/mytop
+		virtual/perl-Getopt-Long
+		dev-perl/TermReadKey
+		virtual/perl-Term-ANSIColor
+		virtual/perl-Time-HiRes
+	)
 "
 # For other stuff to bring us in
 # dev-perl/DBD-mysql is needed by some scripts installed by MySQL
+# percona-xtrabackup-bin causes a circular dependency if DBD-mysql is not already installed
 PDEPEND="perl? ( >=dev-perl/DBD-mysql-2.9004 )"
 
 mysql_init_vars() {
@@ -217,7 +226,12 @@ src_unpack() {
 }
 
 src_prepare() {
-	eapply "${WORKDIR}"/mariadb-patches
+
+	eapply "${FILESDIR}/10.8/0001-cmake-build-without-client-libs-and-tools.patch"
+	eapply "${FILESDIR}/10.8/0002-libmariadb-fix-mysql_st-API-regression.patch"
+	eapply "${FILESDIR}/10.8/0003-libmariadb-cmake-find-GSSAPI-via-pkg-config.patch"
+	eapply "${FILESDIR}/10.8/0004-cmake-don-t-install-mysql-d-.service-symlinks.patch"
+	eapply "${FILESDIR}/10.8/0005-libmariadb-plugins-auth-CMakeLists-txt.patch"
 
 	eapply_user
 
@@ -231,7 +245,7 @@ src_prepare() {
 	if use jemalloc; then
 		echo "TARGET_LINK_LIBRARIES(mariadbd LINK_PUBLIC jemalloc)" >> "${S}/sql/CMakeLists.txt"
 	elif use tcmalloc; then
-		echo "TARGET_LINK_LIBRARIES(mariadbd LINK_PUBLIC tcmalloc)" >> "${S}/sql/CMakeLists.txt"
+		echo "TARGET_LINK_LIBRARIES(mariadbd tcmalloc)" >> "${S}/sql/CMakeLists.txt"
 	fi
 
 	local plugin
@@ -273,6 +287,11 @@ src_prepare() {
 	sed -i -e 's~add_library(wsrep-lib$~add_library(wsrep-lib STATIC~' \
 		"${S}"/wsrep-lib/src/CMakeLists.txt || die
 
+	# Don't clash with dev-db/mysql-connector-c
+	sed -i -e 's/ my_print_defaults.1//' \
+		-e 's/ perror.1//' \
+		"${S}"/man/CMakeLists.txt || die
+
 	# Fix galera_recovery.sh script
 	sed -i -e "s~@bindir@/my_print_defaults~${EPREFIX}/usr/libexec/mariadb/my_print_defaults~" \
 		scripts/galera_recovery.sh || die
@@ -304,6 +323,7 @@ src_configure() {
 	mycmakeargs=(
 		-DCMAKE_C_FLAGS_RELWITHDEBINFO="$(usex debug '' '-DNDEBUG')"
 		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="$(usex debug '' '-DNDEBUG')"
+		-DCMAKE_INSTALL_PREFIX="${EPREFIX}/usr"
 		-DMYSQL_DATADIR="${EPREFIX}/var/lib/mysql"
 		-DSYSCONFDIR="${EPREFIX}/etc/mysql"
 		-DINSTALL_BINDIR=bin
@@ -329,7 +349,6 @@ src_configure() {
 		-DINSTALL_UNIX_ADDRDIR="${EPREFIX}/var/run/mysqld/mysqld.sock"
 		-DWITH_DEFAULT_COMPILER_OPTIONS=0
 		-DWITH_DEFAULT_FEATURE_SET=0
-		-DINSTALL_SYSTEMD_UNITDIR="$(systemd_get_systemunitdir)"
 		# The build forces this to be defined when cross-compiling.  We pass it
 		# all the time for simplicity and to make sure it is actually correct.
 		-DSTACK_DIRECTION=$(tc-stack-grows-down && echo -1 || echo 1)
@@ -367,28 +386,28 @@ src_configure() {
 	)
 
 	if use server ; then
-		# Connect and Federated{,X} must be treated special
-		# otherwise they will not be built as plugins
+
+		# Federated{,X} must be treated special otherwise they will not be built as plugins
 		if ! use extraengine ; then
 			mycmakeargs+=(
-				-DPLUGIN_CONNECT=NO
 				-DPLUGIN_FEDERATED=NO
 				-DPLUGIN_FEDERATEDX=NO
 			)
 		fi
 
 		mycmakeargs+=(
+			-DWITH_JEMALLOC=$(usex jemalloc system)
 			-DWITH_PCRE=system
 			-DPLUGIN_OQGRAPH=$(usex oqgraph DYNAMIC NO)
 			-DPLUGIN_SPHINX=$(usex sphinx YES NO)
 			-DPLUGIN_AUTH_PAM=$(usex pam YES NO)
-			-DPLUGIN_AWS_KEY_MANAGEMENT=NO
 			-DPLUGIN_CRACKLIB_PASSWORD_CHECK=$(usex cracklib YES NO)
 			-DPLUGIN_CASSANDRA=NO
 			-DPLUGIN_SEQUENCE=$(usex extraengine YES NO)
 			-DPLUGIN_SPIDER=$(usex extraengine YES NO)
 			-DPLUGIN_S3=$(usex s3 YES NO)
 			-DPLUGIN_COLUMNSTORE=$(usex columnstore YES NO)
+			-DPLUGIN_CONNECT=$(usex extraengine YES NO)
 			-DCONNECT_WITH_MYSQL=1
 			-DCONNECT_WITH_LIBXML2=$(usex xml)
 			-DCONNECT_WITH_ODBC=$(usex odbc)
@@ -405,8 +424,6 @@ src_configure() {
 			-DWITH_LIBARCHIVE=$(usex backup ON OFF)
 			-DINSTALL_SQLBENCHDIR=""
 			-DPLUGIN_ROCKSDB=$(usex rocksdb DYNAMIC NO)
-			# systemd is only linked to for server notification
-			-DWITH_SYSTEMD=$(usex systemd yes no)
 			-DWITH_NUMA=$(usex numa ON OFF)
 		)
 
@@ -464,6 +481,7 @@ src_configure() {
 			-DWITH_MYISAM_STORAGE_ENGINE=1
 			-DWITH_PARTITION_STORAGE_ENGINE=1
 		)
+
 	else
 		mycmakeargs+=(
 			-DWITHOUT_SERVER=1
@@ -557,24 +575,34 @@ src_test() {
 	# create directories because mysqladmin might run out of order
 	mkdir -p "${T}"/var-tests{,/log} || die
 
+	if [[ ! -f "${S}/mysql-test/unstable-tests" ]] ; then
+		touch "${S}"/mysql-test/unstable-tests || die
+	fi
+
 	cp "${S}"/mysql-test/unstable-tests "${T}/disabled.def" || die
 
 	local -a disabled_tests
 	disabled_tests+=( "compat/oracle.plugin;0;Needs example plugin which Gentoo disables" )
 	disabled_tests+=( "innodb_gis.1;25095;Known rounding error with latest AMD processors" )
 	disabled_tests+=( "innodb_gis.gis;25095;Known rounding error with latest AMD processors" )
+	disabled_tests+=( "main.gis;25095;Known rounding error with latest AMD processors" )
 	disabled_tests+=( "main.explain_non_select;0;Sporadically failing test" )
 	disabled_tests+=( "main.func_time;0;Dependent on time test was written" )
+	disabled_tests+=( "main.mysql_upgrade;27044;Sporadically failing test" )
 	disabled_tests+=( "main.plugin_auth;0;Needs client libraries built" )
+	disabled_tests+=( "main.selectivity_no_engine;26320;Sporadically failing test" )
 	disabled_tests+=( "main.stat_tables;0;Sporadically failing test" )
 	disabled_tests+=( "main.stat_tables_innodb;0;Sporadically failing test" )
 	disabled_tests+=( "main.upgrade_MDEV-19650;25096;Known to be broken" )
 	disabled_tests+=( "mariabackup.*;0;Broken test suite" )
 	disabled_tests+=( "perfschema.nesting;23458;Known to be broken" )
+	disabled_tests+=( "perfschema.prepared_statements;0;Broken test suite" )
+	disabled_tests+=( "perfschema.privilege_table_io;27045;Sporadically failing test" )
 	disabled_tests+=( "plugins.auth_ed25519;0;Needs client libraries built" )
 	disabled_tests+=( "plugins.cracklib_password_check;0;False positive due to varying policies" )
 	disabled_tests+=( "plugins.two_password_validations;0;False positive due to varying policies" )
 	disabled_tests+=( "roles.acl_statistics;0;False positive due to a user count mismatch caused by previous test" )
+	disabled_tests+=( "spider.*;0;Fails with network sandbox" )
 	disabled_tests+=( "sys_vars.wsrep_on_without_provider;25625;Known to be broken" )
 
 	if ! use latin1 ; then
@@ -701,16 +729,18 @@ src_install() {
 		fi
 	fi
 
-	# Remove bundled mytop in favor of dev-db/mytop
-	local mytop_file
-	for mytop_file in \
-		"${ED}/usr/bin/mytop" \
-		"${ED}/usr/share/man/man1/mytop.1" \
-	; do
-		if [[ -e "${mytop_file}" ]] ; then
-			rm -v "${mytop_file}" || die
-		fi
-	done
+	# Remove mytop if perl is not selected
+	if ! use perl ; then
+		local mytop_file
+		for mytop_file in \
+			"${ED}/usr/bin/mytop" \
+			"${ED}/usr/share/man/man1/mytop.1" \
+		; do
+			if [[ -e "${mytop_file}" ]] ; then
+				rm -v "${mytop_file}" || die
+			fi
+		done
+	fi
 
 	# Fix a dangling symlink when galera is not built
 	if [[ -L "${ED}/usr/bin/wsrep_sst_rsync_wan" ]] && ! use galera ; then
@@ -728,6 +758,17 @@ src_install() {
 
 pkg_preinst() {
 	java-pkg-opt-2_pkg_preinst
+
+		# Here we need to see if the implementation switched client libraries
+		# We check if this is a new instance of the package and a client library already exists
+		local SHOW_ABI_MESSAGE libpath
+		if [[ -z ${REPLACING_VERSIONS} && -e "${EROOT}usr/$(get_libdir)/libmysqlclient.so" ]] ; then
+			libpath=$(readlink "${EROOT}usr/$(get_libdir)/libmysqlclient.so")
+			elog "Due to ABI changes when switching between different client libraries,"
+			elog "revdep-rebuild must find and rebuild all packages linking to libmysqlclient."
+			elog "Please run: revdep-rebuild --library ${libpath}"
+			ewarn "Failure to run revdep-rebuild may cause issues with other programs or libraries"
+		fi
 }
 
 pkg_postinst() {
