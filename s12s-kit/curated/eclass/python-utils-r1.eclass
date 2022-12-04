@@ -184,6 +184,7 @@ _python_set_impls() {
 			python3_10+)
 				supp['python3_10']=1
 				supp['python3_11']=1
+				;;
 			python3_11+)
 				supp['python3_11']=1
 				;;
