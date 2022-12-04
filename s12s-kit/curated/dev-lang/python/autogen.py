@@ -15,7 +15,9 @@ async def generate(hub, **pkginfo):
 			continue
 
 		major, minor = v[2], v[3]
-		if f"{major}.{minor}" not in ["3.7", "3.8", "3.9", "3.10"]:
+
+		print(major, minor)
+		if f"{major}.{minor}" not in ["3.7", "3.8", "3.9", "3.10", "3.11"]:
 			continue
 
 		versions.append(v[1])

@@ -1,0 +1,52 @@
+From b8cc46ae6d5a7a0578476b5473205b2202adc0a6 Mon Sep 17 00:00:00 2001
+From: Mike Gilbert <floppym@gentoo.org>
+Date: Fri, 5 Jan 2018 13:31:37 -0500
+Subject: [PATCH 06/12] Replace hard-coded system libdir list
+
+This resolves a build failure against system libffi on platforms where
+libdir is not "lib64" or "lib".
+
+Bug: https://bugs.gentoo.org/850151
+---
+ setup.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/setup.py b/setup.py
+index 64afe35f57..a95505ce33 100644
+--- a/setup.py
++++ b/setup.py
+@@ -847,7 +847,7 @@ def configure_compiler(self):
+         # directories (i.e. '.' and 'Include') must be first.  See issue
+         # 10520.
+         if not CROSS_COMPILING:
+-            add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
++            add_dir_to_list(self.compiler.library_dirs, '/usr/local/@@GENTOO_LIBDIR@@')
+             add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
+         # only change this for cross builds for 3.3, issues on Mageia
+         if CROSS_COMPILING:
+@@ -868,7 +868,7 @@ def init_inc_lib_dirs(self):
+             add_dir_to_list(self.compiler.include_dirs,
+                             sysconfig.get_config_var("INCLUDEDIR"))
+ 
+-        system_lib_dirs = ['/lib64', '/usr/lib64', '/lib', '/usr/lib']
++        system_lib_dirs = ['/@@GENTOO_LIBDIR@@', '/usr/@@GENTOO_LIBDIR@@']
+         system_include_dirs = ['/usr/include']
+         # lib_dirs and inc_dirs are used to search for files;
+         # if a file is found in one of those directories, it can
+@@ -1105,11 +1105,11 @@ def detect_readline_curses(self):
+             elif curses_library:
+                 readline_libs.append(curses_library)
+             elif self.compiler.find_library_file(self.lib_dirs +
+-                                                     ['/usr/lib/termcap'],
++                                                     ['/usr/@@GENTOO_LIBDIR@@/termcap'],
+                                                      'termcap'):
+                 readline_libs.append('termcap')
+             self.addext(Extension('readline', ['readline.c'],
+-                               library_dirs=['/usr/lib/termcap'],
++                               library_dirs=['/usr/@@GENTOO_LIBDIR@@/termcap'],
+                                libraries=readline_libs))
+         else:
+             self.addext(Extension('readline', ['readline.c']))
+-- 
+2.38.1
+

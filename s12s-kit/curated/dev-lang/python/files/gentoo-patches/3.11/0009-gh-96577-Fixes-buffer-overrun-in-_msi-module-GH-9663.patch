@@ -1,0 +1,21 @@
+From 628a380c35a8a2d9c6ced839b169ff0b2c3b9183 Mon Sep 17 00:00:00 2001
+From: Steve Dower <steve.dower@python.org>
+Date: Wed, 7 Sep 2022 18:01:35 +0100
+Subject: [PATCH 09/12] gh-96577: Fixes buffer overrun in _msi module
+ (GH-96633)
+
+---
+ .../next/Windows/2022-09-07-00-11-33.gh-issue-96577.kV4K_1.rst   | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 Misc/NEWS.d/next/Windows/2022-09-07-00-11-33.gh-issue-96577.kV4K_1.rst
+
+diff --git a/Misc/NEWS.d/next/Windows/2022-09-07-00-11-33.gh-issue-96577.kV4K_1.rst b/Misc/NEWS.d/next/Windows/2022-09-07-00-11-33.gh-issue-96577.kV4K_1.rst
+new file mode 100644
+index 0000000000..6025e5ce41
+--- /dev/null
++++ b/Misc/NEWS.d/next/Windows/2022-09-07-00-11-33.gh-issue-96577.kV4K_1.rst
+@@ -0,0 +1 @@
++Fixes a potential buffer overrun in :mod:`msilib`.
+-- 
+2.38.1
+
