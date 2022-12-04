@@ -4,7 +4,7 @@ import re
 
 
 async def generate(hub, **pkginfo):
-	versions = [ "2.7.18" ]
+	versions = []
 	minor = 10000
 	async for tag in hub.pkgtools.github.iter_all_tags(hub, "python", "cpython"):
 		v = re.match(r"v((\d+).(\d+).\d+\b)(?!-)", tag["name"])
@@ -16,8 +16,7 @@ async def generate(hub, **pkginfo):
 
 		major, minor = v[2], v[3]
 
-		print(major, minor)
-		if f"{major}.{minor}" not in ["3.7", "3.8", "3.9", "3.10", "3.11"]:
+		if f"{major}.{minor}" not in ["3.11"]:
 			continue
 
 		versions.append(v[1])
