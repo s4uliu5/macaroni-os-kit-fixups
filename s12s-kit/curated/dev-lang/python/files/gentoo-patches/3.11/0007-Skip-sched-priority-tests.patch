@@ -1,0 +1,37 @@
+From 1464544582f70c1ef56cce3918f3710363f1eda1 Mon Sep 17 00:00:00 2001
+From: Sam James <sam@gentoo.org>
+Date: Wed, 8 Dec 2021 02:10:34 +0000
+Subject: [PATCH 07/12] Skip sched/priority tests
+
+These tests try to change the priority of the running process, but if
+e.g. PORTAGE_NICENESS=19, you can't spawn a process with lower (or higher!)
+niceness, as there's nowhere to go. Ditto priorities.
+
+Signed-off-by: Sam James <sam@gentoo.org>
+---
+ Lib/test/test_posix.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Lib/test/test_posix.py b/Lib/test/test_posix.py
+index e643d8e5a4..7bed4fae43 100644
+--- a/Lib/test/test_posix.py
++++ b/Lib/test/test_posix.py
+@@ -1765,6 +1765,7 @@ def test_setsigdef_wrong_type(self):
+                             os.environ, setsigdef=[signal.NSIG, signal.NSIG+1])
+ 
+     @requires_sched
++    @unittest.skip('Gentoo: fails when PORTAGE_NICENESS is set')
+     @unittest.skipIf(sys.platform.startswith(('freebsd', 'netbsd')),
+                      "bpo-34685: test can fail on BSD")
+     def test_setscheduler_only_param(self):
+@@ -1785,6 +1786,7 @@ def test_setscheduler_only_param(self):
+         support.wait_process(pid, exitcode=0)
+ 
+     @requires_sched
++    @unittest.skip('Gentoo: fails when PORTAGE_NICENESS is set')
+     @unittest.skipIf(sys.platform.startswith(('freebsd', 'netbsd')),
+                      "bpo-34685: test can fail on BSD")
+     def test_setscheduler_with_policy(self):
+-- 
+2.38.1
+

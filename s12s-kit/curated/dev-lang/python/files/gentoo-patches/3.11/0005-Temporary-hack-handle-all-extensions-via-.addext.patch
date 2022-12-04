@@ -1,0 +1,100 @@
+From f52a53680a26c704ef32b7afbba4d465f3d28bb8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Thu, 9 Dec 2021 15:58:30 +0100
+Subject: [PATCH 05/12] Temporary hack: handle all extensions via .addext()
+
+Use .addext() for all modules in order to enable Makefile control
+over building them.
+---
+ configure.ac |  6 ++++++
+ setup.py     | 18 +++++++++---------
+ 2 files changed, 15 insertions(+), 9 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index ab5e1de6fa..0cb4e202ad 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -6993,6 +6993,12 @@ PY_STDLIB_MOD_SIMPLE([_codecs_tw])
+ PY_STDLIB_MOD_SIMPLE([_multibytecodec])
+ PY_STDLIB_MOD_SIMPLE([unicodedata])
+ 
++dnl Gentoo hack
++PY_STDLIB_MOD_SIMPLE([_curses])
++PY_STDLIB_MOD_SIMPLE([_curses_panel])
++PY_STDLIB_MOD_SIMPLE([_dbm])
++PY_STDLIB_MOD_SIMPLE([readline])
++
+ dnl By default we always compile these even when OpenSSL is available
+ dnl (issue #14693). The modules are small.
+ PY_STDLIB_MOD([_md5], [test "$with_builtin_md5" = yes])
+diff --git a/setup.py b/setup.py
+index 15d0d4576a..64afe35f57 100644
+--- a/setup.py
++++ b/setup.py
+@@ -1108,11 +1108,11 @@ def detect_readline_curses(self):
+                                                      ['/usr/lib/termcap'],
+                                                      'termcap'):
+                 readline_libs.append('termcap')
+-            self.add(Extension('readline', ['readline.c'],
++            self.addext(Extension('readline', ['readline.c'],
+                                library_dirs=['/usr/lib/termcap'],
+                                libraries=readline_libs))
+         else:
+-            self.missing.append('readline')
++            self.addext(Extension('readline', ['readline.c']))
+ 
+         # Curses support, requiring the System V version of curses, often
+         # provided by the ncurses library.
+@@ -1142,7 +1142,7 @@ def detect_readline_curses(self):
+         curses_enabled = True
+         if curses_library.startswith('ncurses'):
+             curses_libs = [curses_library]
+-            self.add(Extension('_curses', ['_cursesmodule.c'],
++            self.addext(Extension('_curses', ['_cursesmodule.c'],
+                                include_dirs=curses_includes,
+                                define_macros=curses_defines,
+                                libraries=curses_libs))
+@@ -1156,24 +1156,24 @@ def detect_readline_curses(self):
+             else:
+                 curses_libs = ['curses']
+ 
+-            self.add(Extension('_curses', ['_cursesmodule.c'],
++            self.addext(Extension('_curses', ['_cursesmodule.c'],
+                                define_macros=curses_defines,
+                                libraries=curses_libs))
+         else:
+             curses_enabled = False
+-            self.missing.append('_curses')
++            self.addext(Extension('_curses', ['_cursesmodule.c']))
+ 
+         # If the curses module is enabled, check for the panel module
+         # _curses_panel needs some form of ncurses
+         skip_curses_panel = True if AIX else False
+         if (curses_enabled and not skip_curses_panel and
+                 self.compiler.find_library_file(self.lib_dirs, panel_library)):
+-            self.add(Extension('_curses_panel', ['_curses_panel.c'],
++            self.addext(Extension('_curses_panel', ['_curses_panel.c'],
+                            include_dirs=curses_includes,
+                            define_macros=curses_defines,
+                            libraries=[panel_library, *curses_libs]))
+         elif not skip_curses_panel:
+-            self.missing.append('_curses_panel')
++            self.addext(Extension('_curses_panel', ['_curses_panel.c']))
+ 
+     def detect_crypt(self):
+         self.addext(Extension('_crypt', ['_cryptmodule.c']))
+@@ -1246,9 +1246,9 @@ def detect_dbm_gdbm(self):
+                         )
+                         break
+             if dbmext is not None:
+-                self.add(dbmext)
++                self.addext(dbmext)
+             else:
+-                self.missing.append('_dbm')
++                self.addext(Extension('_dbm', ['_dbmmodule.c']))
+ 
+         # Anthony Baxter's gdbm module.  GNU dbm(3) will require -lgdbm:
+         self.addext(Extension('_gdbm', ['_gdbmmodule.c']))
+-- 
+2.38.1
+

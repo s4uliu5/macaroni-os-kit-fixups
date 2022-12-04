@@ -1,0 +1,63 @@
+From 293374c569885141801bf485eb0e62fca82757bf Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
+Date: Fri, 9 Sep 2022 09:51:42 +0200
+Subject: [PATCH 08/12] Workaround clang+musl build failure
+
+The current configure code detects musl and sets an appropriate suffix
+correctly but afterwards verifies that the detection result matches
+whatever --print-multiarch prints.  Unfortunately, the current Clang
+releases incorrectly report linux-gnu on musl, causing the safety check
+to fail.  Until upstreams sort that out, just nuke the multiarch check
+on musl target.
+
+Bug: https://bugs.gentoo.org/862888
+---
+ configure.ac | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 0cb4e202ad..4bc965239a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1069,11 +1069,22 @@ cat > conftest.c <<EOF
+ 
+ EOF
+ 
++AC_MSG_CHECKING([for multiarch])
++AS_CASE([$ac_sys_system],
++  [Darwin*], [MULTIARCH=""],
++  [FreeBSD*], [MULTIARCH=""],
++  [MULTIARCH=$($CC --print-multiarch 2>/dev/null)]
++)
++AC_SUBST([MULTIARCH])
++AC_MSG_RESULT([$MULTIARCH])
++
+ if $CPP $CPPFLAGS conftest.c >conftest.out 2>/dev/null; then
+   PLATFORM_TRIPLET=`grep -v '^#' conftest.out | grep -v '^ *$' | tr -d ' 	'`
+   case "$build_os" in
+   linux-musl*)
+     PLATFORM_TRIPLET=`echo "$PLATFORM_TRIPLET" | sed 's/linux-gnu/linux-musl/'`
++    # Gentoo hack: clang reports wrong MULTIARCH value for musl
++    MULTIARCH=
+     ;;
+   esac
+   AC_MSG_RESULT([$PLATFORM_TRIPLET])
+@@ -1082,15 +1093,6 @@ else
+ fi
+ rm -f conftest.c conftest.out
+ 
+-AC_MSG_CHECKING([for multiarch])
+-AS_CASE([$ac_sys_system],
+-  [Darwin*], [MULTIARCH=""],
+-  [FreeBSD*], [MULTIARCH=""],
+-  [MULTIARCH=$($CC --print-multiarch 2>/dev/null)]
+-)
+-AC_SUBST([MULTIARCH])
+-AC_MSG_RESULT([$MULTIARCH])
+-
+ if test x$PLATFORM_TRIPLET != x && test x$MULTIARCH != x; then
+   if test x$PLATFORM_TRIPLET != x$MULTIARCH; then
+     AC_MSG_ERROR([internal configure error for the platform triplet, please file a bug report])
+-- 
+2.38.1
+

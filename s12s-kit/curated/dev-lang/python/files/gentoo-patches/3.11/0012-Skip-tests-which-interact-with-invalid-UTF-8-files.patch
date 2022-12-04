@@ -1,0 +1,183 @@
+From 7e40e4961ad4169b16b60b434daecdd4b1ccf6cd Mon Sep 17 00:00:00 2001
+From: Sam James <sam@gentoo.org>
+Date: Fri, 11 Nov 2022 08:18:25 +0000
+Subject: [PATCH 12/12] Skip tests which interact with invalid UTF-8 files
+
+These tests fail on filesystems which disallow
+non-UTF8, like ZFS with 'utf8only' on.
+
+Bug: https://bugs.python.org/issue37584
+Bug: https://github.com/python/cpython/issues/81765
+Signed-off-by: Sam James <sam@gentoo.org>
+---
+ Lib/test/test_cmd_line_script.py        | 1 +
+ Lib/test/test_genericpath.py            | 1 +
+ Lib/test/test_httpservers.py            | 1 +
+ Lib/test/test_imp.py                    | 1 +
+ Lib/test/test_import/__init__.py        | 1 +
+ Lib/test/test_os.py                     | 4 ++++
+ Lib/test/test_sqlite3/test_dbapi.py     | 2 ++
+ Lib/test/test_unicode_file.py           | 2 ++
+ Lib/test/test_unicode_file_functions.py | 1 +
+ Lib/test/test_zipimport.py              | 1 +
+ 10 files changed, 15 insertions(+)
+
+diff --git a/Lib/test/test_cmd_line_script.py b/Lib/test/test_cmd_line_script.py
+index 9e98edf214..fb67288bc8 100644
+--- a/Lib/test/test_cmd_line_script.py
++++ b/Lib/test/test_cmd_line_script.py
+@@ -554,6 +554,7 @@ def test_pep_409_verbiage(self):
+             self.assertTrue(text[1].startswith('  File '))
+             self.assertTrue(text[3].startswith('NameError'))
+ 
++    @unittest.skip('Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     def test_non_ascii(self):
+         # Mac OS X denies the creation of a file with an invalid UTF-8 name.
+         # Windows allows creating a name with an arbitrary bytes name, but
+diff --git a/Lib/test/test_genericpath.py b/Lib/test/test_genericpath.py
+index 489044f809..e0c2914983 100644
+--- a/Lib/test/test_genericpath.py
++++ b/Lib/test/test_genericpath.py
+@@ -478,6 +478,7 @@ def test_abspath_issue3426(self):
+                 for path in ('', 'fuu', 'f\xf9\xf9', '/fuu', 'U:\\'):
+                     self.assertIsInstance(abspath(path), str)
+ 
++    @unittest.skipIf(os_helper.TESTFN_UNENCODABLE, 'Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     def test_nonascii_abspath(self):
+         if (os_helper.TESTFN_UNDECODABLE
+         # macOS and Emscripten deny the creation of a directory with an
+diff --git a/Lib/test/test_httpservers.py b/Lib/test/test_httpservers.py
+index a937258069..16a787e96d 100644
+--- a/Lib/test/test_httpservers.py
++++ b/Lib/test/test_httpservers.py
+@@ -389,6 +389,7 @@ def close_conn():
+         reader.close()
+         return body
+ 
++    @unittest.skip('Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     @unittest.skipIf(sys.platform == 'darwin',
+                      'undecodable name cannot always be decoded on macOS')
+     @unittest.skipIf(sys.platform == 'win32',
+diff --git a/Lib/test/test_imp.py b/Lib/test/test_imp.py
+index d44dc6b49f..87e5c1bd77 100644
+--- a/Lib/test/test_imp.py
++++ b/Lib/test/test_imp.py
+@@ -449,6 +449,7 @@ def test_source_from_cache(self):
+ 
+ 
+ class NullImporterTests(unittest.TestCase):
++    @unittest.skip('Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     @unittest.skipIf(os_helper.TESTFN_UNENCODABLE is None,
+                      "Need an undecodeable filename")
+     def test_unencodeable(self):
+diff --git a/Lib/test/test_import/__init__.py b/Lib/test/test_import/__init__.py
+index 6c5b80bcee..a7fa59e473 100644
+--- a/Lib/test/test_import/__init__.py
++++ b/Lib/test/test_import/__init__.py
+@@ -1292,6 +1292,7 @@ def exec_module(*args):
+             else:
+                 importlib.SourceLoader.exec_module = old_exec_module
+ 
++    @unittest.skip('Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     @unittest.skipUnless(TESTFN_UNENCODABLE, 'need TESTFN_UNENCODABLE')
+     def test_unencodable_filename(self):
+         # Issue #11619: The Python parser and the import machinery must not
+diff --git a/Lib/test/test_os.py b/Lib/test/test_os.py
+index 9970b234b4..bcdb9ddbf8 100644
+--- a/Lib/test/test_os.py
++++ b/Lib/test/test_os.py
+@@ -2386,6 +2386,7 @@ def add_filename(fn):
+     def tearDown(self):
+         shutil.rmtree(self.dir)
+ 
++    @unittest.skipIf(os_helper.TESTFN_UNENCODABLE, 'Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     def test_listdir(self):
+         expected = self.unicodefn
+         found = set(os.listdir(self.dir))
+@@ -2398,11 +2399,13 @@ def test_listdir(self):
+         finally:
+             os.chdir(current_directory)
+ 
++    @unittest.skipIf(os_helper.TESTFN_UNENCODABLE, 'Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     def test_open(self):
+         for fn in self.unicodefn:
+             f = open(os.path.join(self.dir, fn), 'rb')
+             f.close()
+ 
++    @unittest.skipIf(os_helper.TESTFN_UNENCODABLE, 'Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     @unittest.skipUnless(hasattr(os, 'statvfs'),
+                             "need os.statvfs()")
+     def test_statvfs(self):
+@@ -2412,6 +2415,7 @@ def test_statvfs(self):
+             fullname = os.path.join(self.dir, fn)
+             os.statvfs(fullname)
+ 
++    @unittest.skipIf(os_helper.TESTFN_UNENCODABLE, 'Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     def test_stat(self):
+         for fn in self.unicodefn:
+             os.stat(os.path.join(self.dir, fn))
+diff --git a/Lib/test/test_sqlite3/test_dbapi.py b/Lib/test/test_sqlite3/test_dbapi.py
+index 2aea1105a2..bb6070923b 100644
+--- a/Lib/test/test_sqlite3/test_dbapi.py
++++ b/Lib/test/test_sqlite3/test_dbapi.py
+@@ -659,6 +659,7 @@ def test_open_with_path_like_object(self):
+             self.assertTrue(os.path.exists(path))
+             cx.execute(self._sql)
+ 
++    @unittest.skip('Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     @unittest.skipIf(sys.platform == "win32", "skipped on Windows")
+     @unittest.skipIf(sys.platform == "darwin", "skipped on macOS")
+     @unittest.skipIf(is_emscripten or is_wasi, "not supported on Emscripten/WASI")
+@@ -705,6 +706,7 @@ def test_open_uri_readonly(self):
+             with self.assertRaises(sqlite.OperationalError):
+                 cx.execute(self._sql)
+ 
++    @unittest.skip('Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     @unittest.skipIf(sys.platform == "win32", "skipped on Windows")
+     @unittest.skipIf(sys.platform == "darwin", "skipped on macOS")
+     @unittest.skipIf(is_emscripten or is_wasi, "not supported on Emscripten/WASI")
+diff --git a/Lib/test/test_unicode_file.py b/Lib/test/test_unicode_file.py
+index fe25bfe9f8..cf81c329c7 100644
+--- a/Lib/test/test_unicode_file.py
++++ b/Lib/test/test_unicode_file.py
+@@ -119,11 +119,13 @@ def _test_single(self, filename):
+ 
+     # The 'test' functions are unittest entry points, and simply call our
+     # _test functions with each of the filename combinations we wish to test
++    @unittest.skipIf(TESTFN_UNENCODABLE, 'Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     def test_single_files(self):
+         self._test_single(TESTFN_UNICODE)
+         if TESTFN_UNENCODABLE is not None:
+             self._test_single(TESTFN_UNENCODABLE)
+ 
++    @unittest.skipIf(TESTFN_UNENCODABLE, 'Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     def test_directories(self):
+         # For all 'equivalent' combinations:
+         #  Make dir with encoded, chdir with unicode, checkdir with encoded
+diff --git a/Lib/test/test_unicode_file_functions.py b/Lib/test/test_unicode_file_functions.py
+index 54916dec4e..e621ed5690 100644
+--- a/Lib/test/test_unicode_file_functions.py
++++ b/Lib/test/test_unicode_file_functions.py
+@@ -118,6 +118,7 @@ def test_open(self):
+             os.stat(name)
+             self._apply_failure(os.listdir, name, self._listdir_failure)
+ 
++    @unittest.skip('Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     # Skip the test on darwin, because darwin does normalize the filename to
+     # NFD (a variant of Unicode NFD form). Normalize the filename to NFC, NFKC,
+     # NFKD in Python is useless, because darwin will normalize it later and so
+diff --git a/Lib/test/test_zipimport.py b/Lib/test/test_zipimport.py
+index 59a520015f..f51c97dd4a 100644
+--- a/Lib/test/test_zipimport.py
++++ b/Lib/test/test_zipimport.py
+@@ -736,6 +736,7 @@ def testTraceback(self):
+         files = {TESTMOD + ".py": (NOW, raise_src)}
+         self.doTest(None, files, TESTMOD, call=self.doTraceback)
+ 
++    @unittest.skip('Gentoo: fails on ZFS or other strict UTF8-only filesystems (bpo 37584)')
+     @unittest.skipIf(os_helper.TESTFN_UNENCODABLE is None,
+                      "need an unencodable filename")
+     def testUnencodable(self):
+-- 
+2.38.1
+
