@@ -1388,7 +1388,6 @@ packages:
   - net-analyzer/nagios-check_glsa2
   - net-analyzer/icinga-web
   - net-analyzer/bsnmp
-  - net-analyzer/hping
   - net-analyzer/neti
   - net-analyzer/nagtrap
   - net-analyzer/arp-scan
