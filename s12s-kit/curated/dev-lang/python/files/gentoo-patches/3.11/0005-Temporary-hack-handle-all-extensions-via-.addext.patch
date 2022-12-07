@@ -1,7 +1,7 @@
-From f52a53680a26c704ef32b7afbba4d465f3d28bb8 Mon Sep 17 00:00:00 2001
+From a4730bf255951fb851120dbbd3f9475764a9b132 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
 Date: Thu, 9 Dec 2021 15:58:30 +0100
-Subject: [PATCH 05/12] Temporary hack: handle all extensions via .addext()
+Subject: [PATCH 5/9] Temporary hack: handle all extensions via .addext()
 
 Use .addext() for all modules in order to enable Makefile control
 over building them.
@@ -11,10 +11,10 @@ over building them.
  2 files changed, 15 insertions(+), 9 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index ab5e1de6fa..0cb4e202ad 100644
+index 90008bcae1..be82bf4e21 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -6993,6 +6993,12 @@ PY_STDLIB_MOD_SIMPLE([_codecs_tw])
+@@ -7035,6 +7035,12 @@ PY_STDLIB_MOD_SIMPLE([_codecs_tw])
  PY_STDLIB_MOD_SIMPLE([_multibytecodec])
  PY_STDLIB_MOD_SIMPLE([unicodedata])
  

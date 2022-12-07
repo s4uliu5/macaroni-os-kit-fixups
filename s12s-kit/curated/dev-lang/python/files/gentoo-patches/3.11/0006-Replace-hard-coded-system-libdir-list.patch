@@ -1,7 +1,7 @@
-From b8cc46ae6d5a7a0578476b5473205b2202adc0a6 Mon Sep 17 00:00:00 2001
+From 503c91ad067cdee96aed45bd14fede0519717889 Mon Sep 17 00:00:00 2001
 From: Mike Gilbert <floppym@gentoo.org>
 Date: Fri, 5 Jan 2018 13:31:37 -0500
-Subject: [PATCH 06/12] Replace hard-coded system libdir list
+Subject: [PATCH 6/9] Replace hard-coded system libdir list
 
 This resolves a build failure against system libffi on platforms where
 libdir is not "lib64" or "lib".
