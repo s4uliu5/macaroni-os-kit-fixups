@@ -1,7 +1,7 @@
-From 5fb2b4bf4087e997eedf6da15c8497c08c824ffd Mon Sep 17 00:00:00 2001
+From 4bd6b541b6f3c5f5ba4c178de417571fa01ebfb3 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
 Date: Tue, 14 Jul 2020 18:05:32 +0200
-Subject: [PATCH 03/12] Skip RDS socket tests that hang frequently
+Subject: [PATCH 3/9] Skip RDS socket tests that hang frequently
 
 ---
  Lib/test/test_socket.py | 1 +

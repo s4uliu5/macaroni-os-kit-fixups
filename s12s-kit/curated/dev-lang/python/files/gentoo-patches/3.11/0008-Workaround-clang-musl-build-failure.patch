@@ -1,7 +1,7 @@
-From 293374c569885141801bf485eb0e62fca82757bf Mon Sep 17 00:00:00 2001
+From 4254c747eabad3a0b1da59efc967d4b50799a0dc Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Micha=C5=82=20G=C3=B3rny?= <mgorny@gentoo.org>
 Date: Fri, 9 Sep 2022 09:51:42 +0200
-Subject: [PATCH 08/12] Workaround clang+musl build failure
+Subject: [PATCH 8/9] Workaround clang+musl build failure
 
 The current configure code detects musl and sets an appropriate suffix
 correctly but afterwards verifies that the detection result matches
@@ -16,10 +16,10 @@ Bug: https://bugs.gentoo.org/862888
  1 file changed, 11 insertions(+), 9 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 0cb4e202ad..4bc965239a 100644
+index be82bf4e21..ba74dea0f1 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1069,11 +1069,22 @@ cat > conftest.c <<EOF
+@@ -1079,11 +1079,22 @@ cat > conftest.c <<EOF
  
  EOF
  
@@ -42,7 +42,7 @@ index 0cb4e202ad..4bc965239a 100644
      ;;
    esac
    AC_MSG_RESULT([$PLATFORM_TRIPLET])
-@@ -1082,15 +1093,6 @@ else
+@@ -1092,15 +1103,6 @@ else
  fi
  rm -f conftest.c conftest.out
  

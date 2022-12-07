@@ -1,7 +1,7 @@
-From 1464544582f70c1ef56cce3918f3710363f1eda1 Mon Sep 17 00:00:00 2001
+From b7448c758b1979ed126d4b9fb61d389ec778801a Mon Sep 17 00:00:00 2001
 From: Sam James <sam@gentoo.org>
 Date: Wed, 8 Dec 2021 02:10:34 +0000
-Subject: [PATCH 07/12] Skip sched/priority tests
+Subject: [PATCH 7/9] Skip sched/priority tests
 
 These tests try to change the priority of the running process, but if
 e.g. PORTAGE_NICENESS=19, you can't spawn a process with lower (or higher!)
