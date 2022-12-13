@@ -51,6 +51,10 @@ doecho() {
 	"${@}" || die
 }
 
+post_src_unpack() {
+	mv "${WORKDIR}"/iproute2-* "${S}" || die
+}
+
 src_prepare() {
 	if ! use ipv6 ; then
 		PATCHES+=(
