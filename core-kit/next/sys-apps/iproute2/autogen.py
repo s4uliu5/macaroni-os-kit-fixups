@@ -29,14 +29,14 @@ async def generate(hub, **pkginfo):
 		if not href.startswith("iproute2-"):
 			continue
 		cur_version = href.split("-")[1][:-7]
-		split = list(map(int, cur_version.split(".")))
+		split = list(map(int, cur_version.lstrip("v").split(".")))
 		best_split = split_cmp(best_split, split)
 		if best_split == split:
 			version = cur_version
 	url = f"{src_url}iproute2-{version}.tar.xz"
 	ebuild = hub.pkgtools.ebuild.BreezyBuild(
 		**pkginfo,
-		version=version,
+		version=version.lstrip("v"),
 		artifacts=[hub.pkgtools.ebuild.Artifact(url=url)],
 	)
 	ebuild.push()
