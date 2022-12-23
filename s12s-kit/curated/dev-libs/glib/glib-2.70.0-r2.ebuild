@@ -17,7 +17,7 @@ SRC_URI="${SRC_URI}
 	https://pkgconfig.freedesktop.org/releases/pkg-config-0.28.tar.gz" # pkg.m4 for eautoreconf
 
 LICENSE="LGPL-2.1+"
-SLOT="2"
+SLOT="2/${PV}"
 IUSE="dbus fam gtk-doc kernel_linux +mime selinux static-libs systemtap test xattr"
 KEYWORDS="*"
 
@@ -53,8 +53,7 @@ DEPEND="${RDEPEND}
 # python depending package, which can be buildtime depended in packages that
 # need these tools, without pulling in python at runtime.
 RDEPEND="${RDEPEND}
-	${PYTHON_DEPS}
-	>=dev-util/glib-utils-${PV}"
+	${PYTHON_DEPS}"
 PDEPEND="
 	dbus? ( gnome-base/dconf )
 	mime? ( x11-misc/shared-mime-info )
@@ -159,7 +158,6 @@ src_configure() {
 	local emesonargs=(
 		-Dc_args="${CFLAGS}"
 		-Dman=true
-		-Dinternal_pcre=false
 		-Ddefault_library=$(usex static-libs both shared)
 		$(meson_use xattr)
 		$(meson_use fam)
@@ -196,7 +194,7 @@ src_test() {
 }
 
 src_install() {
-	meson_src_install
+	meson_src_install completiondir="$(get_bashcompdir)"
 	keepdir /usr/$(get_libdir)/gio/modules
 	einstalldocs
 
@@ -236,18 +234,9 @@ pkg_preinst() {
 
 pkg_postinst() {
 	# force (re)generation of gschemas.compiled
-	GNOME2_ECLASS_GLIB_SCHEMAS="force"
+	GNOME3_ECLASS_GLIB_SCHEMAS="force"
 
 	gnome3_pkg_postinst
-
-	if ! tc-is-cross-compiler ; then
-		gnome3_giomodule_cache_update || die "Update GIO modules cache failed"
-	else
-		ewarn "Updating of GIO modules cache skipped due to cross-compilation."
-		ewarn "You might want to run gio-querymodules manually on the target for"
-		ewarn "your final image for performance reasons and re-run it when packages"
-		ewarn "installing GIO modules get upgraded or added to the image."
-	fi
 }
 
 pkg_postrm() {
