@@ -405,7 +405,6 @@ packages:
   - net-libs/neon
   - net-libs/rpcsvc-proto
   - dev-util/cmake
-  - dev-util/gtk-doc-am
   - dev-util/re2c
   - dev-util/gperf
   - dev-util/ninja
