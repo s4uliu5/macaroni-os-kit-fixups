@@ -195,6 +195,9 @@ src_compile() {
 		grep -q -- '-fno-PIC' hack/make/dynbinary-daemon || die 'hardened sed failed'
 	fi
 
+	# Fix for https://github.com/moby/moby/issues/44698
+	sed -i "s/args\.lim\.max_referenced/args.lim.max_rfer/" daemon/graphdriver/btrfs/btrfs.go || die
+
 	# build daemon
 	./hack/make.sh dynbinary || die 'dynbinary failed'
 }
