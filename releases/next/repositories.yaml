@@ -147,8 +147,8 @@ release:
       - perl-kit:
           kind: sourced
           source:
-            url: https://code.funtoo.org/bitbucket/scm/core/perl-kit-sources.git
-            branch: 5.32-release
+            url: https://code.funtoo.org/bitbucket/scm/s4uliu5/perl-kit-sources.git
+            branch: 5.36-release
           branch: next
       # - kde-kit:
       #     kind: sourced
