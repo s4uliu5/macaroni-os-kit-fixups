@@ -7,6 +7,7 @@
 # See Also:
 # - https://wiki.apache.org/spamassassin/RelayCountryPlugin
 # - man Mail::SpamAssassin::Plugin::RelayCountry
+# - man Mail::SpamAssassin::Conf
 #
 # NOTE: This is a Gentoo supplied config file.
 #
@@ -17,19 +18,34 @@
 #
 
 # Which type of Geo database to use.  Valid database types are
-# GeoIP, GeoIP2, DB_File and Fast.  Defaults to Fast, GeoIP2 is
-# the suggested backend which uses dev-perl/GeoIP2.
+# GeoIP2, Geo::IP, DB_File and Fast.  Tries them in that order
+# if not explicitly specified.  GeoIP2 is the suggested backend
+# which uses dev-perl/GeoIP2.
 #
-#country_db_type GeoIP2
+# Default: Autodetect
+#
+#geodb_module GeoIP2
 
-# Where to find MaxMind GeoIP2 or IP::Country::DB_File database.
-# The default is to search several paths, see the RelayCountry
-# man page referenced at the top for details.
+# Specifies which DB type and where it is, in
+# dbtype:/path/to/db format.  Multiple entries allowed.
 #
-# It's suggested you use net-misc/geoipupdate to install and
-# update your GeoIP2 databases.
+# For GeoIP2 & GeoIP, geodb_options is only needed if the
+# default location search paths are insufficient.  (Default
+# search paths includes /usr/share/GeoIP/.)
 #
-#country_db_path /usr/share/GeoIP/GeoLite2-Country.mmdb
+# See man Mail::SpamAssassin::Conf for details about what is
+# accepted and searched.
+#
+# Default: Autodetect
+#
+#geodb_options country:/usr/share/GeoIP/GeoLite2-Country.mmdb
+
+# Alternative to geodb_options. Overrides the default list of
+# directories to search for default filenames.
+#
+# Default: Autodetect
+#
+#geodb_search_path /path/to/GeoIP
 
 # The following will add a separate MIME header that shows all
 # the message's relay countries, independent of any site-
