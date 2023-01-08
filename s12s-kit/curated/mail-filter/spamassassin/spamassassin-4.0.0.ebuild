@@ -181,7 +181,7 @@ src_install () {
 	newdoc ldap/README README.ldap
 
 	insinto /etc/mail/spamassassin/
-	doins "${FILESDIR}"/geoip.cf
+	newins "${FILESDIR}"/geoip-4.0.0.cf geoip.cf
 	insopts -m0400
 	newins "${FILESDIR}"/secrets.cf secrets.cf.example
 
