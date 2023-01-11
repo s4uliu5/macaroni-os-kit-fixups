@@ -28,7 +28,6 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 BDEPEND="
 	app-arch/xz-utils[extra-filters(-)]
-	app-alternatives/awk
 "
 
 src_configure() {
