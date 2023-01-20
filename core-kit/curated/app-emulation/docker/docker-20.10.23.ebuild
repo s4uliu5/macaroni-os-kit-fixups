@@ -2,7 +2,7 @@
 
 EAPI=7
 EGO_PN="github.com/docker/docker"
-GIT_COMMIT=42c8b31499
+GIT_COMMIT=6051f14291
 
 inherit bash-completion-r1 golang-base golang-vcs-snapshot linux-info systemd udev user
 
