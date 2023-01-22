@@ -55,7 +55,7 @@ S="${WORKDIR}/${P}/src/${EGO_PN}"
 
 # https://bugs.gentoo.org/748984 https://github.com/etcd-io/etcd/pull/12552
 PATCHES=(
-	"${FILESDIR}/ppc64-buildmode.patch"
+	"${FILESDIR}/${PV}/ppc64-buildmode.patch"
 )
 
 # see "contrib/check-config.sh" from upstream's sources
