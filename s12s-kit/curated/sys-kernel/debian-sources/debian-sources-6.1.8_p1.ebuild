@@ -7,7 +7,7 @@ inherit check-reqs eutils ego
 SLOT=$PF
 CKV=${PV}
 KV_FULL=${PN}-${PVR}
-DEB_EXTRAVERSION="2"
+DEB_EXTRAVERSION="1"
 # Account for version revisions
 [[ ${PR} != "r0" ]] && DEB_EXTRAVERSION+="-${PR}"
 # Debian version -1 becomes _p1 in Funtoo:
@@ -18,7 +18,8 @@ MODULE_EXT=${PVR}-${PN}
 
 # install sources to /usr/src/$LINUX_SRCDIR
 LINUX_SRCDIR=linux-${PF}
-DEB_PV="6.0.10-${DEB_EXTRAVERSION}"
+KERNEL_VERSION="6.1.8"
+DEB_PV="${KERNEL_VERSION}-${DEB_EXTRAVERSION}"
 RESTRICT="binchecks strip"
 LICENSE="GPL-2"
 KEYWORDS=""
@@ -47,8 +48,8 @@ zfs? ( binary )
 DESCRIPTION="Debian Sources (and optional binary kernel)"
 DEB_UPSTREAM="http://http.debian.net/debian/pool/main/l/linux"
 HOMEPAGE="https://packages.debian.org/unstable/kernel/"
-SRC_URI="https://deb.debian.org/debian/pool/main/l/linux/linux_6.0.10.orig.tar.xz -> linux_6.0.10.orig.tar.xz https://deb.debian.org/debian/pool/main/l/linux/linux_6.0.10-2.debian.tar.xz -> linux_6.0.10-2.debian.tar.xz"
-S="$WORKDIR/linux-6.0.10"
+SRC_URI="https://deb.debian.org/debian/pool/main/l/linux/linux_${KERNEL_VERSION}.orig.tar.xz -> linux_${KERNEL_VERSION}.orig.tar.xz https://deb.debian.org/debian/pool/main/l/linux/linux_${DEB_PV}.debian.tar.xz -> linux_${DEB_PV}.debian.tar.xz"
+S="$WORKDIR/linux-${KERNEL_VERSION}"
 
 get_patch_list() {
 	[[ -z "${1}" ]] && die "No patch series file specified"
@@ -130,23 +131,23 @@ src_prepare() {
 	#make -s include/linux/version.h || die "make include/linux/version.h failed"
 	cd "${S}"
 	cp -aR "${WORKDIR}"/debian "${S}"/debian
-	if [ -e "${FILESDIR}/6.0.10/xfs-libcrc32c-fix.patch" ]; then
-	    epatch "${FILESDIR}"/6.0.10/xfs-libcrc32c-fix.patch || die
+	if [ -e "${FILESDIR}/${KERNEL_VERSION}/xfs-libcrc32c-fix.patch" ]; then
+	    epatch "${FILESDIR}"/${KERNEL_VERSION}/xfs-libcrc32c-fix.patch || die
 	else
 	    epatch "${FILESDIR}"/latest/xfs-libcrc32c-fix.patch || die
 	fi
-	if [ -e "${FILESDIR}/6.0.10/mcelog.patch" ]; then
-	    epatch "${FILESDIR}"/6.0.10/mcelog.patch || die
+	if [ -e "${FILESDIR}/${KERNEL_VERSION}/mcelog.patch" ]; then
+	    epatch "${FILESDIR}"/${KERNEL_VERSION}/mcelog.patch || die
 	else
 	    epatch "${FILESDIR}"/latest/mcelog.patch || die
 	fi
-	if [ -e "${FILESDIR}/6.0.10/ikconfig.patch" ]; then
-	    epatch "${FILESDIR}"/6.0.10/ikconfig.patch || die
+	if [ -e "${FILESDIR}/${KERNEL_VERSION}/ikconfig.patch" ]; then
+	    epatch "${FILESDIR}"/${KERNEL_VERSION}/ikconfig.patch || die
 	else
 	    epatch "${FILESDIR}"/latest/ikconfig.patch || die
 	fi
-	if [ -e "${FILESDIR}/6.0.10/extra_cpu_optimizations.patch" ]; then
-	    epatch "${FILESDIR}"/6.0.10/extra_cpu_optimizations.patch || die
+	if [ -e "${FILESDIR}/${KERNEL_VERSION}/extra_cpu_optimizations.patch" ]; then
+	    epatch "${FILESDIR}"/${KERNEL_VERSION}/extra_cpu_optimizations.patch || die
 	else
 	    epatch "${FILESDIR}"/latest/extra_cpu_optimizations.patch || die
 	fi
@@ -161,7 +162,7 @@ src_prepare() {
 	else
 	die "Architecture not handled in ebuild"
 	fi
-	cp "${FILESDIR}"/config-extract . || die
+	cp "${FILESDIR}"/config-extract-6.1 ./config-extract || die
 	chmod +x config-extract || die
 	./config-extract ${arch} ${featureset} ${subarch} || die
 	setno_config .config CONFIG_DEBUG
