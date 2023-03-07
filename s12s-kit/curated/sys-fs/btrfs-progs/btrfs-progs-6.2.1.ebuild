@@ -4,13 +4,14 @@ EAPI=7
 
 PYTHON_COMPAT=( python3+ )
 
-inherit bash-completion-r1 python-single-r1
+inherit autotools bash-completion-r1 python-single-r1
 
 libbtrfs_soname=0
 
 MY_PV="v${PV/_/-}"
+[[ "${PV}" = *_rc* ]] || \
 KEYWORDS="*"
-SRC_URI="https://www.kernel.org/pub/linux/kernel/people/kdave/${PN}/${PN}-${MY_PV}.tar.xz"
+SRC_URI="https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/btrfs-progs-v6.2.1.tar.gz -> btrfs-progs-v6.2.1.tar.gz"
 S="${WORKDIR}/${PN}-${MY_PV}"
 
 DESCRIPTION="Btrfs filesystem utilities"
@@ -27,7 +28,8 @@ RDEPEND="
 	sys-apps/util-linux:0=[static-libs(+)?]
 	sys-libs/zlib:0=
 	convert? (
-		sys-fs/e2fsprogs:=
+		sys-fs/e2fsprogs:0=
+		sys-libs/e2fsprogs-libs:0=
 		reiserfs? (
 			>=sys-fs/reiserfsprogs-3.6.27
 		)
@@ -36,11 +38,10 @@ RDEPEND="
 	zstd? ( app-arch/zstd:0= )
 "
 DEPEND="${RDEPEND}
-	>=sys-kernel/linux-headers-5.10
 	convert? ( sys-apps/acl )
 	python? (
 		$(python_gen_cond_dep '
-			dev-python/setuptools[${PYTHON_USEDEP}]
+			dev-python/setuptools[${PYTHON_MULTI_USEDEP}]
 		')
 	)
 	static? (
@@ -48,7 +49,8 @@ DEPEND="${RDEPEND}
 		sys-apps/util-linux:0[static-libs(+)]
 		sys-libs/zlib:0[static-libs(+)]
 		convert? (
-			sys-fs/e2fsprogs[static-libs(+)]
+			sys-fs/e2fsprogs:0[static-libs(+)]
+			sys-libs/e2fsprogs-libs:0[static-libs(+)]
 			reiserfs? (
 				>=sys-fs/reiserfsprogs-3.6.27[static-libs(+)]
 			)
