@@ -35,8 +35,8 @@ RDEPEND="
 	>=dev-vcs/git-1.7
 	>=app-arch/xz-utils-4.9
 	dev-libs/libltdl
-	>=app-containers/containerd-1.6.15[apparmor?,btrfs?,device-mapper?,seccomp?]
-	~app-containers/docker-proxy-0.8.0_p20230118
+	>=app-emulation/containerd-1.6.15[apparmor?,btrfs?,device-mapper?,seccomp?]
+	~app-emulation/docker-proxy-0.8.0_p20230118
 	container-init? ( >=sys-process/tini-0.19.0[static] )
 	selinux? ( sec-policy/selinux-docker )
 "

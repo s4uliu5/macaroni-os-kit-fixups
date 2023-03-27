@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="hardened selinux"
 
-RDEPEND="!<app-containers/docker-20.10.1
+RDEPEND="!<app-emulation/docker-20.10.1
 	selinux? ( sec-policy/selinux-docker )"
 BDEPEND="
 	>=dev-lang/go-1.16.6"
