@@ -1875,7 +1875,6 @@ dev_python_simplified_rule:
           - urllib3
           - certifi
     - shapely:
-        pypi_name: Shapely
         depend: ">=sci-libs/geos-3.5"
         pydeps:
           py:all:
@@ -2104,6 +2103,12 @@ pep517_compliance_rule:
             - packaging
             - pluggy
             - installer
+            - trove-classifiers
+    - trove-classifiers:
+        pydeps:
+          py:all:build:
+            - calver
+    - calver
     - hatch-vcs:
         pypi_name: hatch_vcs
         du_pep517: hatchling
