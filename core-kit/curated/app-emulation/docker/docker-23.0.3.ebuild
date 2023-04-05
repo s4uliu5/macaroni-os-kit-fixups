@@ -54,7 +54,7 @@ S="${WORKDIR}/${P}/src/${EGO_PN}"
 
 # https://bugs.gentoo.org/748984 https://github.com/etcd-io/etcd/pull/12552
 PATCHES=(
-	"${FILESDIR}/${PV}/0001-Openrc-Depend-on-containerd-init-script.patch"
+	"${FILESDIR}/0001-Openrc-Depend-on-containerd-init-script.patch"
 )
 
 pkg_setup() {
