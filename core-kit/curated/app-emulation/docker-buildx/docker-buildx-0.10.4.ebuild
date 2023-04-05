@@ -27,17 +27,17 @@ RDEPEND="${DEPEND}"
 src_compile() {
 	local _buildx_r='github.com/docker/buildx'
 	local version=${PV}
-	ego build -mod=vendor -o docker-buildx \
+	go build -mod=vendor -o docker-buildx \
 		-ldflags "-linkmode=external \
 		-X $_buildx_r/version.Version=${version} \
 		-X $_buildx_r/version.Revision=$(date -u +%FT%T%z) \
 		-X $_buildx_r/version.Package=$_buildx_r" \
-		./cmd/buildx
+		./cmd/buildx || die "failed"
 }
 
 src_test() {
 	# TestGit can't work in a source tarball; TestReadTargets fails seemingly due to parallelism.
-	ego test ./... -skip "TestGit|TestReadTargets"
+	go test ./... -skip "TestGit|TestReadTargets" || die "failed"
 }
 
 src_install() {
