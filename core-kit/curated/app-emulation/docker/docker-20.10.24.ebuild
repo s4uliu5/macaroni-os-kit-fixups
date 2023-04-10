@@ -2,7 +2,7 @@
 
 EAPI=7
 EGO_PN="github.com/docker/docker"
-GIT_COMMIT=a89b84221c
+GIT_COMMIT=5d6db84223
 
 inherit bash-completion-r1 golang-base golang-vcs-snapshot linux-info systemd udev user
 
@@ -37,7 +37,7 @@ RDEPEND="
 	>=app-arch/xz-utils-4.9
 	dev-libs/libltdl
 	>=app-emulation/containerd-1.6.4[apparmor?,btrfs?,device-mapper?,seccomp?]
-	~app-emulation/docker-proxy-0.8.0_p20220315
+	~app-emulation/docker-proxy-0.8.0_p20220601
 	cli? ( ~app-emulation/docker-cli-${PV} )
 	container-init? ( >=sys-process/tini-0.19.0[static] )
 "
@@ -55,7 +55,7 @@ S="${WORKDIR}/${P}/src/${EGO_PN}"
 
 # https://bugs.gentoo.org/748984 https://github.com/etcd-io/etcd/pull/12552
 PATCHES=(
-	"${FILESDIR}/ppc64-buildmode.patch"
+	"${FILESDIR}/${PV}/ppc64-buildmode.patch"
 )
 
 # see "contrib/check-config.sh" from upstream's sources
@@ -194,6 +194,9 @@ src_compile() {
 			-i hack/make/dynbinary-daemon || die
 		grep -q -- '-fno-PIC' hack/make/dynbinary-daemon || die 'hardened sed failed'
 	fi
+
+	# Fix for https://github.com/moby/moby/issues/44698
+	sed -i "s/args\.lim\.max_referenced/args.lim.max_rfer/" daemon/graphdriver/btrfs/btrfs.go || die
 
 	# build daemon
 	./hack/make.sh dynbinary || die 'dynbinary failed'

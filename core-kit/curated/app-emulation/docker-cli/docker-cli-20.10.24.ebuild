@@ -1,7 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-GIT_COMMIT=100c70180f
+GIT_COMMIT=297e1284d3
 EGO_PN="github.com/docker/cli"
 MY_PV=${PV/_/-}
 inherit bash-completion-r1  golang-vcs-snapshot
@@ -17,7 +17,7 @@ IUSE="hardened"
 
 RDEPEND="!<app-emulation/docker-20.10.1"
 BDEPEND="
-	>=dev-lang/go-1.16.6
+	>=dev-lang/go-1.18.6
 	dev-go/go-md2man"
 
 RESTRICT="installsources strip test"
