@@ -12,7 +12,7 @@ SRC_URI="https://github.com/moby/moby/archive/v${MY_PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="*"
+KEYWORDS=""
 IUSE="apparmor aufs btrfs +container-init device-mapper overlay seccomp selinux"
 
 DEPEND="

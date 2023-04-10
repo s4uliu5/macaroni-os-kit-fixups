@@ -13,10 +13,10 @@ SRC_URI+=" https://s12s.host.funtoo.org/funtoo/distfiles/${CATEGORY}/${PN}/${P}-
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="*"
+KEYWORDS=""
 IUSE="hardened selinux"
 
-RDEPEND="!<app-emulation/docker-20.10.1
+RDEPEND="!<app-emulation/docker-23.0.0
 	selinux? ( sec-policy/selinux-docker )"
 BDEPEND="
 	>=dev-lang/go-1.19.7"
