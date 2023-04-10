@@ -3,14 +3,12 @@ containerd:
   packages:
     - containerd:
         versions:
-          1.5.17:
+          1.5.18:
             template: containerd.tmpl
-          1.6.19:
-            template: containerd-1.6.tmpl
           1.6.20:
             template: containerd-1.6.tmpl
           1.7.0:
-            template: containerd-1.6.tmpl
+            template: containerd-1.7.tmpl
         github:
           query: tags
 
