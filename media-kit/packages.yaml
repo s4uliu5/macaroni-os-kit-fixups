@@ -102,7 +102,7 @@ packages:
   - media-sound/abraca
   - media-sound/gxmms2
 - deadbeef:
-  - media-sound/deadbeef
+  # - media-sound/deadbeef -> this ebuild now located at media-kit/1.4-release/
   - media-plugins/deadbeef-decast
   - media-plugins/deadbeef-waveform-seekbar
   - media-plugins/deadbeef-jack
@@ -345,7 +345,6 @@ packages:
   - media-libs/mediastreamer
   - media-libs/imlib2
   - media-libs/gavl
-  - media-libs/portaudio
   - media-libs/libmodplug
   - media-libs/sdl-gfx
   - media-libs/libnspsl
@@ -1168,7 +1167,6 @@ packages:
   - media-gfx/exif
   - media-gfx/exact-image
   - media-gfx/engauge
-  - media-gfx/hugin
   - media-gfx/povtree
   - media-gfx/freewrl
   - media-gfx/gozer
@@ -1221,7 +1219,6 @@ packages:
   - media-gfx/evoluspencil
   - media-gfx/panini
   - media-gfx/photoqt
-  - media-gfx/enblend
   - media-gfx/luminance-hdr
   - media-gfx/iscan-plugin-gt-f500
   - media-gfx/apng2gif
