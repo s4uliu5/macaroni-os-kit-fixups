@@ -821,6 +821,22 @@ simple_python_autogen_rule:
         homepage: https://github.com/untitaker/python-atomicwrites
         license: MIT
         python_compat: python2+ pypy3
+    - attrs:
+        revision:
+          23.1.0: 1
+        du_pep517: hatchling
+        pydeps:
+          py:all:build:
+            - hatch-vcs
+            - hatch-fancy-pypi-readme
+    - hatch-fancy-pypi-readme:
+        pypi_name: hatch_fancy_pypi_readme
+        du_pep517: hatchling
+        pydeps:
+          py:all:
+            - tomli
+          py:3.7:
+            - typing-extensions
     - beautifulsoup:
         du_pep517: hatchling
         pypi_name: beautifulsoup4
