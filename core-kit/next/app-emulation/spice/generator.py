@@ -1,45 +1,57 @@
 #!/usr/bin/env python3
+import os
 
-from bs4 import BeautifulSoup
-from packaging.version import Version
-import glob
-import os.path
-import re
+async def generate_archive_from_git(hub, pkginfo, url):
+	final_name = f"{pkginfo['name']}-{pkginfo['version']}-with-submodules.tar.xz"
+	my_archive, metadata = hub.Archive.find_by_name(final_name)
+	if my_archive is None:
+		my_archive = hub.Archive(final_name)
+		my_archive.initialize()
+		retval = os.system(f"( cd {my_archive.top_path}; git clone --depth 1 --branch {pkginfo['tag_name']} --recursive {url} {pkginfo['name']}-{pkginfo['tag_name']})")
+		if retval != 0:
+			raise hub.pkgtools.ebuild.BreezyError("Unable to git clone repository.")
+		await my_archive.store_by_name()
+	return my_archive
 
 
 async def generate(hub, **pkginfo):
-    user = "spice"
-    repo = pkginfo["name"]
-    project_path = f"{user}%2F{repo}"
-    info_url = f"https://gitlab.freedesktop.org/api/v4/projects/{project_path}/repository/tags"
-    download_url = f"https://gitlab.freedesktop.org/{user}/{repo}"
+	user = pkginfo['gitlab']['user']
+	repo = pkginfo["name"]
+	releases_url = f"{pkginfo['gitlab']['url']}/api/v4/projects/{pkginfo['gitlab']['project_id']}/releases"
+	releases = await hub.pkgtools.fetch.get_page(releases_url, is_json=True)
+	prefix = pkginfo['gitlab']['prefix']
+	if "version" not in pkginfo or pkginfo["version"] == "latest":
+		for release in releases:
+			if not release['tag_name'].startswith(prefix):
+				continue
+			if release["upcoming_release"]:
+				continue
+			pkginfo["version"] = release['tag_name'][len(prefix):]
+			selected_release = release
+			break
+	else:
+		for release in releases:
+			if not release['tag_name'].startswith(prefix):
+				continue
+			version = release['tag_name'][len(prefix):]
+			if version == pkginfo["version"]:
+				selected_release = release
+				break
+	pkginfo['tag_name'] = selected_release['tag_name']
+	if pkginfo['name'] == 'spice':
+		artifact = await generate_archive_from_git(hub, pkginfo, "https://gitlab.freedesktop.org/spice/spice.git")
+	else:
+		source_url = None
+		for source in release['assets']['sources']:
+			if source['format'] == "tar.gz":
+				source_url = source['url']
+		artifact = hub.pkgtools.ebuild.Artifact(url=source_url)
+	ebuild = hub.pkgtools.ebuild.BreezyBuild(
+		**pkginfo,
+		gitlab_user=user,
+		gitlab_repo=repo,
+		artifacts=[artifact],
+	)
+	ebuild.push()
 
-    regex = r'(\d+(?:[\.-]\d+)+)'
-
-    tag_dict = await hub.pkgtools.fetch.get_page(info_url, is_json=True)
-    tags = dict([(Version(re.findall(regex, tag["name"])[0]), tag) for tag in tag_dict])
-
-    version, info = max(t for t in tags.items() if not t[0].is_prerelease)
-    commit = info['commit']['short_id']
-    sources = info['release']['description'].split('[')[1:]
-    for s in sources:
-        data = s.split('](')
-        if not (data[0].endswith('sig') or data[0].endswith('sum') or '.msi' in data[0]):
-            source = data[1].split(')')[0]
-            compression = source.split('.tar.')[1]
-            break
-
-
-    artifact = hub.pkgtools.ebuild.Artifact(
-        url=f"{download_url}{source}",
-        final_name=f"{repo}-{version}-{commit}.tar.{compression}"
-    )
-
-    ebuild = hub.pkgtools.ebuild.BreezyBuild(
-        **pkginfo,
-        version=version,
-        gitlab_user=user,
-        gitlab_repo=repo,
-        artifacts=[artifact],
-    )
-    ebuild.push()
+# vim: ts=4 sw=4 noet
