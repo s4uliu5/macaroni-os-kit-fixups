@@ -93,7 +93,6 @@ packages:
   - net-misc/sendfile
   - net-misc/mindterm
   - net-misc/cmst
-  - net-misc/crossbar
   - net-misc/tipcutils
   - net-misc/sks
   - net-misc/selfdhcp
@@ -890,10 +889,6 @@ packages:
   - www-apps/ampache
   - www-apps/drupal
   - www-apps/piwigo
-  - www-apps/nikola
-  - www-apps/phpsysinfo
-  - www-apps/dokuwiki
-  - www-apps/phpwebsite
   - www-apps/owncloud
   - www-apps/airdcpp-webui
   - www-apps/scgi
