@@ -74,11 +74,15 @@ tornado_stuff:
   defaults:
     cat: dev-python
     python_compat: python3+
-  generator: pypi-simple-1
+  generator: pypi-compat-1
   packages:
     - service_identity:
-        python_compat: python2+
-        pypi_name: service-identity
+        compat:
+          version: 21.1.0
+        blocker: "!<=dev-python/service_identity-23.1.0"
+        revision:
+          23.1.0: 1
+        du_pep517: hatchling
         license: MIT
         pydeps:
           - pyasn1
@@ -112,8 +116,7 @@ github_pythons:
             - mock
         body: |
           post_src_unpack() {
-            mv "${WORKDIR}"/CacheControl-* "${S}" || die
-            rm -f "${S}"/tests/__init__.py
+            rm "${S}"/tests/__init__.py || die
           }
 
 
@@ -938,6 +941,9 @@ simple_python_autogen_rule:
         homepage: https://github.com/Kozea/cairocffi
         license: BSD
         restrict: test
+        du_pep517: flit
+        revision:
+          1.6.0 : 1
         pydeps:
           py:'python*':
             - cffi >= 1.1.0:=
@@ -946,11 +952,6 @@ simple_python_autogen_rule:
         rdepend: |
           x11-libs/cairo:0=[X,xcb(+)]
           x11-libs/gdk-pixbuf[jpeg]
-        body: |
-          src_prepare() {
-            sed -i -e '/pytest-/d' -e '/addopts/d' setup.cfg || die
-            distutils-r1_src_prepare
-          }
     - charset_normalizer:
         desc: The Real First Universal Charset Detector
         homepage: https://github.com/ousret/charset_normalizer
@@ -1375,35 +1376,6 @@ simple_python_autogen_rule:
         license: MIT
         du_setuptools: rdepend
         python_compat: python3+
-    - qtile:
-        desc: A full-featured, hackable tiling window manager written in Python
-        homepage: http://www.qtile.org/
-        license: MIT
-        cat: x11-wm
-        restrict: test
-        du_setuptools: rdepend
-        pydeps:
-          py:all:
-            - setuptools_scm
-            - cairocffi >= 0.9.0
-            - cffi >= 1.1.0
-            - six >= 1.4.1
-            - xcffib >= 0.8.1
-            - dbus-next
-        rdepend: |
-          x11-libs/cairo[X,xcb(+)]
-          x11-libs/pango
-          x11-libs/libnotify
-          media-sound/pulseaudio
-        body: |
-          python_install_all() {
-            local DOCS=( CHANGELOG README.rst )
-            distutils-r1_python_install_all
-            insinto /usr/share/xsessions
-            doins resources/qtile.desktop
-            exeinto /etc/X11/Sessions
-            newexe "${FILESDIR}"/${PN}-session ${PN}
-          }
     - requests-toolbelt:
         homepage: https://toolbelt.readthedocs.org/
         license: Apache-2.0
@@ -1616,15 +1588,20 @@ io_stuff_rule:
     - async-generator:
         license: '|| ( Apache-2.0 MIT )'
         pypi_name: async_generator
+    - exceptiongroup:
+        du_pep517: flit_scm
     - trio:
+        revision:
+          0.22.1: 1
         license: '|| ( Apache-2.0 MIT )'
         pydeps:
-          - attrs >= 19.2.0
+          - attrs >= 20.1.0
           - sortedcontainers
           - async-generator >= 1.9
           - idna
           - outcome
           - sniffio
+          - exceptiongroup
     - sortedcontainers:
         license: Apache-2.0
         python_compat: python2+
