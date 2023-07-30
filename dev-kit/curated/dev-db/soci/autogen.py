@@ -2,6 +2,12 @@
 
 from packaging import version
 
+def version_parse(str):
+	try:
+		v = version.parse(str)
+	except version.InvalidVersion:
+		v = version.Version('0.0.0')
+	return v
 
 async def generate(hub, **pkginfo):
 	github_user = "SOCI"
@@ -15,7 +21,7 @@ async def generate(hub, **pkginfo):
 	try:
 		latest_release = max(
 			release_data,
-			key=lambda release: version.parse(release["name"]),
+			key=lambda release: version_parse(release["name"]),
 		)
 	except ValueError:
 		raise hub.pkgtools.ebuild.BreezyError(

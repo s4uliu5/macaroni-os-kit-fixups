@@ -2,10 +2,17 @@
 
 from packaging import version
 
+def version_parse(str):
+	try:
+		v = version.parse(str)
+	except version.InvalidVersion:
+		v = version.Version('0.0.0')
+	return v
+
 
 def get_release(releases_data):
 	releases = list(filter(lambda x: x["prerelease"] is False and x["draft"] is False, releases_data))
-	return None if not releases else sorted(releases, key=lambda x: version.parse(x["tag_name"])).pop()
+	return None if not releases else sorted(releases, key=lambda x: version_parse(x["tag_name"])).pop()
 
 
 async def get_latest_release(hub, github_user, github_repo):
@@ -34,7 +41,7 @@ async def generate(hub, **pkginfo):
 	github_repo = "abseil-cpp"
 	test_user = "google"
 	test_repo="googletest"
-	
+
 	src_info = await get_latest_release(hub, github_user, github_repo)
 	test_info = await get_latest_release(hub, test_user, test_repo)
 

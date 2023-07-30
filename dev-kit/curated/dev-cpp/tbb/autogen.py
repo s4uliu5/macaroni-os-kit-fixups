@@ -24,8 +24,15 @@ def get_release(release_data):
 	releases = list(
 		filter(lambda x: x["prerelease"] is False and x["draft"] is False, release_data)
 	)
-	return None if not releases else sorted(releases, key=lambda x: version.parse(x["tag_name"])).pop()
+	return None if not releases else sorted(releases, key=lambda x: version_parse(x["tag_name"])).pop()
 
+
+def version_parse(str):
+	try:
+		v = version.parse(str)
+	except version.InvalidVersion:
+		v = version.Version('0.0.0')
+	return v
 
 async def generate(hub, **pkginfo):
 	user = "oneapi-src"
