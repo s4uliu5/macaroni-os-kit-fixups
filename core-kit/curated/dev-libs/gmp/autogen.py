@@ -20,7 +20,7 @@ async def generate(hub, **pkginfo):
             a.get('href'))
         for a in releases if re.findall(regex, a.contents[0])
     ])
-    version = latest[0]
+    version = '6.2.1' # latest[0]
 
     artifacts[''] =  hub.pkgtools.ebuild.Artifact(url=download_url + latest[1])
     artifacts['doc'] = hub.pkgtools.ebuild.Artifact(url=f"{base_url}/{name}-man-{version}.pdf")
