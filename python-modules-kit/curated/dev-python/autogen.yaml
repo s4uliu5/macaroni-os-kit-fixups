@@ -546,6 +546,8 @@ dev_python_compat_rule:
             distutils-r1_python_prepare_all
           }
     - pyyaml:
+        revision:
+          6.0.1: 1
         compat: '5.4.1'
         blocker: '!<dev-python/pyyaml-6.0'
         python_compat: python3+ pypy3
@@ -562,8 +564,10 @@ dev_python_compat_rule:
         rdepend: |
           libyaml? ( dev-libs/libyaml )
         pydeps:
+          use:libyaml:build:
+            - cython < 3
           use:libyaml:
-            - cython
+            - cython < 3
         body: |
           python_configure_all() {
             mydistutilsargs=( $(use_with libyaml) )
@@ -690,6 +694,7 @@ dev_python_compat_rule:
             esetup.py test
           }
     - importlib_metadata:
+        version: 6.7.0
         compat: '2.1.1'
         blocker: '!<=dev-python/importlib_metadata-3.4.0-r1'
         homepage: https://importlib-metadata.readthedocs.io/
@@ -733,6 +738,8 @@ dev_python_compat_rule:
             doins -r "${S}"/pybind11/share/cmake/*
           }
     - zipp:
+        # FL-11430:
+        version: 3.9.1
         python_compat: python3+ pypy3
         compat: '1.2.0'
         blocker: '!<=dev-python/zipp-2'
@@ -2130,6 +2137,10 @@ better_autogens_without_templates:
     python_compat: python3+
   generator: pypi-simple-1
   packages:
+    - cython:
+        pypi_name: Cython
+        version: 0.29.36
+        python_compat: python2+
     - py:
         python_compat: python2+ pypy{,3}
         revision:
@@ -2375,9 +2386,6 @@ dev_python_autogen_rule:
     - click:
         python_compat: python3+ pypy3
     - cloudflare
-    - cython:
-        python_compat: python2+ pypy3
-        pypi_name: Cython
     - daemonize:
         python_compat: python2+ pypy3
     - defusedxml:

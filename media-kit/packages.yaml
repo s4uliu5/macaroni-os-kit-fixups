@@ -89,7 +89,6 @@ packages:
   - media-gfx/fbcondecor-funtoo-logo
   - media-gfx/slic3r
   - media-gfx/posterazor
-  - media-sound/squeezelite
   - media-sound/strawberry
   - media-sound/yarock
   - media-sound/musescore
@@ -1061,7 +1060,6 @@ packages:
   - media-gfx/pngrewrite
   - media-gfx/fbida
   - media-gfx/sfftobmp
-  - media-gfx/maim
   - media-gfx/ebdftopcf
   - media-gfx/autopano-sift-C
   - media-gfx/flam3
