@@ -9,7 +9,7 @@ def get_release(releases_data):
     return (
         None
         if not releases
-        else sorted(releases, key=lambda x: version.parse(x["tag_name"])).pop()
+        else sorted(releases, key=lambda x: version.parse(x["tag_name"].replace('ver.', ''))).pop()
     )
 
 async def generate(hub, **pkginfo):
