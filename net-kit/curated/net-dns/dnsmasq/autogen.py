@@ -26,11 +26,8 @@ def get_latest_version(hub):
 			continue
 
 		if rtt[2].startswith("v") and not rtt[2].endswith("^{}"):
-			try:
-				v = version.parse(rtt[2])
-			except:
-				continue
-			if v.is_prerelease or v.is_devrelease:
+			v = version.parse(rtt[2])
+			if v.is_prerelease or isinstance(v, version.LegacyVersion):
 				continue
 			tags.append(v)
 
