@@ -110,7 +110,7 @@ src_compile() {
 	export CGO_LDFLAGS_ALLOW="-Wl,-z,now"
 
 	export CGO_CFLAGS="${CGO_CFLAGS} -I${VDIR}/dqlite/include/ -I${VDIR}/raft/include/"
-	export CGO_LDFLAGS="${CGO_LDFLAGS} -L${VDIR}/dqlite/.libs/ -L${VDIR}/raft/.libs -Wl,-rpath,${EPREFIX}/usr/lib/lxd"
+	export CGO_LDFLAGS="${CGO_LDFLAGS} -L${VDIR}/dqlite/.libs/ -L${VDIR}/raft/.libs -lraft -Wl,-rpath,${EPREFIX}/usr/lib/lxd"
 	export LD_LIBRARY_PATH="${VDIR}/dqlite/.libs/:${VDIR}/raft/.libs/:${LD_LIBRARY_PATH}"
 
 	cd ${VDIR}/raft || die
