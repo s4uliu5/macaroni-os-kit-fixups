@@ -52,7 +52,9 @@ doecho() {
 }
 
 post_src_unpack() {
-	mv "${WORKDIR}"/iproute2-* "${S}" || die
+	if [ ! -d "${WORKDIR}/${S}" ] ; then
+		mv "${WORKDIR}"/iproute2-* "${S}" || die
+	fi
 }
 
 src_prepare() {
