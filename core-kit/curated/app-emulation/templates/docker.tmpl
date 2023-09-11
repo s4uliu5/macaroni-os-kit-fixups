@@ -2,18 +2,16 @@
 
 EAPI=7
 EGO_PN=github.com/docker/docker
-MY_PV=${PV/_/-}
-GIT_COMMIT=219f21bf07
-inherit linux-info systemd udev golang-base golang-vcs-snapshot user
+inherit bash-completion-r1 golang-base golang-vcs-snapshot linux-info systemd udev user
 
 DESCRIPTION="The core functions you need to create Docker images and run Docker containers"
-HOMEPAGE="https://www.docker.com/"
-SRC_URI="https://github.com/moby/moby/archive/v${MY_PV}.tar.gz -> ${P}.tar.gz"
+HOMEPAGE="https://www.docker.com/ https://github.com/{{ github_user }}/{{ github_repo }}"
+SRC_URI="{{ src_uri }}"
 
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
-IUSE="apparmor aufs btrfs +container-init device-mapper overlay seccomp selinux"
+IUSE="apparmor btrfs +container-init device-mapper overlay seccomp"
 
 DEPEND="
 	>=dev-db/sqlite-3.7.9:3
@@ -26,8 +24,6 @@ DEPEND="
 # https://github.com/moby/moby/blob/master/project/PACKAGERS.md#runtime-dependencies
 # https://github.com/moby/moby/blob/master/project/PACKAGERS.md#optional-dependencies
 # https://github.com/moby/moby/tree/master//hack/dockerfile/install
-# make sure docker-proxy is pinned to exact version from ^,
-# for appropriate branchch/version of course
 RDEPEND="
 	${DEPEND}
 	>=net-firewall/iptables-1.4
@@ -35,15 +31,14 @@ RDEPEND="
 	>=dev-vcs/git-1.7
 	>=app-arch/xz-utils-4.9
 	dev-libs/libltdl
-	>=app-emulation/containerd-1.6.19[apparmor?,btrfs?,device-mapper?,seccomp?]
-	~app-emulation/docker-proxy-0.8.0_p20230118
+	>=app-emulation/containerd-1.7.1[apparmor?,btrfs?,device-mapper?,seccomp?]
+	!app-emulation/docker-proxy
 	container-init? ( >=sys-process/tini-0.19.0[static] )
-	selinux? ( sec-policy/selinux-docker )
 "
 
 # https://github.com/docker/docker/blob/master/project/PACKAGERS.md#build-dependencies
 BDEPEND="
-	>=dev-lang/go-1.16.12
+	>=dev-lang/go-1.19.12
 	dev-go/go-md2man
 	virtual/pkgconfig
 "
@@ -52,10 +47,11 @@ RESTRICT="installsources strip test"
 
 S="${WORKDIR}/${P}/src/${EGO_PN}"
 
-# https://bugs.gentoo.org/748984 https://github.com/etcd-io/etcd/pull/12552
-PATCHES=(
-	"${FILESDIR}/0001-Openrc-Depend-on-containerd-init-script.patch"
-)
+post_src_unpack() {
+	if [ ! -d "${S}" ]; then
+		mv {{ github_user }}-{{ github_repo }}* "${S}" || die
+	fi
+}
 
 pkg_setup() {
 	# this is based on "contrib/check-config.sh" from upstream's sources
@@ -137,8 +133,7 @@ pkg_setup() {
 	CONFIG_CHECK+="
 		~!LEGACY_VSYSCALL_NONE
 		"
-	WARNING_LEGACY_VSYSCALL_NONE="CONFIG_LEGACY_VSYSCALL_NONE enabled: \
-		Containers with <=glibc-2.13 will not work"
+	WARNING_LEGACY_VSYSCALL_NONE="CONFIG_LEGACY_VSYSCALL_NONE enabled: Containers with <=glibc-2.13 will not work"
 
 	if kernel_is le 4 5; then
 		CONFIG_CHECK+="
@@ -157,7 +152,7 @@ pkg_setup() {
 		~CGROUP_PERF
 		~CGROUP_HUGETLB
 		~NET_CLS_CGROUP ~CGROUP_NET_PRIO
-		~CFS_BANDWIDTH ~FAIR_GROUP_SCHED ~RT_GROUP_SCHED
+		~CFS_BANDWIDTH ~FAIR_GROUP_SCHED
 		~IP_NF_TARGET_REDIRECT
 		~IP_VS
 		~IP_VS_NFCT
@@ -166,36 +161,15 @@ pkg_setup() {
 		~IP_VS_RR
 		"
 
-	if use selinux; then
-		CONFIG_CHECK+="
-			~SECURITY_SELINUX
-			"
-	fi
-
 	if use apparmor; then
 		CONFIG_CHECK+="
 			~SECURITY_APPARMOR
 			"
 	fi
 
-	# if ! is_set EXT4_USE_FOR_EXT2; then
-	#	check_flags EXT3_FS EXT3_FS_XATTR EXT3_FS_POSIX_ACL EXT3_FS_SECURITY
-	#	if ! is_set EXT3_FS || ! is_set EXT3_FS_XATTR || ! is_set EXT3_FS_POSIX_ACL || ! is_set EXT3_FS_SECURITY; then
-	#		echo "    $(wrap_color '(enable these ext3 configs if you are using ext3 as backing filesystem)' bold black)"
-	#	fi
-	# fi
-
 	CONFIG_CHECK+="
 		~EXT4_FS ~EXT4_FS_POSIX_ACL ~EXT4_FS_SECURITY
 	"
-
-	# if ! is_set EXT4_FS || ! is_set EXT4_FS_POSIX_ACL || ! is_set EXT4_FS_SECURITY; then
-	#	if is_set EXT4_USE_FOR_EXT2; then
-	#		echo "    $(wrap_color 'enable these ext4 configs if you are using ext3 or ext4 as backing filesystem' bold black)"
-	#	else
-	#		echo "    $(wrap_color 'enable these ext4 configs if you are using ext4 as backing filesystem' bold black)"
-	#	fi
-	# fi
 
 	# network drivers
 	CONFIG_CHECK+="
@@ -220,13 +194,6 @@ pkg_setup() {
 	"
 
 	# storage drivers
-	if use aufs; then
-		CONFIG_CHECK+="
-			~AUFS_FS
-		"
-		ERROR_AUFS_FS="CONFIG_AUFS_FS: is required to be set if and only if aufs is patched to kernel instead of using standalone"
-	fi
-
 	if use btrfs; then
 		CONFIG_CHECK+="
 			~BTRFS_FS
@@ -245,14 +212,13 @@ pkg_setup() {
 	"
 
 	linux-info_pkg_setup
-
 	enewgroup docker
 }
 
 src_compile() {
-	export DOCKER_GITCOMMIT="${GIT_COMMIT}"
+	export DOCKER_GITCOMMIT="{{ sha[0:7] }}"
 	export GOPATH="${WORKDIR}/${P}"
-	export VERSION=${PV}
+	export VERSION="{{ version }}-funtoo"
 
 	# setup CFLAGS and LDFLAGS for separate build target
 	# see https://github.com/tianon/docker-overlay/pull/10
@@ -261,7 +227,7 @@ src_compile() {
 
 	# let's set up some optional features :)
 	export DOCKER_BUILDTAGS=''
-	for gd in aufs btrfs device-mapper overlay; do
+	for gd in btrfs device-mapper overlay; do
 		if ! use $gd; then
 			DOCKER_BUILDTAGS+=" exclude_graphdriver_${gd//-/}"
 		fi
@@ -273,7 +239,7 @@ src_compile() {
 		fi
 	done
 
-	# build daemon
+	# build binaries
 	./hack/make.sh dynbinary || die 'dynbinary failed'
 }
 
@@ -282,10 +248,11 @@ src_install() {
 	dosym containerd-shim /usr/bin/docker-containerd-shim
 	dosym runc /usr/bin/docker-runc
 	use container-init && dosym tini /usr/bin/docker-init
-	newbin bundles/dynbinary-daemon/dockerd dockerd
+	dobin bundles/dynbinary-daemon/dockerd
+	dobin bundles/dynbinary-daemon/docker-proxy
 
-	newinitd contrib/init/openrc/docker.initd docker
-	newconfd contrib/init/openrc/docker.confd docker
+	newinitd {{ gen_path }}/files/${PN}/${PN}.initd ${PN}
+	newconfd {{ gen_path }}/files/${PN}/${PN}.confd ${PN}
 
 	systemd_dounit contrib/init/systemd/docker.{service,socket}
 
