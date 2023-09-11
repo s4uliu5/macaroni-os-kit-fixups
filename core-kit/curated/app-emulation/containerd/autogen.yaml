@@ -10,7 +10,9 @@ containerd:
           1.6.20:
             template: containerd-1.6.tmpl
           1.7.0:
-            template: containerd-1.6.tmpl
+            template: containerd-1.7.tmpl
+          1.7.5:
+            template: containerd-1.7.tmpl
         github:
           query: tags
 
