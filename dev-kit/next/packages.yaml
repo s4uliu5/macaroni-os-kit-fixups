@@ -13,7 +13,6 @@ packages:
   - app-misc/calendar
   - app-misc/colordiff
   - app-misc/icdiff
-  - app-misc/jq
   - app-misc/linux-logo
   - app-misc/lockfile-progs
   - app-misc/ranger
@@ -295,7 +294,6 @@ packages:
   - dev-libs/cxxtools
   - dev-libs/d0_blind_id
   - dev-libs/darts
-  - dev-libs/dbus-c++
   - dev-libs/dbus-glib
   - dev-libs/device-atlas-api-c
   - dev-libs/dietlibc
