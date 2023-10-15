@@ -249,6 +249,7 @@ aiobotostuff:
           - botocore
           - wrapt
     - typing-extensions:
+        version: 4.7.1
         du_pep517: flit
     - wrapt
 
@@ -521,6 +522,28 @@ dev_python_compat_rule:
         compat: '4.3.0'
         blocker: '!<dev-python/more-itertools-8'
         homepage: 'https://pypi.org/project/more-itertools/'
+    - msgpack:
+        compat: '0.6.2'
+        blocker: '!dev-python/msgpack-1.0.7 !<=dev-python/msgpack-1.0.5'
+        revision:
+          1.0.5: 1
+          1.0.7: 1
+        iuse: native-extensions
+        version:
+          latest:
+            keywords: next
+          1.0.5:
+            keywords: '*'
+        body: |
+          python_prepare_all() {
+            # Remove pre-generated cython files
+            rm msgpack/{_packer,_unpacker,_cmsgpack}.pyx || die
+
+            if ! use native-extensions ; then
+              sed -i -e "/have_cython/s:True:False:" setup.py || die
+            fi
+            distutils-r1_python_prepare_all
+          }
     - mwparserfromhell:
         license: MIT
         compat: '0.5.4'
@@ -996,10 +1019,6 @@ simple_python_autogen_rule:
         homepage: https://github.com/ousret/charset_normalizer
         license: MIT
         body: |
-          src_unpack() {
-            default
-            mv ${WORKDIR}/charset-normalizer-* ${S} || die
-          }
           src_prepare() {
             sed -i -e '/addopts/d' setup.cfg || die
             distutils-r1_src_prepare
@@ -1229,10 +1248,10 @@ simple_python_autogen_rule:
           - six
     - patch-ng
     - pycodestyle:
-        python_compat: python2+
-        desc: Python style guide checker (fka pep8)
-        homepage: https://pypi.org/project/pycodestyle/
-        license: MIT
+        compat: '2.8.0'
+        blocker: '!<dev-python/pycodestyle-2.11.0-r1'
+        revision:
+          2.11.0: 1
     - pyflakes:
         python_compat: python2+
         desc: Passive checker for Python programs
@@ -1251,6 +1270,7 @@ simple_python_autogen_rule:
             - astroid
             - isort
             - mccabe
+            - tomlkit
           use:doc:
             - sphinx
           use:test:
@@ -1887,6 +1907,7 @@ dev_python_simplified_rule:
         license: Apache-2.0
         python_compat: python2+ pypy{,3}
     - setuptools_scm:
+        version: 7.1.0
         revision:
           7.0.2: 2
         compat: '5.0.2'
@@ -2188,7 +2209,6 @@ sphinx_and_friends:
           0.7.13: 1
         blocker: '!<=dev-python/alabaster-0.7.13'
     - sphinx:
-        pypi_name: Sphinx
         du_pep517: flit
         iuse: latex doc
         rdepend: |
@@ -2225,7 +2245,11 @@ sphinx_and_friends:
               HTML_DOCS=( "${BUILD_DIR}"/sphinx/html/. )
             fi
           }
-    - sphinx_rtd_theme
+    - sphinx_rtd_theme:
+        pydeps:
+          - sphinxcontrib-jquery
+          - sphinx
+          - docutils
 
 sphinx_contrib:
   generator: pypi-compat-1
@@ -2243,6 +2267,7 @@ sphinx_contrib:
     - sphinxcontrib-jsmath
     - sphinxcontrib-qthelp
     - sphinxcontrib-serializinghtml
+    - sphinxcontrib-jquery
 
 
 pep517_compliance_rule:
@@ -2383,6 +2408,7 @@ pep517_compliance_rule:
             mv "${ED}"/usr/bin/{,python-}dotenv || die
           }
     - gpep517:
+        requires_python_override: ">=3.7"
         du_pep517: 'no'
         pydeps:
           - installer
@@ -2479,12 +2505,6 @@ dev_python_autogen_rule:
         python_compat: python2_7
         template: pygments-old.tmpl
         pypi_name: pygments
-    - msgpack
-    - msgpack-compat:
-        version: 0.6.2
-        template: msgpack.tmpl
-        pypi_name: msgpack
-        python_compat: python2_7
     - multidict
     - numpy:
         # FL-9243: numpy >=1.22.0 only supports Python >=3.8

@@ -29,11 +29,11 @@ async def add_ebuild(hub, json_dict=None, compat_ebuild=False, has_compat_ebuild
 	local_pkginfo["compat_ebuild"] = compat_ebuild
 	hub.pkgtools.pyhelper.pypi_metadata_init(local_pkginfo, json_dict)
 	hub.pkgtools.pyhelper.expand_pydeps(local_pkginfo, compat_mode=True, compat_ebuild=compat_ebuild)
-
 	if compat_ebuild:
 		local_pkginfo["python_compat"] = "python2_7"
 		if isinstance(local_pkginfo["compat"], str):
 			# assume compat is just the compat version
+			hub.pkgtools.model.log.debug(f"For compat ebuild, setting version to {local_pkginfo['compat']}")
 			local_pkginfo["version"] = local_pkginfo["compat"]
 		else:
 			# assume we are overriding more things
@@ -42,7 +42,8 @@ async def add_ebuild(hub, json_dict=None, compat_ebuild=False, has_compat_ebuild
 		if "du_pep517" in local_pkginfo:
 			# It doesn't make sense to enable new PEP 517 support for python2.7-compat ebuilds:
 			del local_pkginfo["du_pep517"]
-		artifact_url = hub.pkgtools.pyhelper.sdist_artifact_url(json_dict["releases"], local_pkginfo["version"])
+		# TODO: this doesn't work if we want to filter to make sure we have a compatible version -- we can't directly pick it.
+		artifact_url = hub.pkgtools.pyhelper.pypi_get_artifact_url(local_pkginfo, json_dict, has_python="2.7", strict=True)
 	else:
 		if has_compat_ebuild:
 			compat_split = local_pkginfo["python_compat"].split()
@@ -60,26 +61,47 @@ async def add_ebuild(hub, json_dict=None, compat_ebuild=False, has_compat_ebuild
 			version_specified = False
 			# get latest version
 			local_pkginfo["version"] = json_dict["info"]["version"]
-
-		artifact_url = hub.pkgtools.pyhelper.pypi_get_artifact_url(local_pkginfo, json_dict, strict=version_specified)
+		if "requires_python_override" in local_pkginfo:
+			# Allow YAML to override bogus upstream pypi requires_python settings:
+			requires_python_override = local_pkginfo["requires_python_override"]
+		else:
+			# Use upstream values:
+			requires_python_override = None
+		python_kit = hub.release_yaml.get_primary_kit(name="python-kit")
+		has_python = python_kit.settings["has_python"]
+		artifact_url = hub.pkgtools.pyhelper.pypi_get_artifact_url(local_pkginfo, json_dict, strict=version_specified, has_python=has_python,
+						requires_python_override=requires_python_override)
 	# fixup $S automatically -- this seems to follow the name in the archive:
-	under_name = pkginfo["name"].replace("-","_")
+
+	under_name = pkginfo["name"].replace("-", "_")
+	over_name = pkginfo["name"].replace("_", "-")
 	local_pkginfo["s_pkg_name"] = pkginfo["pypi_name"]
-	if not artifact_url.split("/")[-1].startswith(pkginfo["pypi_name"]):
-		if artifact_url.split("/")[-1].startswith(under_name):
+
+	hub.pkgtools.pyhelper.pypi_normalize_version(local_pkginfo)
+
+	artifacts = [hub.pkgtools.ebuild.Artifact(url=artifact_url)]
+	await artifacts[0].fetch()
+	artifacts[0].extract()
+	main_dir = glob.glob(os.path.join(artifacts[0].extract_path, "*"))
+	if len(main_dir) != 1:
+		raise ValueError("Found more than one directory inside python module")
+	main_dir = main_dir[0]
+	main_base = os.path.basename(main_dir)
+
+	# deal with fact that "-" and "_" are treated as equivalent by pypi:
+	if not main_base.startswith(pkginfo["name"]):
+		if main_base.startswith(under_name):
 			local_pkginfo["s_pkg_name"] = under_name
+		elif main_base.startswith(over_name):
+			local_pkginfo["s_pkg_name"] = over_name
 
 	assert (
 		artifact_url is not None
 	), f"Artifact URL could not be found in {pkginfo['name']} {local_pkginfo['version']}. This can indicate a PyPi package without a 'source' distribution."
 	local_pkginfo["template_path"] = os.path.normpath(os.path.join(os.path.dirname(__file__), "templates"))
 
-	hub.pkgtools.pyhelper.pypi_normalize_version(local_pkginfo)
-
-	artifacts = [hub.pkgtools.ebuild.Artifact(url=artifact_url)]
 	if not compat_ebuild and "du_pep517" in local_pkginfo and local_pkginfo["du_pep517"] == "generator":
-		await artifacts[0].fetch()
-		artifacts[0].extract()
+
 		setup_path = glob.glob(os.path.join(artifacts[0].extract_path, "*", "setup.py"))
 		if len(setup_path):
 			has_setup = True
