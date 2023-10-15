@@ -13,6 +13,8 @@ containerd:
             template: containerd-1.7.tmpl
           1.7.6:
             template: containerd-1.7.tmpl
+          1.7.7:
+            template: containerd-1.7.tmpl
         github:
           query: tags
 
