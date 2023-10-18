@@ -132,8 +132,26 @@ src_prepare() {
 	#make -s include/linux/version.h || die "make include/linux/version.h failed"
 	cd "${S}"
 	cp -aR "${WORKDIR}"/debian "${S}"/debian
-	epatch "${FILESDIR}"/${KERNEL_VERSION}/linux-6.4.13-keyboard-not-working-Asus-TUF-FA617NS-FL-11436.patch || die
-	epatch "${FILESDIR}"/${KERNEL_VERSION}/linux-6.4.13-pinctrl-FL-11437-backport.patch || die
+	if [ -e "${FILESDIR}/${KERNEL_VERSION}/xfs-libcrc32c-fix.patch" ]; then
+	    epatch "${FILESDIR}"/${KERNEL_VERSION}/xfs-libcrc32c-fix.patch || die
+	else
+	    epatch "${FILESDIR}"/latest/xfs-libcrc32c-fix.patch || die
+	fi
+	if [ -e "${FILESDIR}/${KERNEL_VERSION}/mcelog.patch" ]; then
+	    epatch "${FILESDIR}"/${KERNEL_VERSION}/mcelog.patch || die
+	else
+	    epatch "${FILESDIR}"/latest/mcelog.patch || die
+	fi
+	if [ -e "${FILESDIR}/${KERNEL_VERSION}/ikconfig.patch" ]; then
+	    epatch "${FILESDIR}"/${KERNEL_VERSION}/ikconfig.patch || die
+	else
+	    epatch "${FILESDIR}"/latest/ikconfig.patch || die
+	fi
+	if [ -e "${FILESDIR}/${KERNEL_VERSION}/extra_cpu_optimizations.patch" ]; then
+	    epatch "${FILESDIR}"/${KERNEL_VERSION}/extra_cpu_optimizations.patch || die
+	else
+	    epatch "${FILESDIR}"/latest/extra_cpu_optimizations.patch || die
+	fi
 	local arch featureset subarch
 	featureset="standard"
 	if [[ ${REAL_ARCH} == x86 ]]; then
