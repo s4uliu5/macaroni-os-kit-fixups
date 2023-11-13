@@ -432,6 +432,7 @@ packages:
   - sys-libs/lib-compat
   - sys-libs/lib-compat-loki
   - sys-libs/libaal
+  - sys-libs/libavc1394
   - sys-libs/libblockdev
   - sys-libs/libcap-ng
   - sys-libs/libchipcard
@@ -439,6 +440,7 @@ packages:
   - sys-libs/libhx
   - sys-libs/libieee1284
   - sys-libs/libnih
+  - sys-libs/libraw1394
   - sys-libs/librtas
   - sys-libs/libstdc++-v3
   - sys-libs/libstdc++-v3-bin
