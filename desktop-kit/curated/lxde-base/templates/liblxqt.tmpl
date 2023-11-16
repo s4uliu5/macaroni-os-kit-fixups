@@ -7,7 +7,7 @@ inherit cmake
 DESCRIPTION="Common base library for the LXQt desktop environment"
 HOMEPAGE="https://lxqt.github.io/"
 
-SRC_URI="{{artifacts[0].src_uri}}"
+SRC_URI="{{src_uri}}"
 KEYWORDS="*"
 
 LICENSE="LGPL-2.1+ BSD"
@@ -31,3 +31,9 @@ DEPEND="
 	sys-auth/polkit-qt
 "
 RDEPEND="${DEPEND}"
+
+post_src_unpack() {
+	if [ ! -d "${S}" ]; then
+		mv "${WORKDIR}"/* "${S}" || die
+	fi
+}

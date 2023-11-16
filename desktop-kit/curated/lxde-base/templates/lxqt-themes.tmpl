@@ -7,10 +7,16 @@ inherit cmake
 DESCRIPTION="LXQt Themes"
 HOMEPAGE="https://lxqt.github.io/"
 
-SRC_URI="{{artifacts[0].src_uri}}"
+SRC_URI="{{src_uri}}"
 KEYWORDS="*"
 
 LICENSE="LGPL-2.1+"
 SLOT="0"
 
 BDEPEND="dev-util/lxqt-build-tools"
+
+post_src_unpack() {
+	if [ ! -d "${S}" ]; then
+		mv "${WORKDIR}"/* "${S}" || die
+	fi
+}

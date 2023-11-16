@@ -6,7 +6,7 @@ inherit cmake xdg-utils
 
 DESCRIPTION="Qt GUI Process Manager"
 HOMEPAGE="https://lxqt.github.io/"
-SRC_URI="{{artifacts[0].src_uri}}"
+SRC_URI="{{src_uri}}"
 
 LICENSE="GPL-2 GPL-2+ LGPL-2.1+ QPL-1.0"
 SLOT="0"
@@ -36,3 +36,9 @@ pkg_postrm() {
 	xdg_icon_cache_update
 }
 
+
+post_src_unpack() {
+	if [ ! -d "${S}" ]; then
+		mv "${WORKDIR}"/* "${S}" || die
+	fi
+}
