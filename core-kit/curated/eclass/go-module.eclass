@@ -474,6 +474,9 @@ _go-module_src_prepare_verify_gosum() {
 	# Cleanup the modules before starting anything else
 	# This will print 'downloading' messages, but it's accessing content from
 	# the $GOPROXY file:/// URL!
+	#
+	[ "${GO_MOD_TIDY_SKIP}" == "true" ] && return
+
 	einfo "Tidying go.mod/go.sum"
 	_go_mod_tidy_output=$(go mod tidy 2>&1 >/dev/null)
 	if [[ $? -ne 0 ]]; then
