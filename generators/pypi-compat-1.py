@@ -166,7 +166,11 @@ async def add_ebuild(hub, json_dict=None, compat_ebuild=False, has_compat_ebuild
 			found_build_system = None
 			if len(pyproject_path):
 				with open(pyproject_path[0], "r") as f:
-					toml_data = toml.load(f)
+					try:
+						toml_data = toml.load(f)
+					except toml.TomlDecodeError as e:
+						hub.pkgtools.model.log.error(f"TOML decode error for {pkginfo['name']}: {repr(e)}")
+						toml_data = {}
 					if "build-system" not in toml_data:
 						pass
 					elif "requires" not in toml_data["build-system"]:
@@ -182,6 +186,8 @@ async def add_ebuild(hub, json_dict=None, compat_ebuild=False, has_compat_ebuild
 								found_build_system = "setuptools"
 								if "depend" not in local_pkginfo:
 									local_pkginfo["depend"] = ""
+								else:
+									local_pkginfo["depend"] += "\n"
 								local_pkginfo["depend"] += 'dev-python/setuptools_scm[${PYTHON_USEDEP}]\n'
 							elif req.startswith("setuptools"):
 								found_build_system = "setuptools"
