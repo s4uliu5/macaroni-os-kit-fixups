@@ -223,7 +223,7 @@ src_unpack() {
 
 src_prepare() {
 
-	eapply "${FILESDIR}/10.6/0001-cmake-build-without-client-libs-and-tools.patch"
+	eapply "${FILESDIR}/10.6/0001-10.6.15-cmake-build-without-client-libs-and-tools.patch"
 	eapply "${FILESDIR}/10.6/0002-libmariadb-fix-mysql_st-API-regression.patch"
 	eapply "${FILESDIR}/10.6/0003-libmariadb-cmake-find-GSSAPI-via-pkg-config.patch"
 	eapply "${FILESDIR}/10.6/0004-cmake-don-t-install-mysql-d-.service-symlinks.patch"

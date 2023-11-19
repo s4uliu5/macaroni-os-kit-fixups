@@ -27,7 +27,7 @@ REQUIRED_USE="jdbc? ( extraengine server !static )
 	?? ( tcmalloc jemalloc )
 	static? ( yassl !pam )"
 
-KEYWORDS=""
+KEYWORDS="*"
 
 # Shorten the path because the socket path length must be shorter than 107 chars
 # and we will run a mysql server during test phase
@@ -100,10 +100,6 @@ RDEPEND="${COMMON_DEPEND}
 	!dev-db/mariadb:10.3
 	!dev-db/mariadb:10.4
 	!dev-db/mariadb:10.5
-	!dev-db/mariadb:10.6
-	!dev-db/mariadb:10.7
-	!dev-db/mariadb:10.8
-	!dev-db/mariadb:10.9
 	!<virtual/mysql-5.6-r11
 	!<virtual/libmysqlclient-18-r1
 	selinux? ( sec-policy/selinux-mysql )
@@ -227,11 +223,10 @@ src_unpack() {
 
 src_prepare() {
 
-	eapply "${FILESDIR}/10.10/0001-cmake-build-without-client-libs-and-tools.patch"
-	eapply "${FILESDIR}/10.10/0002-libmariadb-fix-mysql_st-API-regression.patch"
-	eapply "${FILESDIR}/10.10/0003-libmariadb-cmake-find-GSSAPI-via-pkg-config.patch"
-	eapply "${FILESDIR}/10.10/0004-cmake-don-t-install-mysql-d-.service-symlinks.patch"
-	eapply "${FILESDIR}/10.10/0005-libmariadb-plugins-auth-CMakeLists-txt.patch"
+	eapply "${FILESDIR}/10.6/0001-10.6.16-cmake-build-without-client-libs-and-tools.patch"
+	eapply "${FILESDIR}/10.6/0002-libmariadb-fix-mysql_st-API-regression.patch"
+	eapply "${FILESDIR}/10.6/0003-libmariadb-cmake-find-GSSAPI-via-pkg-config.patch"
+	eapply "${FILESDIR}/10.6/0004-cmake-don-t-install-mysql-d-.service-symlinks.patch"
 
 	eapply_user
 
