@@ -19,6 +19,17 @@ oddball_core_deps:
         license: MIT
         body: |
           DOCS=( README.md )
+    - testtools:
+        compat: 2.4.0
+        blocker: '!<dev-python/testtools-2.5.0-r1'
+        revision:
+          2.5.0: 1
+        pydeps:
+          py:all:build:
+            - setuptools
+            - pbr
+          py:all:
+            - pbr
 
 sqlalchemy:
   defaults:
@@ -681,6 +692,7 @@ dev_python_compat_rule:
             append-cppflags -DZMQ_BUILD_DRAFT_API=1
           }
     - scons:
+        du_pep517: generator
         compat: 3.1.2
         blocker: '!<dev-util/scons-4.0.0'
         pypi_name: SCons
@@ -688,7 +700,6 @@ dev_python_compat_rule:
         homepage: https://www.scons.org/
         license: MIT
         cat: dev-util
-        du_setuptools: rdepend
         restrict: test
         body: |
           if [ "$PN"  == 'scons-compat' ]; then
@@ -702,7 +713,6 @@ dev_python_compat_rule:
             if [ "$PN"  == 'scons-compat' ]; then
               rm -rf "${D}"/usr/bin
               find "${D}" -type d -name "man" -exec rm -rf \{\} \;
-
             fi
 
           }
@@ -2049,17 +2059,6 @@ dev_python_simplified_rule:
         desc: Implements a XML/HTML/XHTML Markup safe string for Python
         homepage: https://pypi.org/project/MarkupSafe
         license: BSD
-    - testtools:
-        compat: 2.4.0
-        blocker: '!<dev-python/testtools-2.5.0-r1'
-        revision:
-          2.5.0: 1
-        pydeps:
-          py:all:build:
-            - setuptools
-            - pbr
-          py:all:
-            - pbr
     - mypy:
         pydeps:
           py:all:
