@@ -15,9 +15,9 @@ IUSE="ssl"
 
 RDEPEND="
 	dev-lang/execline:=
-	>=dev-libs/skalibs-2.14.0.0:=
-	>=net-dns/s6-dns-2.3.6.0:=
-	>=sys-apps/s6-2.12.0.0:=[execline]
+	>=dev-libs/skalibs-2.14.0.1:=
+	>=net-dns/s6-dns-2.3.7.0:=
+	>=sys-apps/s6-2.12.0.1:=[execline]
 	ssl? ( dev-libs/libretls )
 "
 DEPEND="${RDEPEND}"
