@@ -20,6 +20,7 @@ async def generate(hub, **pkginfo):
 		("5.17", True),
 		("5.18", True),
 		("5.19", True),
+		("5.20", True),
 	]:
 		url=f"https://github.com/canonical/lxd/releases/download/lxd-{pv}/lxd-{pv}.tar.gz"
 		ebuild = hub.pkgtools.ebuild.BreezyBuild(
