@@ -5,37 +5,37 @@ EAPI=5
 inherit check-reqs eutils ego
 
 SLOT=$PF
-CKV=${PV}
-KV_FULL=${PN}-${PVR}
-DEB_EXTRAVERSION="1"
-# Account for version revisions
-[[ ${PR} != "r0" ]] && DEB_EXTRAVERSION+="-${PR}"
-# Debian version -1 becomes _p1 in Funtoo:
-EXTRAVERSION="_p${DEB_EXTRAVERSION}-${PN}"
 
-# This sets the module dir in /lib/modules. This starts with the version (reversed from normal.)
-MODULE_EXT=${PVR}-${PN}
-
+DEB_PATCHLEVEL="1"
+KERNEL_TRIPLET="6.6.8"
+VERSION_SUFFIX="_p${DEB_PATCHLEVEL}"
+if [ ${PR} != "r0" ]; then
+	VERSION_SUFFIX+="-${PR}"
+fi
+EXTRAVERSION="${VERSION_SUFFIX}-${PN}"
+MOD_DIR_NAME="${KERNEL_TRIPLET}${EXTRAVERSION}"
+# Tracking: https://packages.debian.org/sid/linux-image-amd64
 # install sources to /usr/src/$LINUX_SRCDIR
 LINUX_SRCDIR=linux-${PF}
-KERNEL_VERSION="6.1.20"
-DEB_PV="${KERNEL_VERSION}-${DEB_EXTRAVERSION}"
+DEB_PV="${KERNEL_TRIPLET}-${DEB_PATCHLEVEL}"
+
+
 RESTRICT="binchecks strip"
 LICENSE="GPL-2"
-KEYWORDS=""
+KEYWORDS="*"
 IUSE="acpi-ec binary btrfs custom-cflags ec2 +logo luks lvm sign-modules zfs"
 RDEPEND="
 	|| (
 		<sys-apps/gawk-5.2.0
 		>=sys-apps/gawk-5.2.1
 	)
+	binary? ( >=sys-apps/ramdisk-1.1.3 )
 "
 DEPEND="
 	virtual/libelf
-	binary? ( >=sys-kernel/genkernel-4 )
-	btrfs? ( sys-fs/btrfs-progs sys-kernel/genkernel[btrfs] )
+	btrfs? ( sys-fs/btrfs-progs )
 	zfs? ( sys-fs/zfs )
-	luks? ( sys-kernel/genkernel[cryptsetup] )"
+	luks? ( sys-fs/cryptsetup )"
 REQUIRED_USE="
 btrfs? ( binary )
 custom-cflags? ( binary )
@@ -48,8 +48,8 @@ zfs? ( binary )
 DESCRIPTION="Debian Sources (and optional binary kernel)"
 DEB_UPSTREAM="http://http.debian.net/debian/pool/main/l/linux"
 HOMEPAGE="https://packages.debian.org/unstable/kernel/"
-SRC_URI="https://deb.debian.org/debian/pool/main/l/linux/linux_${KERNEL_VERSION}.orig.tar.xz -> linux_${KERNEL_VERSION}.orig.tar.xz https://deb.debian.org/debian/pool/main/l/linux/linux_${DEB_PV}.debian.tar.xz -> linux_${DEB_PV}.debian.tar.xz"
-S="$WORKDIR/linux-${KERNEL_VERSION}"
+SRC_URI="https://deb.debian.org/debian/pool/main/l/linux/linux_${KERNEL_TRIPLET}.orig.tar.xz -> linux_${KERNEL_TRIPLET}.orig.tar.xz https://deb.debian.org/debian/pool/main/l/linux/linux_${DEB_PV}.debian.tar.xz -> linux_${DEB_PV}.debian.tar.xz"
+S="$WORKDIR/linux-${KERNEL_TRIPLET}"
 
 get_patch_list() {
 	[[ -z "${1}" ]] && die "No patch series file specified"
@@ -85,9 +85,12 @@ zap_config() {
 pkg_pretend() {
 	# Ensure we have enough disk space to compile
 	if use binary ; then
-		CHECKREQS_DISK_BUILD="5G"
+		CHECKREQS_DISK_BUILD="6G"
 		check-reqs_pkg_setup
 	fi
+	for unsupported in luks lvm zfs; do
+		use $unsupported && die "Currently, $unsupported is unsupported in our binary kernel/initramfs."
+	done
 }
 
 get_certs_dir() {
@@ -108,10 +111,10 @@ get_certs_dir() {
 pkg_setup() {
 	export REAL_ARCH="$ARCH"
 	unset ARCH; unset LDFLAGS #will interfere with Makefile if set
+	export FEATURESET="standard"
 }
 
 src_prepare() {
-	cd "${S}"
 	for debpatch in $( get_patch_list "${WORKDIR}/debian/patches/series" ); do
 		epatch -p1 "${WORKDIR}/debian/patches/${debpatch}"
 	done
@@ -128,43 +131,34 @@ src_prepare() {
 	rm -f .config >/dev/null
 	cp -a "${WORKDIR}"/debian "${T}"
 	make -s mrproper || die "make mrproper failed"
-	#make -s include/linux/version.h || die "make include/linux/version.h failed"
-	cd "${S}"
+	cd "${S}" || die
 	cp -aR "${WORKDIR}"/debian "${S}"/debian
-	if [ -e "${FILESDIR}/${KERNEL_VERSION}/xfs-libcrc32c-fix.patch" ]; then
-	    epatch "${FILESDIR}"/${KERNEL_VERSION}/xfs-libcrc32c-fix.patch || die
-	else
-	    epatch "${FILESDIR}"/latest/xfs-libcrc32c-fix.patch || die
-	fi
-	if [ -e "${FILESDIR}/${KERNEL_VERSION}/mcelog.patch" ]; then
-	    epatch "${FILESDIR}"/${KERNEL_VERSION}/mcelog.patch || die
-	else
-	    epatch "${FILESDIR}"/latest/mcelog.patch || die
-	fi
-	if [ -e "${FILESDIR}/${KERNEL_VERSION}/ikconfig.patch" ]; then
-	    epatch "${FILESDIR}"/${KERNEL_VERSION}/ikconfig.patch || die
-	else
-	    epatch "${FILESDIR}"/latest/ikconfig.patch || die
-	fi
-	if [ -e "${FILESDIR}/${KERNEL_VERSION}/extra_cpu_optimizations.patch" ]; then
-	    epatch "${FILESDIR}"/${KERNEL_VERSION}/extra_cpu_optimizations.patch || die
-	else
-	    epatch "${FILESDIR}"/latest/extra_cpu_optimizations.patch || die
-	fi
-	local arch featureset subarch
-	featureset="standard"
-	if [[ ${REAL_ARCH} == x86 ]]; then
-		arch="i386"
-		subarch="686-pae"
-	elif [[ ${REAL_ARCH} == amd64 ]]; then
-		arch="amd64"
-		subarch="amd64"
-	else
-	die "Architecture not handled in ebuild"
-	fi
-	cp "${FILESDIR}"/config-extract-6.1 ./config-extract || die
+	epatch "${FILESDIR}"/latest/ikconfig.patch || die
+	epatch "${FILESDIR}"/latest/mcelog.patch || die
+	epatch "${FILESDIR}"/latest/extra_cpu_optimizations.patch || die
+	# revert recent changes to the rtw89 driver that cause problems for Wi-Fi:
+	#rm -rf "${S}"/drivers/net/wireless/rtw89 || die
+	#tar xzf "${DISTDIR}"/debian-sources-6.3.7_p1-rtw89-driver.tar.gz -C "${S}"/drivers/net/wireless/ || die
+	#einfo "Using debian-sources-6.3.7_p1 Wi-Fi driver to avoid latency issues..."
+	cp "${FILESDIR}"/config-extract-6.6 ./config-extract || die
 	chmod +x config-extract || die
-	./config-extract ${arch} ${featureset} ${subarch} || die
+
+	# Set up arch-specific variables and this will fail if run in pkg_setup() since ARCH can be unset there:
+	if [ "${REAL_ARCH}" = x86 ]; then
+		export DEB_ARCH="i386"
+		export DEB_SUBARCH="686-pae"
+		export KERN_SUFFIX="${PN}-i686-${PV}"
+	elif [ "${REAL_ARCH}" = amd64 ]; then
+		export DEB_ARCH="amd64"
+		export DEB_SUBARCH="amd64"
+		export KERN_SUFFIX="${PN}-x86_64-${PV}"
+	else
+		die "Architecture '${REAL_ARCH}' not handled in ebuild"
+	fi
+	[[ ${PR} != "r0" ]] && KERN_SUFFIX+="-${PR}"
+
+	echo "./config-extract ${DEB_ARCH} ${FEATURESET} ${DEB_SUBARCH}"
+	./config-extract ${DEB_ARCH} ${FEATURESET} ${DEB_SUBARCH} || die
 	setno_config .config CONFIG_DEBUG
 	if use acpi-ec; then
 		# most fan control tools require this
@@ -212,13 +206,19 @@ src_prepare() {
 		ewarn "To enable strict enforcement, YOU MUST add module.sig_enforce=1 as a kernel boot"
 		ewarn "parameter (to params in /etc/boot.conf, and re-run boot-update.)"
 		ewarn ""
+	else
+		tweak_config .config CONFIG_MODULE_SIG n
 	fi
 	if use custom-cflags; then
 		MARCH="$(python3 -c "import portage; print(portage.settings[\"CFLAGS\"])" | sed 's/ /\n/g' | grep "march")"
 		if [ -n "$MARCH" ]; then
 			CONFIG_MARCH="$(grep -m 1 -e "${MARCH}" -B 1 arch/x86/Makefile | sort -r | grep -m 1 -o CONFIG_\[^\)\]* )"
-			tweak_config .config CONFIG_GENERIC_CPU n && \
-				tweak_config .config "${CONFIG_MARCH}" y || die "Canna optimize this kernel anymore, captain!"
+			if [ -n "${CONFIG_MARCH}" ]; then
+				tweak_config .config CONFIG_GENERIC_CPU n
+				tweak_config .config "${CONFIG_MARCH}" y
+			else
+				ewarn "Could not find optimized settings for $MARCH, compiling generic kernel."
+			fi
 		fi
 	fi
 	# get config into good state:
@@ -229,32 +229,10 @@ src_prepare() {
 
 src_compile() {
 	! use binary && return
-	install -d "${WORKDIR}"/out/{lib,boot}
-	install -d "${T}"/{cache,twork}
 	install -d "${WORKDIR}"/build
-	cp "${T}"/config "${WORKDIR}"/build/.config
-	use zfs && addwrite /dev/zfs
-	DEFAULT_KERNEL_SOURCE="${S}" CMD_KERNEL_DIR="${S}" genkernel ${GKARGS} \
-		--no-save-config \
-		--no-oldconfig \
-		--no-menuconfig \
-		--kernel-config=${T}/config \
-		--kernname="${PN}" \
-		--build-src="${S}" \
-		--build-dst="${WORKDIR}"/build \
-		--makeopts="${MAKEOPTS}" \
-		--cachedir="${T}"/cache \
-		--tempdir="${T}"/twork \
-		--logfile="${WORKDIR}"/genkernel.log \
-		--bootdir="${WORKDIR}"/out/boot \
-		--disklabel \
-		$(usex lvm --lvm --no-lvm ) \
-		$(usex luks --luks --no-luks ) \
-		--mdadm \
-		$(usex btrfs --btrfs --no-btrfs) \
-		$(usex zfs --zfs --no-zfs) \
-		--module-prefix="${WORKDIR}"/out \
-		all || die
+	cp "${T}"/config "${WORKDIR}"/build/.config || die "couldn't copy kernel config"
+	make ${MAKEOPTS} O="${WORKDIR}"/build bzImage || die "kernel build failure"
+	make ${MAKEOPTS} O="${WORKDIR}"/build modules || die "modules build failure"
 }
 
 src_install() {
@@ -267,19 +245,19 @@ src_install() {
 	cp "${T}"/config .config || die
 	cp -a "${T}"/debian debian || die
 
-
-	# if we didn't use genkernel, we're done. The kernel source tree is left in
+	# if we didn't compile a kernel, we're done. The kernel source tree is left in
 	# an unconfigured state - you can't compile 3rd-party modules against it yet.
 	use binary || return
+	make ${MAKEOPTS} O="${WORKDIR}"/build INSTALL_MOD_PATH="${D}" modules_install || die "modules install failure"
+	insinto /boot
+	newins ${WORKDIR}/build/arch/x86/boot/bzImage "kernel-${KERN_SUFFIX}"
+	newins ${WORKDIR}/build/System.map "System.map-${KERN_SUFFIX}"
 	make prepare || die
 	make scripts || die
-    # FL-8004: In Linux 5.10, module.lds is generated by 'modules_prepare',
-    # so we need to run it as well to be able to compile modules
+	# FL-8004: In Linux 5.10, module.lds is generated by 'modules_prepare',
+	# so we need to run it as well to be able to compile modules
 	make modules_prepare || die
-	# OK, now the source tree is configured to allow 3rd-party modules to be
-	# built against it, since we want that to work since we have a binary kernel
-	# built.
-	cp -a "${WORKDIR}"/out/* "${D}"/ || die "couldn't copy output files into place"
+
 	# module symlink fixup:
 	rm -f "${D}"/lib/modules/*/source || die
 	rm -f "${D}"/lib/modules/*/build || die
@@ -291,23 +269,17 @@ src_install() {
 	cp "${WORKDIR}/build/System.map" "${D}/usr/src/${LINUX_SRCDIR}/" || die
 	cp "${WORKDIR}/build/Module.symvers" "${D}/usr/src/${LINUX_SRCDIR}/" || die
 	if use sign-modules; then
-		for x in $(find "${D}"/lib/modules -iname *.ko); do
-			# $certs_dir defined previously in this function.
-			${WORKDIR}/build/scripts/sign-file sha512 $certs_dir/signing_key.pem $certs_dir/signing_key.x509 $x || die
-		done
+		find "${D}"/lib/modules -iname *.ko -exec ${WORKDIR}/build/scripts/sign-file sha512 $certs_dir/signing_key.pem $certs_dir/signing_key.x509 {} \; || die
 		# install the sign-file executable for future use.
 		exeinto /usr/src/${LINUX_SRCDIR}/scripts
 		doexe ${WORKDIR}/build/scripts/sign-file
 	fi
-
-	# The new naming scheme leaves an extra -${PN} at the name of various things in /boot. This should fix that.
-	cd ${D}/boot
-	for x in $(ls *); do
-		xnew=${x%-${PN}}
-		mv $x ${xnew} || die
-	done
-
-
+	/usr/bin/ramdisk \
+		--fs_root="${D}" \
+		--temp_root="${T}" \
+		--enable=btrfs \
+		--kernel=${MOD_DIR_NAME} \
+		${D}/boot/initramfs-${KERN_SUFFIX} --debug --backtrace || die "failcakes $?"
 }
 
 pkg_postinst() {
@@ -325,7 +297,7 @@ pkg_postinst() {
 	fi
 
 	if [ -e ${ROOT}lib/modules ]; then
-		depmod -a $DEB_PV
+		depmod -a ${PV}-${PN}
 	fi
 
 	ego_pkg_postinst
