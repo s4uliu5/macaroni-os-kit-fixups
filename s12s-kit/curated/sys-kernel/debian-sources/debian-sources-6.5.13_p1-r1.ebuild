@@ -7,7 +7,7 @@ inherit check-reqs eutils ego
 SLOT=$PF
 
 DEB_PATCHLEVEL="1"
-KERNEL_TRIPLET="6.6.8"
+KERNEL_TRIPLET="6.5.13"
 VERSION_SUFFIX="_p${DEB_PATCHLEVEL}"
 if [ ${PR} != "r0" ]; then
 	VERSION_SUFFIX+="-${PR}"
@@ -22,7 +22,7 @@ DEB_PV="${KERNEL_TRIPLET}-${DEB_PATCHLEVEL}"
 
 RESTRICT="binchecks strip"
 LICENSE="GPL-2"
-KEYWORDS=""
+KEYWORDS="*"
 IUSE="acpi-ec binary btrfs custom-cflags ec2 +logo luks lvm sign-modules zfs"
 RDEPEND="
 	|| (
@@ -140,7 +140,7 @@ src_prepare() {
 	#rm -rf "${S}"/drivers/net/wireless/rtw89 || die
 	#tar xzf "${DISTDIR}"/debian-sources-6.3.7_p1-rtw89-driver.tar.gz -C "${S}"/drivers/net/wireless/ || die
 	#einfo "Using debian-sources-6.3.7_p1 Wi-Fi driver to avoid latency issues..."
-	cp "${FILESDIR}"/config-extract-6.6 ./config-extract || die
+	cp "${FILESDIR}"/config-extract-6.1 ./config-extract || die
 	chmod +x config-extract || die
 
 	# Set up arch-specific variables and this will fail if run in pkg_setup() since ARCH can be unset there:
@@ -274,6 +274,13 @@ src_install() {
 		exeinto /usr/src/${LINUX_SRCDIR}/scripts
 		doexe ${WORKDIR}/build/scripts/sign-file
 	fi
+	echo /usr/bin/ramdisk \
+		--fs_root="${D}" \
+		--temp_root="${T}" \
+		--enable=btrfs \
+		--kernel=${MOD_DIR_NAME} \
+		${D}/boot/initramfs-${KERN_SUFFIX} --debug --backtrace || die "failcakes $?"
+
 	/usr/bin/ramdisk \
 		--fs_root="${D}" \
 		--temp_root="${T}" \
