@@ -1,0 +1,28 @@
+Subject: [PATCH] fix when roofsfs is btrfs
+
+---
+ funtoo_ramdisk/support/etc/initrd.scripts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/funtoo_ramdisk/support/etc/initrd.scripts b/funtoo_ramdisk/support/etc/initrd.scripts
+index e0388ea..0248913 100644
+--- a/funtoo_ramdisk/support/etc/initrd.scripts
++++ b/funtoo_ramdisk/support/etc/initrd.scripts
+@@ -140,6 +140,14 @@ mount_real_root() {
+ 	# If $REAL_ROOT is a symlink
+ 	# Resolve it like util-linux mount does
+ 	[ -L "${REAL_ROOT}" ] && REAL_ROOT=$(readlink "${REAL_ROOT}")
++
++	if [ $ROOTFSTYPE == "btrfs" ]
++	then
++		echo "btrfs device scan"
++		btrfs device scan
++		sleep 2
++	fi
++
+ 	# mount ro so fsck doesn't barf later
+ 	local opts="${MOUNT_STATE}"
+ 	[ -n "${REAL_ROOTFLAGS}" ] && opts="${opts},${REAL_ROOTFLAGS}"
+-- 
+2.43.0
+
