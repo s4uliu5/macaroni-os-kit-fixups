@@ -9,7 +9,8 @@ async def generate(hub, **pkginfo):
 		("7.4", "latest", ["php-iodbc-header-location.patch", "apache.patch", "bug81656-gcc-11.patch"], None),
 		("8.0", "latest", ["php-iodbc-header-location.patch", "php80-firebird-warnings.patch"], None),
 		("8.1", "latest" , ["php-iodbc-header-location.patch"], None),
-  	("8.2", "latest" , ["php-iodbc-header-location.patch"], None),
+		("8.2", "latest" , ["php-iodbc-header-location.patch"], None),
+		("8.3", "latest" , ["php-iodbc-header-location.patch"], None),
 	]
 
 	php_url = "https://www.php.net/releases/?json&version={slot}"
