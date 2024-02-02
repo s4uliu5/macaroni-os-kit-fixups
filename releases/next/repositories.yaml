@@ -137,8 +137,8 @@ release:
       #     kind: sourced
       #     source:
       #       url: https://code.funtoo.org/bitbucket/scm/core/kde-kit-sources.git
-      #       branch: 5.25-release
-      #     branch: next/5.25-release
+      #       branch: 5.27-release
+      #     branch: next/5.27-release
       # - gnome-kit:
       #     kind: sourced
       #     source:
@@ -161,8 +161,8 @@ release:
       #     kind: sourced
       #     source:
       #       url: https://code.funtoo.org/bitbucket/scm/core/mate-kit-sources.git
-      #       branch: 1.24-prime
-      #     branch: next-1.24-prime
+      #       branch: 1.26-prime
+      #     branch: next/1.26-prime
       - ruby-kit:
           branch: next
           source: funtoo_late_2020

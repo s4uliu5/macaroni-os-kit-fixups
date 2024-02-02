@@ -16,8 +16,6 @@ packages:
       - media-libs/devil
       - media-libs/libfpx
       - media-libs/liblqr
-      - media-libs/libquvi
-      - media-libs/libquvi-scripts
       - media-libs/jasper
 
     miscategorized:
@@ -55,8 +53,6 @@ packages:
 
       - media-libs/raptor
     external_and_interactive:
-      toolkits:
-        - media-libs/libsdl
       video:
         - media-libs/libv4l
         - media-libs/nv-codec-headers
@@ -121,7 +117,6 @@ packages:
         - media-gfx/potrace
         - media-gfx/scour
         - media-libs/gd
-        - media-gfx/sam2p
         - media-libs/libpano13
       photo:
         - media-libs/exiftool

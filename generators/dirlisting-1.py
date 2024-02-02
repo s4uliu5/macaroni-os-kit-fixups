@@ -4,11 +4,11 @@
 # for any web page serving as a directory listing.
 
 
+from distutils.version import LooseVersion
 import re
 
 
 async def generate(hub, **pkginfo):
-
 	release_data = await hub.pkgtools.fetch.get_page(
 		pkginfo['dir']['url'], is_json=False
 	)
@@ -29,27 +29,28 @@ async def generate(hub, **pkginfo):
 			# finally, the file extension
 			f'(?<=href=")(((?:({files})?-)?(\d+(?:[\.|-][a-zA-Z0-9_]+)*)+)'
 			+ (
-				re.escape(pkginfo['dir']['format'])
-				if format in pkginfo['dir']
-				else f'(\.tar\.gz|\.tar\.bz2|\.tar\.xz|\.zip)+)"'
-			),
+				f"\.({re.escape(pkginfo['dir']['format'])})+"
+				if 'format' in pkginfo['dir']
+				else f'\.(tar\.gz|tar\.bz2|tar\.xz|zip)+'
+			)
+			+ ')"',
 		release_data
 		)
 	]
 	if not releases:
 		raise KeyError(
 			f"Unable to find a suitable version for {pkginfo['cat']}"
-			+ f"-{pkginfo['name']}."
+			+ f"/{pkginfo['name']}."
 		)
 
 	# if a specific version is requested, check that it actually exists
 	if 'version' in pkginfo:
 		# latest always matches
-		if 'latest' in pkginfo['version']:
+		if pkginfo['version'] == 'latest':
 			pass
 		elif not any(pkginfo['version'] == ver for ver, release in releases):
 			raise KeyError(
-				f"Requested version {pkginfo['cat']}-{pkginfo['name']}"
+				f"Requested version {pkginfo['cat']}/{pkginfo['name']}"
 				+ f"-{pkginfo['version']} not found!"
 			)
 
@@ -63,7 +64,7 @@ async def generate(hub, **pkginfo):
 			}
 		]
 		# restrict so that only unique versions are included
-		for ver in sorted(list(set(h for h,k in releases)))
+		for ver in sorted(list(set(h for h,k in releases)), key=LooseVersion)
 	]
 
 	# Highest version is assumed to be either the first or last entry.
@@ -76,7 +77,10 @@ async def generate(hub, **pkginfo):
 			and 'asc' in pkginfo['dir']['order']
 		else versions_l[0]
 	)
-	pkginfo['version'] = ver
+	if not 'version' in pkginfo or (
+		'version' in pkginfo and pkginfo['version'] == 'latest'
+	):
+		pkginfo['version'] = ver
 
 # if no 'files' key defined in YAML, just add 'name' to the list of files.
 	files_l = []
@@ -104,3 +108,4 @@ async def generate(hub, **pkginfo):
 
 
 # vim: :et sw=4 ts=4 noet
+

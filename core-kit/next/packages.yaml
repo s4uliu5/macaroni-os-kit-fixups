@@ -152,7 +152,6 @@ packages:
   - app-text/wgetpaste
   - dev-libs/check
   - dev-libs/elfutils
-  - dev-libs/iniparser
   - dev-libs/jansson
   - dev-libs/json-c
   - dev-libs/jsoncpp
@@ -212,7 +211,6 @@ packages:
   - sys-apps/gentoo-functions
   - sys-apps/gptfdisk
   - sys-apps/groff
-  - sys-apps/hardened-shadow
   - sys-apps/haveged
   - sys-apps/install-xattr
   - sys-apps/kbd
