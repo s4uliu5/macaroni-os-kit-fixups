@@ -16,9 +16,6 @@ packages:
       - media-libs/devil
       - media-libs/libfpx
       - media-libs/liblqr
-      - media-libs/libquvi
-      - media-libs/libquvi-scripts
-      - media-libs/gavl
       - media-libs/jasper
 
     miscategorized:
@@ -56,8 +53,6 @@ packages:
 
       - media-libs/raptor
     external_and_interactive:
-      toolkits:
-        - media-libs/libsdl
       video:
         - media-libs/libv4l
         - media-libs/nv-codec-headers
@@ -74,7 +69,6 @@ packages:
         - media-libs/libdiscid
         - media-libs/libbluray
       hardware:
-        - media-libs/libffado
         - media-libs/libiec61883
         # should be in this kit?:
         # - sys-libs/libavc1394
@@ -94,7 +88,6 @@ packages:
         - media-libs/libmtp
         - media-libs/libmpd
         - virtual/jack
-        - media-libs/libsamplerate
         - media-libs/libsndfile
         - media-sound/jack
         - media-sound/id3
@@ -112,7 +105,6 @@ packages:
         - media-libs/openal
         - media-libs/opus
         - media-libs/faad2
-        - media-libs/libvorbis
         - media-libs/libogg
         - media-libs/flac
         - media-libs/audiofile
@@ -125,6 +117,7 @@ packages:
         - media-gfx/potrace
         - media-gfx/scour
         - media-libs/gd
+        - media-libs/libpano13
       photo:
         - media-libs/exiftool
         - media-libs/libraw
@@ -150,7 +143,6 @@ packages:
         - media-video/ffmpegthumbnailer # dep for xfce4-meta
       formats:
         - media-libs/xvid
-        - media-libs/a52dec
         - media-libs/libheif
         - media-libs/dav1d
         - media-libs/libaom
@@ -158,7 +150,6 @@ packages:
         - media-libs/x265
         - media-libs/openh264
         - media-libs/libtheora
-        - media-libs/libdca
     typography:
       toolkits:
         - media-gfx/graphite2
@@ -170,6 +161,7 @@ packages:
         - media-fonts/urw-fonts
         - media-fonts/symbola
         - media-fonts/unifont
+        - media-fonts/roboto
 - gentoo-staging-nov-2021:
     audio:
       apps:
@@ -225,7 +217,8 @@ packages:
       - media-plugins/gst-plugins-soup
       - media-plugins/gst-plugins-bs2b
       - media-plugins/gst-plugins-resindvd
-      - media-plugins/gst-plugins-vaapi
+#     This has been forked to apply meson fixes:
+#      - media-plugins/gst-plugins-vaapi
       - media-plugins/gst-plugins-neon
       - media-plugins/gst-plugins-dvb
       - media-plugins/gst-plugins-dash
@@ -277,6 +270,4 @@ packages:
       - media-plugins/gst-plugins-smoothstreaming
       - media-plugins/gst-plugins-openh264
       - media-plugins/gst-plugins-x264
-- flora:
-  - media-sound/squeezelite
 

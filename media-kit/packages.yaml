@@ -89,7 +89,6 @@ packages:
   - media-gfx/fbcondecor-funtoo-logo
   - media-gfx/slic3r
   - media-gfx/posterazor
-  - media-sound/squeezelite
   - media-sound/strawberry
   - media-sound/yarock
   - media-sound/musescore
@@ -101,30 +100,6 @@ packages:
   - media-sound/idjc
   - media-sound/abraca
   - media-sound/gxmms2
-- deadbeef:
-  - media-sound/deadbeef
-  - media-plugins/deadbeef-decast
-  - media-plugins/deadbeef-waveform-seekbar
-  - media-plugins/deadbeef-jack
-  - media-plugins/deadbeef-gnome-mmkeys
-  - media-plugins/deadbeef-statusnotifier
-  - media-plugins/deadbeef-vu-meter
-  - media-plugins/deadbeef-vk
-  - media-plugins/deadbeef-bs2b
-  - media-plugins/deadbeef-spectrogram
-  - media-plugins/deadbeef-archive-reader
-  - media-plugins/deadbeef-replaygain-control
-  - media-plugins/deadbeef-opus
-  - media-plugins/deadbeef-fb
-  - media-plugins/deadbeef-musical-spectrum
-  - media-plugins/deadbeef-soxr
-  - media-plugins/deadbeef-infobar
-  - media-plugins/deadbeef-librarybrowser
-  - media-plugins/deadbeef-bookmark-manager
-  - media-plugins/deadbeef-mpris
-  - media-plugins/deadbeef-stereo-widener
-  - media-plugins/deadbeef-plugins-meta
-  - media-plugins/deadbeef-quick-search
 - gentoo-staging:
   - media-radio/flamp
   - media-radio/grig
@@ -199,7 +174,6 @@ packages:
   - media-libs/pyliblo
   - media-libs/libdca
   - media-libs/hamlib
-  - media-libs/libharu
   - media-libs/exempi
   - media-libs/libmediainfo
   - media-libs/dumb
@@ -303,7 +277,6 @@ packages:
   - media-libs/stops
   - media-libs/libmng
   - media-libs/libtiger
-  - media-libs/libcue
   - media-libs/jasper
   - media-libs/zvbi
   - media-libs/libclthreads
@@ -346,7 +319,6 @@ packages:
   - media-libs/mediastreamer
   - media-libs/imlib2
   - media-libs/gavl
-  - media-libs/portaudio
   - media-libs/libmodplug
   - media-libs/sdl-gfx
   - media-libs/libnspsl
@@ -390,7 +362,6 @@ packages:
   - media-libs/libid3tag
   - media-libs/audiofile
   - media-libs/zita-convolver
-  - media-libs/libopenshot-audio
   - media-libs/zita-resampler
   - media-libs/cal3d
   - media-libs/ftgl
@@ -425,7 +396,6 @@ packages:
   - media-libs/spandsp
   - media-libs/libaacplus
   - media-libs/libfpx
-  - media-libs/libopenshot
   - media-libs/fontconfig-infinality
   - media-libs/oyranos
   - media-libs/tremor
@@ -485,7 +455,6 @@ packages:
   - media-video/mplay-sh
   - media-video/vcdimager
   - media-video/dvbsnoop
-  - media-video/openshot
   - media-video/dvdrip
   - media-video/guvcview
   - media-video/vdrsync
@@ -549,7 +518,6 @@ packages:
   - media-video/chaplin
   - media-video/tovid
   - media-video/pymp
-  - media-video/movit
   - media-video/mjpg-streamer
   - media-video/bdsup2sub
   - media-video/vdr2jpeg
@@ -652,7 +620,6 @@ packages:
   - media-sound/aumix
   - media-sound/timidity++
   - media-sound/mp3blaster
-  - media-sound/exaile
   - media-sound/wav2json
   - media-sound/vmpk
   - media-sound/alsamixer-app
@@ -823,7 +790,6 @@ packages:
   - media-sound/pianobar
   - media-sound/pympd
   - media-sound/gmorgan
-  - media-sound/clementine
   - media-sound/fluid-soundfont
   - media-sound/tomahawk
   - media-sound/yoshimi
@@ -1075,7 +1041,6 @@ packages:
   - media-gfx/fbgrab
   - media-gfx/apngasm
   - media-gfx/galleryadd
-  - media-gfx/iscan
   - media-gfx/gifsicle
   - media-gfx/qrencode-python
   - media-gfx/hp2xx
@@ -1093,7 +1058,6 @@ packages:
   - media-gfx/pngrewrite
   - media-gfx/fbida
   - media-gfx/sfftobmp
-  - media-gfx/maim
   - media-gfx/ebdftopcf
   - media-gfx/autopano-sift-C
   - media-gfx/flam3
@@ -1160,7 +1124,6 @@ packages:
   - media-gfx/scour
   - media-gfx/printrun
   - media-gfx/img2pdf
-  - media-gfx/sane-frontends
   - media-gfx/quat
   - media-gfx/mypaint
   - media-gfx/gnofract4d
@@ -1175,7 +1138,6 @@ packages:
   - media-gfx/exif
   - media-gfx/exact-image
   - media-gfx/engauge
-  - media-gfx/hugin
   - media-gfx/povtree
   - media-gfx/freewrl
   - media-gfx/gozer
@@ -1228,7 +1190,6 @@ packages:
   - media-gfx/evoluspencil
   - media-gfx/panini
   - media-gfx/photoqt
-  - media-gfx/enblend
   - media-gfx/luminance-hdr
   - media-gfx/iscan-plugin-gt-f500
   - media-gfx/apng2gif
@@ -1240,13 +1201,11 @@ packages:
   - media-gfx/mirage
   - media-gfx/aview
   - media-gfx/jpegpixi
-  - media-gfx/sane-backends
   - media-gfx/gimageview
   - media-gfx/peps
   - media-gfx/wings
   - media-gfx/ufraw
   - media-gfx/duhdraw
-  - media-gfx/xsane
   - media-gfx/mscgen
   - media-gfx/svg2rlg
   - media-gfx/gmic

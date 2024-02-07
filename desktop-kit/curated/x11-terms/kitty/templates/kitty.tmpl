@@ -2,12 +2,16 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( {{python_compat}} )
+PYTHON_COMPAT=( python3_9+ )
 
-inherit python-single-r1 toolchain-funcs xdg
+inherit python-single-r1 toolchain-funcs xdg go-module
+EGO_SUM=(
+{{gosum}})
 
-SRC_URI="{{artifacts[0].src_uri}}"
-KEYWORDS="{{keywords}}"
+go-module_set_globals
+
+SRC_URI="{{src_uri}}"
+KEYWORDS="next"
 
 DESCRIPTION="{{ description }}"
 HOMEPAGE="https://github.com/kovidgoyal/kitty"
@@ -36,6 +40,7 @@ RDEPEND="
 	x11-libs/libxkbcommon[X]
 	x11-libs/libXrandr
 	net-libs/librsync
+	dev-libs/xxhash
 	wayland? (
 		dev-libs/wayland
 		>=dev-libs/wayland-protocols-1.17
@@ -57,6 +62,8 @@ PATCHES=(
 		{{gen_path}}/files/{{patch}}
 	{%- endfor %}
 )
+
+QA_FLAGS_IGNORED="usr/bin/kitten" # written in Go
 
 src_prepare() {
 	default
@@ -106,7 +113,8 @@ src_install() {
 	doins -r linux-package/*
 	dobin linux-package/bin/kitty
 
-	fperms +x /usr/$(get_libdir)/kitty/shell-integration/ssh/{askpass.py,kitty}
+	fperms +x /usr/$(get_libdir)/kitty/shell-integration/ssh/kitty
+	fperms +x /usr/bin/kitten
 
 	python_fix_shebang "${ED}"
 }

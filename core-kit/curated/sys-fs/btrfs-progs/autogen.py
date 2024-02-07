@@ -14,16 +14,15 @@ async def generate(hub, **pkginfo):
 	for link in soup.find_all("a"):
 		href = link.get("href")
 		if href.endswith(".tar.xz"):
-			vers.append( href.split(pkg_name)[1].split(".tar")[0].split("-")[-1])
+			vers.append( href.split(pkg_name)[1].split(".tar")[0].split("-")[1])
 
-	latest_version = sorted(vers, key=lambda v: version.parse(v)).pop()
-
-	final_name = f"{pkg_name}-{latest_version}.tar.xz"
+	latest_version = sorted(vers, key=lambda v: version.parse(v)).pop().lstrip("v")
+	final_name = f"{pkg_name}-v{latest_version}.tar.xz"
 	url = f"{url}{final_name}"
 
 	ebuild = hub.pkgtools.ebuild.BreezyBuild(
 		**pkginfo,
-		version=latest_version.lstrip("v"),
+		version=latest_version,
 		artifacts=[hub.pkgtools.ebuild.Artifact(url=url, final_name=final_name)],
 	)
 	ebuild.push()

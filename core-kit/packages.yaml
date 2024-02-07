@@ -1,12 +1,7 @@
 copyfiles:
-- deadbeef:
-  - src: profiles/package.mask
-    dest: profiles/package.mask/deadbeef.mask
 - flora:
   - src: licenses/renoise-EULA
 eclasses:
-- deadbeef:
-  - deadbeef-plugins
 - faustoo:
   - waf
   - googlecode
@@ -140,7 +135,6 @@ packages:
   - sys-libs/nss_wrapper
   - sys-libs/fts-standalone
   - sys-libs/libunwind
-  - sys-libs/libstatgrab
   - sys-libs/queue-standalone
   - sys-libs/libblockdev
   - sys-libs/cracklib
@@ -211,7 +205,6 @@ packages:
   - sys-fs/pytagsfs
   - sys-fs/exfat-utils
   - sys-fs/dd-rescue
-  - sys-fs/ntfs3g
   - sys-fs/quota
   - sys-fs/fuse-common
   - sys-fs/lsscsi
@@ -286,7 +279,6 @@ packages:
   - sys-fs/tmsu
   - sys-fs/f2fs-tools
   - sys-fs/growpart
-  - sys-fs/bindfs
   - sys-fs/yaffs2-utils
   - sys-fs/udftools
   - sys-fs/extundelete
@@ -303,12 +295,10 @@ packages:
   - net-dialup/ppp
   - net-dialup/ppp-scripts
   - sys-apps/gentoo-functions
-  - sys-apps/man-db
   - sys-apps/acl
   - sys-apps/debianutils
   - sys-apps/install-xattr
   - sys-apps/net-tools
-  - sys-apps/help2man
   - sys-apps/haveged
   - sys-apps/pcsc-lite
   - sys-apps/paxctl
@@ -327,7 +317,6 @@ packages:
   - sys-apps/gptfdisk
   - app-admin/syslog-ng
   - app-admin/mcelog
-  - app-portage/repoman
   - app-portage/elt-patches
   - virtual/dev-manager
   - virtual/udev
@@ -449,7 +438,6 @@ packages:
   - app-admin/chrpath
   - app-admin/durep
   - app-admin/eclean-kernel
-  - app-arch/advancecomp
   - app-arch/arj
   - app-arch/brotli
   - app-arch/cabextract
@@ -488,7 +476,6 @@ packages:
   - app-emulation/spice-protocol
   - app-emulation/vice
   - app-emulation/virtio-win
-  - app-emulation/xen-tools
   - app-misc/byobu
   - sys-apps/pcsc-tools
   - sys-process/dcron
@@ -504,7 +491,6 @@ packages:
   - sys-devel/gdb
   - sys-devel/ucpp
   - sys-kernel/genkernel-next
-  - sys-kernel/gentoo-sources
   - sys-apps/pacman
   - sys-apps/usermode-utilities
   - sys-apps/pv
@@ -514,25 +500,12 @@ packages:
   - app-admin/packagekit-gtk
   - app-admin/packagekit-qt
   - app-admin/supervisor
-  - sys-kernel/aufs-sources
-  - sys-kernel/ck-sources
   - sys-kernel/dracut-crypt-ssh
-  - sys-kernel/pf-sources
-  - sys-kernel/raspberrypi-sources
-  - sys-kernel/vanilla-sources
-  - sys-kernel/zen-sources
-  - sys-kernel/xbox-sources
-  - sys-kernel/rt-sources
   - sys-kernel/raspberrypi-image
-  - sys-kernel/mips-sources
-  - sys-kernel/git-sources
   - sys-kernel/cryptodev
-  - sys-kernel/bliss-initramfs
   - sys-kernel/linux-docs
   - sys-kernel/kergen
   - sys-kernel/kpatch
-  - app-admin/grubconfig
-  - app-misc/mc
   - app-misc/vlock
   - sys-apps/etckeeper
   - sys-apps/fbset

@@ -1,12 +1,7 @@
 copyfiles:
-- deadbeef:
-  - src: profiles/package.mask
-    dest: profiles/package.mask/deadbeef.mask
 - flora:
   - src: licenses/renoise-EULA
 eclasses:
-- deadbeef:
-  - deadbeef-plugins
 - faustoo:
   - waf
   - googlecode
@@ -200,9 +195,7 @@ packages:
   - dev-libs/libintl
   - dev-libs/iniparser
   - dev-libs/npth
-  - dev-libs/libusb
   - dev-libs/libltdl
-  - dev-libs/libusb-compat
   - dev-libs/check
   - dev-libs/libffi
   - dev-libs/elfutils
@@ -314,7 +307,6 @@ packages:
   - sys-fs/tmsu
   - sys-fs/f2fs-tools
   - sys-fs/growpart
-  - sys-fs/bindfs
   - sys-fs/yaffs2-utils
   - sys-fs/udftools
   - sys-fs/extundelete
@@ -521,8 +513,6 @@ packages:
   - app-emulation/libspectrum
   - app-emulation/qemu-guest-agent
   - app-emulation/slirp4netns
-  - app-emulation/spice
-  - app-emulation/spice-protocol
   - app-emulation/vice
   - app-emulation/virtio-win
   - app-emulation/xen-tools

@@ -1,21 +1,45 @@
-# Note that the following packages are specific to Python 2.7, so we will not be porting these
-# to autogen, even though they are on stage3's with python2.7 enabled:
-#
-# python2 things that will go away:
-# - backports
-# - configparser
-# - contextlib2
-# - functools32
-# - future
-# - pathlib2
-#
-#
-#
-# Here are some things that we should autogen that are on stage3:
+namespaces:
+  generator: python-namespace-1
+  packages:
+    - namespace-google:
+        version: '1'
+    - namespace-sphinxcontrib:
+        version: '1.0'
+    - namespace-zope:
+        version: '1'
+
+python-github:
+  defaults:
+    python_compat: python3+
+  generator: python-github-1
+  packages:
+    - subunit:
+        github:
+          user: testing-cabal
+          query: releases
+        pydeps:
+          - iso8601
+          - testtools
+
+bleach:
+  defaults:
+    python_compat: python2+ pypy3 pypy
+  generator: pypi-compat-1
+  packages:
+    - bleach:
+        pydeps:
+          - six >= 1.9.0
+          - webencodings
+          - tinycss2
+    - webencodings
+    - tinycss2:
+        pydeps:
+          - webencodings
 
 autogens:
   defaults:
-    python_compat: python2+ pypy3 pypy
+    python_compat: python3+
+    du_pep517: generator
   generator: pypi-compat-1
   packages:
     - commonmark:
@@ -35,10 +59,18 @@ autogens:
                   ewarn "/usr/bin/cmark has been renamed to /usr/bin/cmark.py due file"
                   ewarn "collision with app-text/cmark (see bug #627034)"
           }
+    - cachetools
+    - cssselect
+    - iso8601
     - jsonpointer:
         pydeps:
           py:all:build:
             - setuptools
+    - pyinotify
+    - pyrfc3339:
+        pypi_name: pyRFC3339
+        pydeps:
+          - pytz
     - regex:
         compat: 2020.9.27
         blocker: '!<dev-python/regex-2018'
@@ -57,27 +89,34 @@ autogens:
             sed -i -r "s:('|\")pytest-runner('|\")(,|)::" setup.py || die
             distutils-r1_python_prepare_all
           }
-    - strict-rfc3339
+    - rsa:
+        compat: '4.4'
+        blocker: '!<dev-python/rsa-4.9'
+        pydeps:
+          - pyasn1
     - scandir
+    - setproctitle:
+        du_pep517: generator
+        blocker: '!<dev-python/setproctitle-1.3.3'
+        compat: 1.1.9
+    - simplejson
+    - strict-rfc3339
+    - typing-extensions:
+        du_pep517: flit
     - webcolors:
         compat: '1.9'
         blocker: '!<dev-python/webcolors-1.9'
     - zipp:
-        compat: 1.2.0
-        blocker: '!<dev-python/zipp-0.8'
-
-pypi_simple_rule:
-  generator: pypi-simple-1
-  packages:
-    - pyicu:
-        pypi_name: PyICU
-        python_compat: python3+
-        patches:
-          - pyicu-2.10-fix_displayoptions.patch
-        rdepend: |
-          dev-libs/icu:=
-        body: |
-          DOCS=( CHANGES CREDITS README.md )
+        python_compat: python3+ pypy3
+        compat: '1.2.0'
+        blocker: '!<=dev-python/zipp-2'
+        homepage: https://github.com/jaraco/zipp
+        license: MIT
+        pydeps:
+          py:all:
+            - toml
+            - setuptools_scm
+    - ujson
 
 
 pypi_compat_rule:
@@ -155,4 +194,56 @@ pypi_compat_rule:
             use examples && dodoc -r examples
             distutils-r1_python_install_all
           }
+    - pyicu:
+        pypi_name: PyICU
+        python_compat: python3+
+        patches:
+          - pyicu-2.10-fix_displayoptions.patch
+        rdepend: |
+          dev-libs/icu:=
+        body: |
+          DOCS=( CHANGES CREDITS README.md )
+    - werkzeug:
+        pydeps:
+          - markupsafe
 
+github_pythons:
+  generator: python-github-1
+  defaults:
+    python_compat: python3+ pypy3
+  packages:
+    - python-xlib:
+        desc: A fully functional X client library for Python, written in Python
+        github:
+          query: releases
+        pydeps:
+          py:all:
+            - six
+          py:all:build:
+            - setuptools_scm
+            - packaging
+          use:test:
+            - mock
+        depend: |
+          doc? ( sys-apps/texinfo )
+        iuse: doc test
+        inherit:
+          - virtualx
+        license: LGPL-2+
+        body: |
+          python_compile_all() {
+            use doc && emake -C doc/info
+          }
+
+          src_test() {
+            virtx distutils-r1_src_test
+          }
+
+          python_test() {
+            "${EPYTHON}" -m unittest discover -v || die "Tests fail with ${EPYTHON}"
+          }
+
+          python_install_all() {
+            use doc && doinfo doc/info/*.info
+            distutils-r1_python_install_all
+          }

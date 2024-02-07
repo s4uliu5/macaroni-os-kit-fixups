@@ -7,7 +7,6 @@ packages:
   - sci-visualization/gnuplot
   - sci-visualization/xd3d
   - sci-visualization/tensorboard
-  - sci-visualization/gle
   - sci-visualization/gfsview
   - sci-visualization/spyview
   - sci-visualization/veusz
@@ -41,7 +40,6 @@ packages:
   - sci-calculators/transcalc
   - sci-calculators/grpn
   - sci-calculators/hexcalc
-  - sci-calculators/galculator
   - sci-calculators/calculator
   - sci-calculators/wcalc
   - sci-calculators/orpie
@@ -126,7 +124,6 @@ packages:
   - sci-libs/xylib
   - sci-libs/clashscore-db
   - sci-libs/libticonv
-  - sci-libs/gsl
   - sci-libs/mmtk
   - sci-libs/getdata
   - sci-libs/coinor-clp

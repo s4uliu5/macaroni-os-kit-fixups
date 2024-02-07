@@ -2,15 +2,11 @@
 
 EAPI=7
 
-CRATES="
-{{crates}}"
-
 inherit bash-completion-r1 cargo
 
 DESCRIPTION="A search tool that combines the usability of ag with the raw speed of grep"
 HOMEPAGE="https://github.com/{{github_user}}/{{github_repo}}"
-SRC_URI="{{artifacts[0].src_uri}}
-	$(cargo_crate_uris ${CRATES})"
+SRC_URI="{{src_uri}}"
 
 LICENSE="Apache-2.0 Boost-1.0 BSD BSD-2 CC0-1.0 ISC LGPL-3+ MIT Apache-2.0 Unlicense ZLIB"
 SLOT="0"
@@ -51,16 +47,25 @@ src_install() {
 	local BUILD_DIR="$(dirname $(find target/release -name ripgrep-stamp -print -quit))"
 
 	if use man ; then
-	    doman "${BUILD_DIR}"/rg.1
+		newman - rg.1 <<-EOF
+		$(target/$(usex debug debug release)/rg --generate man)
+		EOF
 	fi
 
-	newbashcomp "${BUILD_DIR}"/rg.bash rg
+	newbashcomp - rg <<-EOF
+	$(target/$(usex debug debug release)/rg --generate complete-bash)
+	EOF
 
 	insinto /usr/share/fish/vendor_completions.d
-	doins "${BUILD_DIR}"/rg.fish
+	newins - rg.fish <<-EOF
+	$(target/$(usex debug debug release)/rg --generate complete-fish)
+	EOF
 
 	insinto /usr/share/zsh/site-functions
-	doins complete/_rg
+	newins - _rg <<-EOF
+	$(target/$(usex debug debug release)/rg --generate complete-zsh)
+	EOF
+
 
 	dodoc CHANGELOG.md FAQ.md GUIDE.md README.md
 }

@@ -9,6 +9,8 @@ media_catpkg:
         github:
           query: releases
     - libheif:
+        # FL-11298:
+        version: 1.15.2
         github:
           user: strukturag
           query: releases
@@ -22,4 +24,37 @@ media_catpkg:
         github:
           user: jasper-software
           repo: jasper
+          query: releases
+    - oidn:
+        assets:
+          src: oidn-{version}.src.tar.gz
+        github:
+          user: OpenImageDenoise
+          repo:  oidn
+          query: releases
+    - libharu:
+        github:
+          user: libharu
+          repo: libharu
+          query: releases
+    - opencolorio:
+        versions:
+          2.1.2:
+            github:
+              user: AcademySoftwareFoundation
+              repo: OpenColorIO
+              query: releases
+            python_compat: python3+
+    - gd:
+        desc: GD is an open source code library for the dynamic creation of images by programmers.
+        homepage: https://libgd.github.io/
+        github:
+          user: libgd
+          repo: libgd
+          query: tags
+        select: 'gd-[0-9.]*$'
+    - harfbuzz:
+        github:
+          user: harfbuzz
+          repo: harfbuzz
           query: releases

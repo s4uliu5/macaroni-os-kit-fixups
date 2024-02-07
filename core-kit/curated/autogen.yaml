@@ -8,6 +8,26 @@ github_rule:
           user: libarchive
           repo: libarchive
           query: releases
+          tarball: libarchive-{version}.tar.gz
+    - minizip-ng:
+        cat: sys-libs
+        github:
+          user: zlib-ng
+          repo: minizip-ng
+          query: releases
+    - zlib-ng:
+        cat: sys-libs
+        github:
+          user: zlib-ng
+          repo: zlib-ng
+          query: releases
+    - bindfs:
+        cat: sys-fs
+        github:
+          user: mpartel
+          repo: bindfs
+          query: tags
+
 
 debian_rule:
   generator: debian
@@ -28,6 +48,8 @@ libbsd_rule:
           url: https://libbsd.freedesktop.org/releases/
           format: tar.xz
           order: asc
+        revision:
+          '0.11.7': '1'
     - libmd:
         cat: app-crypt
         desc: Message Digest functions from BSD systems
@@ -151,3 +173,57 @@ lpg_suite:
         dir:
           url: https://gnupg.org/ftp/gcrypt/libksba/
           format: tar.bz2
+
+libnml_rule:
+  generator: dirlisting
+  packages:
+    - libmnl:
+        cat: net-libs
+        desc: Minimalistic netlink library
+        homepage: https://netfilter.org/projects/libmnl/
+        dir:
+          url: https://www.netfilter.org/pub/libmnl/
+          format: tar.bz2
+          order: asc
+
+
+parallel_rule:
+  generator: dirlisting-1
+  packages:
+    - parallel:
+        cat: sys-process
+        desc: A shell tool for executing jobs in parallel locally or on remote machines
+        homepage: https://www.gnu.org/software/parallel/
+        dir:
+          url: https://ftp.gnu.org/gnu/parallel/
+          order: asc
+          format: tar.bz2
+
+
+corenetwork_rule:
+  generator: github-1
+  packages:
+    - corenetwork:
+        cat: sys-apps
+        desc: Funtoo's networking scripts.
+        homepage: http://www.funtoo.org/Networking
+        github:
+          user: funtoo
+          repo: corenetwork
+          query: tags
+
+daemontools_rule:
+  generator: github-1
+  packages:
+    - daemontools-encore:
+        cat: sys-process
+        desc: Collection of tools for managing UNIX services
+        homepage: https://untroubled.org/daemontools-encore/
+        github:
+          user: bruceg
+          repo: daemontools-encore
+          query: tags
+        patches:
+          - 1.11-implicit-func-decl-clang16.patch
+          - 1.11-use-posix-complaint-functions.patch
+

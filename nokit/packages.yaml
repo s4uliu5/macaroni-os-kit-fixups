@@ -148,7 +148,6 @@ packages:
   - app-admin/r10k
   - app-admin/radmind
   - app-admin/ranpwd
-  - app-admin/rcm
   - app-admin/recursos
   - app-admin/reportmagic
   - app-admin/restart-services
@@ -1199,7 +1198,6 @@ packages:
   - sys-apps/dchroot
   - sys-apps/dnotify
   - sys-apps/dog
-  - sys-apps/dstat
   - sys-apps/duc
   - sys-apps/edac-utils
   - sys-apps/edid-fixdim
@@ -1297,7 +1295,6 @@ packages:
   - sys-apps/pcmciautils
   - sys-apps/pcsc-slb-rf72-drv
   - sys-apps/pick
-  - sys-apps/pkgcore
   - sys-apps/pmount-gui
   - sys-apps/powerpc-utils
   - sys-apps/prctl

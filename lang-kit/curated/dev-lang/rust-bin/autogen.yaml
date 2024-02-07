@@ -1,0 +1,35 @@
+rust-gen_rule:
+  defaults:
+    cat: dev-lang
+    target_arches:
+      abi_x86_64:
+        - pattern: x86_64*
+          chost: x86_64-unknown-linux-gnu
+      arm:
+        - pattern: armv6j*s*
+          chost: arm-unknown-linux-gnueabi
+        - pattern: armv6j*h*
+          chost: arm-unknown-linux-gnueabihf
+        - pattern: armv7a*h*
+          chost: armv7-unknown-linux-gnueabihf
+      arm64:
+        - pattern: aarch64*
+          chost: aarch64-unknown-linux-gnu
+      riscv64:
+        - pattern: riscv64*
+          chost: riscv64gc-unknown-linux-gnu
+
+  packages:
+    - rust-bin:
+        revision:
+          1.70.0: 1
+          1.69.0: 1
+        version:
+          latest: {}
+          1.69.0: {}
+        extra_components:
+          rust-src:
+            name: rust-src
+          wasm:
+            name: rust-std
+            chost: wasm32-unknown-unknown

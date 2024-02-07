@@ -14,7 +14,7 @@
 # written in the go programming language that uses modules.
 #
 # If the software you are packaging  has a file named go.mod in its top
-# level directory, it uses modules and  your ebuild should inherit this
+# level directory, it uses modules and	your ebuild should inherit this
 # eclass. If it does not, your ebuild should use the golang-* eclasses.
 #
 # If, besides go.mod, your software has a directory named vendor in its
@@ -35,8 +35,8 @@
 # inherit go-module
 #
 # EGO_SUM=(
-#   "github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59/go.mod"
-#   "github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59"
+#	"github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59/go.mod"
+#	"github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59"
 # )
 #
 # go-module_set_globals
@@ -183,8 +183,8 @@ declare -A -g _GOMODULE_GOSUM_REVERSE_MAP
 # Convert the information in EGO_SUM for other usage in the ebuild.
 # - Populates EGO_SUM_SRC_URI that can be added to SRC_URI
 # - Exports _GOMODULE_GOSUM_REVERSE_MAP which provides reverse mapping from
-#   distfile back to the relative part of SRC_URI, as needed for
-#   GOPROXY=file:///...
+#	distfile back to the relative part of SRC_URI, as needed for
+#	GOPROXY=file:///...
 go-module_set_globals() {
 	local line exts
 	# for tracking go.sum errors
@@ -244,6 +244,7 @@ go-module_set_globals() {
 			_distfile="${_reluri//\//%2F}"
 
 			EGO_SUM_SRC_URI+=" ${_uri} -> ${_distfile}${newline}"
+			EGO_A+="${_distfile}${newline}"
 			_GOMODULE_GOSUM_REVERSE_MAP["${_distfile}"]="${_reluri}"
 		done
 	done
@@ -259,6 +260,7 @@ go-module_set_globals() {
 	# Ensure these variables are not changed past this point
 	readonly EGO_SUM
 	readonly EGO_SUM_SRC_URI
+	readonly EGO_A
 	readonly _GOMODULE_GOSUM_REVERSE_MAP
 
 	# Set the guard that we are safe
@@ -268,13 +270,15 @@ go-module_set_globals() {
 # @FUNCTION: go-module_src_unpack
 # @DESCRIPTION:
 # - If EGO_VENDOR is set, use the deprecated function to unpack the base
-#   tarballs and the tarballs indicated in EGO_VENDOR to the correct
-#   locations.
+#	tarballs and the tarballs indicated in EGO_VENDOR to the correct
+#	locations.
 # - Otherwise, if EGO_SUM is set, unpack the base tarball(s) and set up the
-#   local go proxy.
+#	local go proxy.
 # - Otherwise do a normal unpack.
 go-module_src_unpack() {
-	if [[ "${#EGO_VENDOR[@]}" -gt 0 ]]; then
+	if [ "${A/${P}-funtoo-go-bundle-/}" != "${A}" ]; then
+		_go-module_src_unpack_funtoo_bundle
+	elif [[ "${#EGO_VENDOR[@]}" -gt 0 ]]; then
 		_go-module_src_unpack_vendor
 	elif [[ "${#EGO_SUM[@]}" -gt 0 ]]; then
 		_go-module_src_unpack_gosum
@@ -284,11 +288,44 @@ go-module_src_unpack() {
 }
 
 go-module_src_prepare() {
+	if [ ${#EGO_SUM} != 0 ] || [ ${#GOPROXY} != 0 ]; then
+		_go-module_src_prepare_verify_gosum
+	fi
 	# See Funtoo Linux bug FL-6885,FL-9561 for why this is needed:
 	xdg_environment_reset
 	default
 }
 
+# @FUNCTION: _go-module_src_unpack_gosum
+# @DESCRIPTION:
+# Populate a GOPROXY directory hierarchy with distfiles from a Funtoo Go
+# bundle and unpack the base distfiles.
+#
+# Exports GOPROXY environment variable so that Go calls will source the
+# directory correctly.
+_go-module_src_unpack_funtoo_bundle() {
+	einfo "Using Funtoo Go Bundle..."
+
+	local goproxy_dir="${T}/go-proxy"
+	mkdir -p "${goproxy_dir}" || die
+
+	local f
+	local dep
+	local goproxy_mod_dir
+	local go_srcdir="${WORKDIR}"/funtoo-go-bundle-"${PN}"
+
+	unpack ${A}
+
+	for dep in "${go_srcdir}"/*; do
+		f="${dep#"${go_srcdir}/"}"
+		# Unescape slashes in filename to get the path in the goproxy directory
+		goproxy_mod_path="${f//\%2F//}"
+
+		_go-module_process_dependency "${f}" "${goproxy_mod_path}"
+	done
+
+	export GOPROXY="file://${goproxy_dir}"
+}
 
 # @FUNCTION: _go-module_src_unpack_gosum
 # @DESCRIPTION:
@@ -298,6 +335,7 @@ go-module_src_prepare() {
 # Exports GOPROXY environment variable so that Go calls will source the
 # directory correctly.
 _go-module_src_unpack_gosum() {
+
 	# shellcheck disable=SC2120
 	debug-print-function "${FUNCNAME}" "$@"
 
@@ -312,28 +350,43 @@ _go-module_src_unpack_gosum() {
 	# symlink into place.
 	local f
 	local goproxy_mod_dir
-	for f in ${A}; do
+	for f in $A; do
 		goproxy_mod_path="${_GOMODULE_GOSUM_REVERSE_MAP["${f}"]}"
-		if [[ -n "${goproxy_mod_path}" ]]; then
-			debug-print-function "Populating go proxy for ${goproxy_mod_path}"
-			# Build symlink hierarchy
-			goproxy_mod_dir=$( dirname "${goproxy_dir}"/"${goproxy_mod_path}" )
-			mkdir -p "${goproxy_mod_dir}" || die
-			ln -sf "${DISTDIR}"/"${f}" "${goproxy_dir}/${goproxy_mod_path}" ||
-				die "Failed to ln"
-			local v=${goproxy_mod_path}
-			v="${v%.mod}"
-			v="${v%.zip}"
-			v="${v//*\/}"
-			_go-module_gosum_synthesize_files "${goproxy_mod_dir}" "${v}"
-		else
-			unpack "$f"
-		fi
+		_go-module_process_dependency "${f}" "${goproxy_mod_path}"
 	done
 	export GOPROXY="file://${goproxy_dir}"
+}
 
-	# Validate the gosum now
-	_go-module_src_unpack_verify_gosum
+# @FUNCTION: _go-module_process_dependency
+# @DESCRIPTION:
+# Symlinks a Go module into a target Goproxy directory.
+#
+# Requires `go_srcdir` and `goproxy_dir` to be set accordingly by the caller.
+_go-module_process_dependency() {
+	local f=$1
+	local goproxy_mod_path=$2
+
+	if [[ -n "${goproxy_mod_path}" ]]; then
+		debug-print-function "Populating go proxy for ${goproxy_mod_path}"
+
+		# Build symlink hierarchy
+		goproxy_mod_dir=$( dirname "${goproxy_dir}"/"${goproxy_mod_path}" )
+
+		mkdir -p "${goproxy_mod_dir}" || die
+
+		ln -sf "${go_srcdir}"/"${f}" "${goproxy_dir}/${goproxy_mod_path}" ||
+			die "Failed to ln"
+
+		local v=${goproxy_mod_path}
+
+		v="${v%.mod}"
+		v="${v%.zip}"
+		v="${v//*\/}"
+
+		_go-module_gosum_synthesize_files "${goproxy_mod_dir}" "${v}"
+	else
+		unpack "$f"
+	fi
 }
 
 # @FUNCTION: _go-module_gosum_synthesize_files
@@ -365,7 +418,7 @@ _go-module_gosum_synthesize_files() {
 
 # @FUNCTION: _go-module_src_unpack_vendor
 # @DESCRIPTION:
-# Extract all archives in ${a} which are not nentioned in ${EGO_VENDOR}
+# Extract all archives in ${a} which are not mentioned in ${EGO_VENDOR}
 # to their usual locations then extract all archives mentioned in
 # ${EGO_VENDOR} to ${S}/vendor.
 _go-module_src_unpack_vendor() {
@@ -408,17 +461,13 @@ _go-module_src_unpack_vendor() {
 	eqawarn "Please request that the author migrate to EGO_SUM."
 }
 
-# @FUNCTION: _go-module_src_unpack_verify_gosum
+# @FUNCTION: _go-module_src_prepare_verify_gosum
 # @DESCRIPTION:
 # Validate the Go modules declared by EGO_SUM are sufficient to cover building
 # the package, without actually building it yet.
-_go-module_src_unpack_verify_gosum() {
+_go-module_src_prepare_verify_gosum() {
 	# shellcheck disable=SC2120
 	debug-print-function "${FUNCNAME}" "$@"
-
-	if [[ ! ${_GO_MODULE_SET_GLOBALS_CALLED} ]]; then
-		die "go-module_set_globals must be called in global scope"
-	fi
 
 	cd "${S}"
 

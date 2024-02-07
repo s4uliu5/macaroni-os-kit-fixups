@@ -30,7 +30,6 @@ packages:
   - dev-python/sdnotify
   - dev-python/singledispatch
   - dev-python/taskflow
-  - dev-python/cairocffi
   - dev-python/genshi
   - dev-python/flufl-i18n
   - dev-python/serverfiles
@@ -51,7 +50,6 @@ packages:
   - dev-python/urlgrabber
   - dev-python/hyperlink
   - dev-python/py-amqp
-  - dev-python/autobahn
   - dev-python/python-designateclient
   - dev-python/osprofiler
   - dev-python/xstatic-patternfly-bootstrap-treeview
@@ -99,7 +97,6 @@ packages:
   - dev-python/deprecation
   - dev-python/snappy
   - dev-python/txgithub
-  - dev-python/configargparse
   - dev-python/python-ctags
   - dev-python/simplejson
   - dev-python/speg
@@ -137,7 +134,6 @@ packages:
   - dev-python/pytest-runner
   - dev-python/pyte
   - dev-python/parsedatetime
-  - dev-python/pystache
   - dev-python/isodate
   - dev-python/pyopencl
   - dev-python/pydns
@@ -156,7 +152,6 @@ packages:
   - dev-python/python-sqlparse
   - dev-python/mkdocs
   - dev-python/nose_warnings_filters
-  - dev-python/lazy-object-proxy
   - dev-python/parse
   - dev-python/demjson
   - dev-python/rst2pdf
@@ -170,7 +165,6 @@ packages:
   - dev-python/pymssql
   - dev-python/rospkg
   - dev-python/bluelet
-  - dev-python/cement
   - dev-python/pytest-flake8
   - dev-python/sabyenc
   - dev-python/passlib
@@ -255,7 +249,6 @@ packages:
   - dev-python/pastedeploy
   - dev-python/cjkwrap
   - dev-python/mpi4py
-  - dev-python/wsgiproxy2
   - dev-python/bitstring
   - dev-python/radon
   - dev-python/pyutil
@@ -275,7 +268,6 @@ packages:
   - dev-python/jplephem
   - dev-python/bibtexparser
   - dev-python/logbook
-  - dev-python/hyper-h2
   - dev-python/flask-script
   - dev-python/rackspace-auth-openstack
   - dev-python/cov-core
@@ -394,7 +386,6 @@ packages:
   - dev-python/rebulk
   - dev-python/lockfile
   - dev-python/graphy
-  - dev-python/unittest2
   - dev-python/joblib
   - dev-python/os-testr
   - dev-python/stestr
@@ -506,7 +497,6 @@ packages:
   - dev-python/intervaltree
   - dev-python/cliff
   - dev-python/python-neutronclient
-  - dev-python/sqlalchemy
   - dev-python/liblarch
   - dev-python/setproctitle
   - dev-python/google-auth-httplib2
@@ -529,7 +519,6 @@ packages:
   - dev-python/tempora
   - dev-python/ipaddr
   - dev-python/cssselect
-  - dev-python/nautilus-python
   - dev-python/pypam
   - dev-python/llfuse
   - dev-python/coverage
@@ -575,7 +564,6 @@ packages:
   - dev-python/xstatic-jquery
   - dev-python/nose_fixes
   - dev-python/parver
-  - dev-python/idna-ssl
   - dev-python/pycson
   - dev-python/eventlet
   - dev-python/jsonpatch
@@ -639,7 +627,6 @@ packages:
   - dev-python/xapp
   - dev-python/bottle
   - dev-python/citeproc-py
-  - dev-python/eyeD3
   - dev-python/oauth2
   - dev-python/twisted-words
   - dev-python/xstatic-bootstrap-scss
@@ -700,7 +687,6 @@ packages:
   - dev-python/gevent-websocket
   - dev-python/flask-migrate
   - dev-python/python-axolotl-curve25519
-  - dev-python/pyquery
   - dev-python/twisted-conch
   - dev-python/plyr
   - dev-python/sphinx-bootstrap-theme
@@ -813,9 +799,7 @@ packages:
   - dev-python/reno
   - dev-python/socketpool
   - dev-python/google-auth
-  - dev-python/setuptools_scm_git_archive
   - dev-python/mysql-python
-  - dev-python/notify-python
   - dev-python/requests-mock
   - dev-python/pygal
   - dev-python/pytest-xprocess

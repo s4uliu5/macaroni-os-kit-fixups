@@ -132,7 +132,6 @@ packages:
   - dev-vcs/subversion
   - dev-vcs/bzr-xmloutput
   - dev-vcs/git-sh
-  - dev-vcs/python-gitlab
   - dev-vcs/rcs
   - dev-vcs/vcsh
   - dev-vcs/mr
@@ -540,7 +539,6 @@ packages:
   - dev-cpp/sourcetrail
   - dev-cpp/gstreamermm
   - dev-cpp/glog
-  - dev-cpp/websocketpp
   - dev-cpp/popl
   - dev-cpp/lucene++
   - dev-cpp/catch
@@ -565,7 +563,6 @@ packages:
   - dev-libs/redland-bindings
   - dev-libs/ossp-uuid
   - dev-libs/libax25
-  - dev-libs/utfcpp
   - dev-libs/fstrm
   - dev-libs/btparser
   - dev-libs/libg15
@@ -578,7 +575,6 @@ packages:
   - dev-libs/libbegemot
   - dev-libs/libspnav
   - dev-libs/libmowgli
-  - dev-libs/xxhash
   - dev-libs/libfstrcmp
   - dev-libs/pcc-libs
   - dev-libs/d0_blind_id
@@ -601,14 +597,12 @@ packages:
   - dev-libs/roct-thunk-interface
   - dev-libs/libbrahe
   - dev-libs/libcdio
-  - dev-libs/fribidi
   - dev-libs/libserialport
   - dev-libs/xapian-bindings
   - dev-libs/liblinear
   - dev-libs/libnsutils
   - dev-libs/cereal
   - dev-libs/angelscript
-  - dev-libs/xerces-c
   - dev-libs/crc32c
   - dev-libs/libsass
   - dev-libs/libtreadstone
@@ -651,7 +645,6 @@ packages:
   - dev-libs/ilbc-rfc3951
   - dev-libs/OpenNI
   - dev-libs/libindicator
-  - dev-libs/stfl
   - dev-libs/leveldb
   - dev-libs/locked_sstream
   - dev-libs/ucommon
@@ -792,7 +785,6 @@ packages:
   - dev-libs/librevenge
   - dev-libs/libburn
   - dev-libs/protobuf-c
-  - dev-libs/libsecp256k1
   - dev-libs/libb64
   - dev-libs/dbus-glib
   - dev-libs/cppcodec
@@ -801,7 +793,6 @@ packages:
   - dev-libs/libzip
   - dev-libs/gf2x
   - dev-libs/eb
-  - dev-libs/crypto++
   - dev-libs/freexl
   - dev-libs/ntl
   - dev-libs/geoip
@@ -811,7 +802,6 @@ packages:
   - dev-libs/libtermkey
   - dev-libs/libwapcaplet
   - dev-libs/poco
-  - dev-libs/libnatspec
   - dev-libs/darts
   - dev-libs/nanomsg
   - dev-libs/libbulletml
@@ -882,7 +872,6 @@ packages:
   - dev-util/tkdiff
   - dev-util/leaktracer
   - dev-util/cpputest
-  - dev-util/mingw-runtime
   - dev-util/clair
   - dev-util/cdiff
   - dev-util/kdstatemachineeditor
@@ -906,7 +895,6 @@ packages:
   - dev-util/yuicompressor
   - dev-util/ald
   - dev-util/lcov
-  - dev-util/dialog
   - dev-util/d-feet
   - dev-util/global
   - dev-util/cccc
@@ -1052,7 +1040,6 @@ packages:
   - dev-util/open-vcdiff
   - dev-util/vbindiff
   - dev-util/shflags
-  - dev-util/pkgcheck
   - dev-util/waf
   - dev-util/kyua
   - dev-util/gyp
@@ -1070,7 +1057,6 @@ packages:
   - dev-util/tup
   - dev-util/shc
   - dev-util/emilpro
-  - dev-util/howdoi
   - dev-util/uncrustify
   - dev-util/redo
   - dev-util/coccigrep
@@ -1123,7 +1109,6 @@ packages:
   - dev-util/rosinstall
   - dev-util/xxdiff
   - dev-util/complexity
-  - dev-util/catfish
   - dev-util/App-SVN-Bisect
   - dev-util/omake
   - dev-util/autodia
@@ -1151,7 +1136,6 @@ packages:
   - dev-util/rebar
   - dev-util/gob
   - dev-util/intel-ocl-sdk
-  - dev-util/mingw64-runtime
   - dev-util/regexxer
   - dev-util/stripe-mock
   - dev-util/nvidia-cuda-sdk
@@ -1160,8 +1144,6 @@ packages:
   - dev-games/hdl_dump
   - dev-games/vamos
   - dev-games/libmaitretarot
-  - dev-games/guichan
-  - dev-games/openscenegraph-qt
   - dev-games/ogre
   - dev-games/hlsdk
   - dev-games/irrlicht
@@ -1170,7 +1152,6 @@ packages:
   - dev-games/KXL
   - dev-games/poker-eval
   - dev-games/newton
-  - dev-games/openscenegraph
   - dev-games/flinker
   - dev-games/freecell-solver
   - dev-games/higan-ananke
@@ -1185,7 +1166,6 @@ packages:
   - dev-games/ps2-packer
   - dev-games/gtkradiant
   - dev-games/mygui
-  - dev-games/aseprite
   - dev-games/t4k-common
   - dev-games/flatzebra
   - dev-games/ois
@@ -1217,7 +1197,6 @@ packages:
   - dev-embedded/dc-tool-ip
   - dev-embedded/sdcc
   - dev-embedded/libftdi
-  - dev-embedded/platformio
   - dev-embedded/scratchbox-devkit-qemu
   - dev-embedded/sgpp-lite-arm-linux-bin
   - dev-embedded/gnap-dev
@@ -1262,11 +1241,9 @@ packages:
   - dev-embedded/dfu-programmer
   - dev-embedded/cpik
   - sys-apps/the_silver_searcher
-  - app-admin/lib_users
   - app-misc/calendar
   - app-misc/colordiff
   - app-misc/icdiff
-  - app-misc/jq
   - app-misc/linux-logo
   - app-misc/lockfile-progs
   - app-misc/ranger

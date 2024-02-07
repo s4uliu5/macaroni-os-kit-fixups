@@ -7,7 +7,6 @@ packages:
     - sys-firmware/ipxe
     - sys-firmware/sgabios
 - gentoo-staging:
-  - net-misc/dhcpcd
   - net-wireless/portapack-firmware
   - net-wireless/bladerf-firmware
   - sys-block/qla-fc-firmware
@@ -66,7 +65,6 @@ packages:
   - sys-power/acpid
   - sys-power/acpitool
   - sys-power/apcupsd
-  - sys-power/bbswitch
   - sys-power/cpupower
   - sys-power/nvram-wakeup
   - sys-power/pmtools
@@ -95,5 +93,4 @@ packages:
   - sys-apps/intel-sa-00075-tools
   - sys-apps/iucode_tool
   - sys-apps/ipmiutil
-  - sys-apps/irqbalance
   - sys-apps/lshw
