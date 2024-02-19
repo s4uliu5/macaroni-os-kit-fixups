@@ -1273,6 +1273,17 @@ simple_python_autogen_rule:
           https://github.com/PyCQA/pyflakes
           https://pypi.org/project/pyflakes/
         license: MIT
+    - pysol_cards:
+        python_compat: python3+
+        desc: Deal PySol FreeCell cards
+        homepage: |
+          https://github.com/shlomif/pysol_cards/
+          https://pypi.org/project/pysol-cards/
+        license: MIT
+        pydeps:
+          py:all:
+            - random2
+            - six
     - pylint:
         desc: Python code static checker
         license: GPL-2
@@ -1397,7 +1408,7 @@ simple_python_autogen_rule:
           }
     - m2crypto:
         pypi_name: M2Crypto
-        python_compat: python2+ pypy3
+        python_compat: python3+ pypy3
         inherit:
           - toolchain-funcs
         desc: A Python crypto and SSL toolkit
@@ -1430,7 +1441,7 @@ simple_python_autogen_rule:
             # https://bugs.gentoo.org/674112
             swig_define __ARM_PCS_VFP
 
-            distutils-r1_python_compile --openssl="${ESYSROOT}"/usr
+            distutils-r1_python_compile
           }
           python_test() {
             esetup.py test
@@ -2386,6 +2397,18 @@ pep517_compliance_rule:
               from gpep517.__main__ import main
               sys.exit(main())
             EOF
+          }
+    - pycups:
+        du_pep517: setuptools
+        iuse: examples
+        rdepend: 'net-print/cups'
+        body: |
+          python_install_all() {
+            distutils-r1_python_install_all
+            if use examples; then
+              dodoc -r examples
+              docompress -x /usr/share/doc/${PF}
+            fi
           }
     # This is a hard-coded ebuild for now... See FL-10181:
     # - installer:
