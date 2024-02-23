@@ -5,7 +5,7 @@ from distutils.version import LooseVersion
 
 def get_release(release_data):
 	releases = list(filter(lambda x: x["prerelease"] is False and x["draft"] is False, release_data))
-	return None if not releases else sorted(releases, key=lambda x: LooseVersion(x["tag_name"])).pop()
+	return None if not releases else sorted(releases, key=lambda x: LooseVersion(x["tag_name"].lstrip('v'))).pop()
 
 
 async def fetch_latest_release(hub, user, repo):
