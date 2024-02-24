@@ -15,7 +15,7 @@ async def fetch_latest_release(hub, user, repo):
 	latest_release = get_release(releases_dict)
 	if latest_release is None:
 		raise hub.pkgtools.ebuild.BreezyError(f"Can't find a suitable release of {repo}")
-	return latest_release["tag_name"]
+	return latest_release["tag_name"].lstrip("v")
 
 
 async def generate(hub, **pkginfo):
