@@ -3,10 +3,6 @@ containerd:
   packages:
     - containerd:
         versions:
-          1.5.18:
-            template: containerd.tmpl
-          1.6.28:
-            template: containerd-1.6.tmpl
           1.7.12:
             template: containerd-1.7.tmpl
           1.7.13:
