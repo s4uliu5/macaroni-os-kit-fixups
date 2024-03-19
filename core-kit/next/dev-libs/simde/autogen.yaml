@@ -1,8 +1,8 @@
-freeglut:
+simde:
   generator: github-1
   packages:
-    - freeglut:
+    - simde:
         github:
-          user: freeglut
-          repo: freeglut
+          user: simd-everywhere
+          repo: simde
           query: releases
