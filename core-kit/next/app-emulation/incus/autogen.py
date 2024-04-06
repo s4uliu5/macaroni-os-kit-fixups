@@ -3,8 +3,8 @@ from packaging.version import Version
 
 async def generate(hub, **pkginfo):
 	supported_releases = {
-		'latest': '>0.3.0',
-		'0.3.0': '==0.3.0',
+		'lts': '>=6.0.0',
+		'feature': '<1.0.0',
 	}
 	github_user = "lxc"
 	github_repo = "incus"
@@ -40,7 +40,7 @@ async def generate(hub, **pkginfo):
 		# So, version 0.4.0 for example will be 0.4 as tarball.
 		v = Version(pv)
 		tar_version = pv
-		if v.micro == 0:
+		if v.major < 6 and v.micro == 0:
 			tar_version = "%s.%s" % (v.major, v.minor)
 
 		url=f"https://github.com/lxc/incus/releases/download/v{pv}/incus-{tar_version}.tar.xz"
