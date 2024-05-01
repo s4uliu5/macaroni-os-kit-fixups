@@ -549,6 +549,12 @@ src_prepare() {
 		epatch "${FILESDIR}/patches/upstream-check-plus-stream.patch"
 	fi
 
+	if use nginx_modules_external_njs; then
+		cd "${mod_wd[njs]}" || die
+		sed -e 's/-Werror//g' -i auto/cc || die
+		cd "${S}" || die
+	fi
+
 	if use nginx_modules_external_naxsi; then
 		cd "${WORKDIR}/${mod_p[naxsi]}"
 		epatch "${FILESDIR}/patches/naxsi_1.21_pcre2.patch"
@@ -670,8 +676,11 @@ src_configure() {
 
 	for m in ${!mod_a[@]} ; do
 		[[ $m == "ndk" ]] && continue
+		[[ $m == "njs" ]] && continue
 		use nginx_modules_external_${m} && http_enabled=1 && nginx_configure+=" --add-module=${mod_wd[$m]}"
 	done
+
+	use nginx_modules_external_njs && http_enabled=1 && nginx_configure+=" --add-module=${mod_wd['njs']}/nginx"
 
 	if use nginx_modules_external_lua ; then
 		http_enabled=1
