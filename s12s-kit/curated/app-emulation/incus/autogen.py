@@ -3,8 +3,9 @@ from packaging.version import Version
 
 async def generate(hub, **pkginfo):
 	supported_releases = {
-		'lts': '>=6.0.0',
-		'feature': '<1.0.0',
+		'pre-lts': '<1.0.0',
+		'lts': '>=6.0.0,<6.1',
+		'post-lts': '>=6.1',
 	}
 	github_user = "lxc"
 	github_repo = "incus"
@@ -15,33 +16,30 @@ async def generate(hub, **pkginfo):
 	handled_releases=[]
 
 	for rel in json_list:
-		selectedVersion = None
-		version = rel["tag_name"][1:]
-
 		if len(supported_releases) == 0:
 			break
 
-		v1 = Version(version)
+		version = tar_version = ""
+		tag = rel["tag_name"][1:]
+
+		v1 = Version(tag)
 		for k, v in supported_releases.items():
 			selector = SpecifierSet(v)
 			if v1 in selector:
-				selectedVersion = k
+				v = Version(tag)
+				tar_version = tag
+				version = tag
+				if v.micro == 0 and k != "lts":
+					tar_version = "%s.%s" % (v.major, v.minor)
+
+				handled_releases.append([version, tar_version])
+				del supported_releases[k]
 				break
 
-		if selectedVersion:
-			handled_releases.append(version)
-			del supported_releases[k]
-			continue
-
 	artifacts = []
-	for pv in handled_releases:
+	for version_tar_version in handled_releases:
 
-		# Version with patch version zero is generated with only major and minor version.
-		# So, version 0.4.0 for example will be 0.4 as tarball.
-		v = Version(pv)
-		tar_version = pv
-		if v.micro == 0:
-			tar_version = "%s.%s" % (v.major, v.minor)
+		[pv, tar_version] = version_tar_version
 
 		url=f"https://github.com/lxc/incus/releases/download/v{pv}/incus-{tar_version}.tar.xz"
 		ebuild = hub.pkgtools.ebuild.BreezyBuild(
