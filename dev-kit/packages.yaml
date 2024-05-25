@@ -652,7 +652,6 @@ packages:
   - dev-libs/libite
   - dev-libs/libbase58
   - dev-libs/eekboard
-  - dev-libs/opensc
   - dev-libs/uulib
   - dev-libs/device-atlas-api-c
   - dev-libs/libnfc
@@ -1052,7 +1051,6 @@ packages:
   - dev-util/cucumber
   - dev-util/abootimg
   - dev-util/tinlink
-  - dev-util/clinfo
   - dev-util/unifdef
   - dev-util/its4
   - dev-util/wiggle
