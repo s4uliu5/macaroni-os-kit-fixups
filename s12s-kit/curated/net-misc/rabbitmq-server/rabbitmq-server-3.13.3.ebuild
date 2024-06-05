@@ -43,7 +43,8 @@ pkg_setup() {
 }
 
 src_compile() {
-	emake all docs dist
+	# Disable parallel make
+	emake -j1 all docs dist
 }
 
 src_install() {
@@ -56,6 +57,8 @@ src_install() {
 
 	einfo "Installing Erlang modules to ${targetdir}"
 	insinto "${targetdir}"
+	chmod +x escript/* || die
+	insopts -m0755
 	doins -r deps/rabbit/ebin deps/rabbit/include deps/rabbit/priv escript plugins
 
 	einfo "Installing server scripts to /usr/sbin"
@@ -90,6 +93,4 @@ pkg_preinst() {
 		elog "from 3.12 to be enabled. If any feature flags are not"
 		elog "enabled, the node will refuse to start."
 	fi
-
 }
-
