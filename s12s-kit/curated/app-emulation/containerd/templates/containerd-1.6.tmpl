@@ -1,11 +1,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit go-module systemd toolchain-funcs
+inherit go-module systemd
 
 DESCRIPTION="A daemon to control runC"
 HOMEPAGE="https://containerd.io/"
-SRC_URI="https://github.com/containerd/containerd/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="{{artifacts[0].src_uri}}"
 
 LICENSE="Apache-2.0"
 SLOT="0"
@@ -17,11 +17,11 @@ DEPEND="
 	seccomp? ( sys-libs/libseccomp )
 "
 
-# recommended version of runc is found in script/setup/runc-version
+# recommended version of runc is found at https://github.com/containerd/containerd/tree/release/1.5/script/setup
 RDEPEND="
 	${DEPEND}
-	>=app-emulation/runc-1.0
-	<app-emulation/runc-1.1
+	>=app-emulation/runc-1.1
+	<app-emulation/runc-1.2
 "
 
 BDEPEND="
@@ -33,6 +33,12 @@ BDEPEND="
 # upstream does not recommend stripping binary
 RESTRICT+=" strip test"
 
+post_src_unpack() {
+	if [ ! -d "${S}" ]; then
+		mv {{ github_user }}-{{ github_repo }}* "${S}" || die
+	fi
+}
+
 src_prepare() {
 	default
 	sed -i \
@@ -41,6 +47,12 @@ src_prepare() {
 	sed -i \
 		-e "s:/usr/local:/usr:" \
 		containerd.service || die
+
+		# Force "vendor" mode, because "readonly" does not work in sandbox
+		sed -i \
+		-e "s:-mod=readonly:-mod=vendor:" \
+		Makefile || die
+
 }
 
 src_compile() {
@@ -55,15 +67,16 @@ src_compile() {
 
 	myemakeargs=(
 		BUILDTAGS="${options[*]}"
-		GO_BUILD_FLAGS="-mod vendor"
 		LDFLAGS="$(usex hardened '-extldflags -fno-PIC' '')"
-		REVISION=1a1b383ad5b520349f13f9715e0cd1e2f132c087
+		REVISION="{{sha}}"
 		VERSION=v${PV}
 	)
 
 	# race condition in man target https://bugs.gentoo.org/765100
 	# we need to explicitly specify GOFLAGS for "go run" to use vendor source
-	GOFLAGS="-v -x -mod=vendor" emake "${myemakeargs[@]}" man -j1 #nowarn
+	# See https://bugs.funtoo.org/browse/FL-9417
+	export GOFLAGS="-v -x -mod=vendor"
+	emake "${myemakeargs[@]}" man -j1 #nowarn
 	emake "${myemakeargs[@]}" all
 
 }

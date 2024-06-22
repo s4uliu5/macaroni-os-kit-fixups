@@ -1,0 +1,15 @@
+containerd:
+  generator: github-1
+  packages:
+    - containerd:
+        versions:
+          1.5.18:
+            template: containerd.tmpl
+          1.6.33:
+            template: containerd-1.6.tmpl
+          1.7.17:
+            template: containerd-1.7.tmpl
+          1.7.18:
+            template: containerd-1.7.tmpl
+        github:
+          query: tags
