@@ -7,7 +7,7 @@ LUA_COMPAT=( lua5-{1..4} luajit )
 inherit cmake lua-single pax-utils tmpfiles user
 
 SRC_URI="https://github.com/rspamd/rspamd/archive/${PV}.tar.gz -> ${P}.tar.gz"
-KEYWORDS="*"
+KEYWORDS=""
 
 DESCRIPTION="Rapid spam filtering system"
 HOMEPAGE="
