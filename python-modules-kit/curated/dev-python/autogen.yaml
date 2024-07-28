@@ -635,7 +635,6 @@ dev_python_compat_rule:
             - hatch-vcs
     - pyopenssl:
         compat: '21.0.0'
-        pypi_name: pyOpenSSL
         blocker: '!<=dev-python/pyopenssl-23.1.1'
         homepage: https://github.com/pyca/pyopenssl
         license: Apache-2.0
@@ -757,6 +756,7 @@ dev_python_compat_rule:
 
           }
     - setuptools:
+        version: 70.3.0
         du_setuptools: 'no'
         desc: Collection of extensions to Distutils
         license: MIT
@@ -2028,6 +2028,7 @@ dev_python_simplified_rule:
             - toml
             - typing-extensions
     - cryptography:
+        version: '42.0.8'
         compat: '3.3.2'
         revision:
           '40.0.2': '1'
@@ -2311,6 +2312,8 @@ pep517_compliance_rule:
         du_pep517: standalone
         desc: Simplified packaging of Python modules (core module)
     - sip:
+        version: 6.8.3
+        du_pep517: generator
         license: SIP
         pydeps:
           - packaging
