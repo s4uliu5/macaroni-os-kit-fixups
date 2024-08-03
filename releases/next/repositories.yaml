@@ -63,7 +63,7 @@ release:
   # Have all of our remote configurations defined in one place for ease of maintenance
   remotes:
     dev:
-      url: url: ssh://git@gitlab.com/s12s/funtoo/{repo}
+      url: ssh://git@gitlab.com/s12s/funtoo/{repo}
     prod:
       url: ssh://git@gitlab.com/s12s/funtoo/{repo}
       mirrors:
