@@ -70,6 +70,7 @@ src_configure() {
 	# if we want it on (not just -flto)
 	# ... but allow turning it off.
 	local mycmakeargs=(
+		-DLUAJIT_INCLUDE_DIR=/usr/include/luajit-2.0/
 		-DENABLE_LTO=$(usex lto)
 		-DFEAT_TUI=$(usex tui)
 		-DPREFER_LUA=$(usex luajit no yes)
