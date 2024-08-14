@@ -27,7 +27,6 @@ DEPEND="
 	dev-libs/msgpack:0=
 	dev-lua/lpeg[luajit=]
 	dev-lua/luv[luajit=]
-	dev-lua/mpack[luajit=]
 	net-libs/libnsl
 	dev-libs/tree-sitter
 	luajit? ( dev-lang/luajit:2 )
@@ -71,7 +70,7 @@ src_configure() {
 	# ... but allow turning it off.
 	# ln -s "${BROOT}"/usr/bin/luajit "${BUILD_DIR}"/luajit || die
 	local mycmakeargs=(
-		-DLUAJIT_INCLUDE_DIR=/usr/include/luajit-2.0/
+		-DLUAJIT_INCLUDE_DIR=/usr/include/luajit-2.1/
 		-DENABLE_LTO=$(usex lto)
 		-DFEAT_TUI=$(usex tui)
 		-DPREFER_LUA=$(usex luajit no yes)
