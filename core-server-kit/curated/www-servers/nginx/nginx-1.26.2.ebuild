@@ -292,7 +292,7 @@ mod_lic["njs"]="as-is"
 mod_p["njs"]="${mod_pn["njs"]}-${mod_pv["njs"]}"
 mod_uri["njs"]="https://github.com/${mod_a["njs"]}/${mod_pn["njs"]}/archive/${mod_pv["njs"]}.tar.gz"
 mod_wd["njs"]="${WORKDIR}/${mod_p["njs"]}"
-mod_doc["njs"]="README"
+mod_doc["njs"]="README.md"
 
 inherit autotools eutils ssl-cert toolchain-funcs perl-module flag-o-matic user versionator pax-utils
 
