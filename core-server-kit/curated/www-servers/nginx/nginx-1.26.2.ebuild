@@ -139,8 +139,8 @@ mod_doc["push"]="README.md changelog.txt"
 # Lua (https://github.com/openresty/lua-nginx-module)
 mod_a["lua"]="openresty"
 mod_pn["lua"]="lua-nginx-module"
-mod_pv["lua"]="v0.10.27"
-# mod_sha["lua"]="f44c18859050be5af314bae8f05660478af5e31d"
+mod_pv["lua"]="v0.10.26"
+# mod_sha["lua"]="28cf5ce3b6ec8e7ab44eadac9cc1c3b6f5c387ba"
 mod_lic["lua"]="BSD-2"
 mod_p["lua"]="${mod_pn["lua"]}-${mod_pv["lua"]/v/}"
 mod_uri["lua"]="https://github.com/${mod_a["lua"]}/${mod_pn["lua"]}/archive/${mod_pv["lua"]}.tar.gz"
@@ -287,12 +287,12 @@ mod_doc["ajp"]="README"
 # njs-module (https://github.com/nginx/njs, as-is)
 mod_a["njs"]="nginx"
 mod_pn["njs"]="njs"
-mod_pv["njs"]="0.8.5"
+mod_pv["njs"]="0.8.4"
 mod_lic["njs"]="as-is"
 mod_p["njs"]="${mod_pn["njs"]}-${mod_pv["njs"]}"
 mod_uri["njs"]="https://github.com/${mod_a["njs"]}/${mod_pn["njs"]}/archive/${mod_pv["njs"]}.tar.gz"
 mod_wd["njs"]="${WORKDIR}/${mod_p["njs"]}"
-mod_doc["njs"]="README.md"
+mod_doc["njs"]="README"
 
 inherit autotools eutils ssl-cert toolchain-funcs perl-module flag-o-matic user versionator pax-utils
 
@@ -313,7 +313,7 @@ for m in ${!mod_a[@]} ; do
 done
 
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="*"
 
 # Package doesn't provide a real test suite
 RESTRICT="test"
