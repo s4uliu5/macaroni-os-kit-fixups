@@ -16,7 +16,7 @@ S="${WORKDIR}/${MY_PN}-${PV}"
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="*"
-IUSE="test"
+IUSE="luajit test"
 REQUIRED_USE="${LUA_REQUIRED_USE}"
 RESTRICT="!test? ( test )"
 
