@@ -64,9 +64,6 @@ PATCHES=(
 	"${FILESDIR}/${PN}-3.6-cmake-lua-version.patch"
 	"${FILESDIR}/${PN}-3.6-unbundle-lua.patch"
 	"${FILESDIR}/${PN}-3.6-unbundle-snowball.patch"
-
-	# see https://github.com/rspamd/rspamd/issues/5163
-	"${FILESDIR}/${PN}-3.10.0-libucl-type.patch"
 )
 
 pkg_setup() {
