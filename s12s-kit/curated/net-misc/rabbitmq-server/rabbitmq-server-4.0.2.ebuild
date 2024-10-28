@@ -47,6 +47,7 @@ src_compile() {
 	# https://bugs.gentoo.org/930093
 	# https://bugs.gentoo.org/930098
 	# https://bugs.gentoo.org/930133
+	export PROJECT_VERSION=${PV}
 	emake -j1 all docs dist
 }
 
