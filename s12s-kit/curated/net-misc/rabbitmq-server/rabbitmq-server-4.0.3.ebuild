@@ -18,7 +18,7 @@ IUSE=""
 RESTRICT="test"
 
 # See https://www.rabbitmq.com/which-erlang.html for Erlang version
-# See https://github.com/rabbitmq/rabbitmq-server/tree/main/deps/rabbitmq_cli#requirements for Elixir version
+# See https://github.com/rabbitmq/rabbitmq-server/blob/main/deps/rabbitmq_cli/mix.exs for Elixir version
 RDEPEND="
 	>=dev-lang/erlang-25.0[ssl] <dev-lang/erlang-27
 "
@@ -27,7 +27,7 @@ DEPEND="${RDEPEND}
 	app-arch/unzip
 	app-text/docbook-xml-dtd:4.5
 	app-text/xmlto
-	>=dev-lang/elixir-1.14 <dev-lang/elixir-1.17.0
+	>=dev-lang/elixir-1.14 <dev-lang/elixir-1.18.0
 	dev-libs/libxslt
 	$(python_gen_any_dep 'dev-python/simplejson[${PYTHON_USEDEP}]')
 "
@@ -43,7 +43,12 @@ pkg_setup() {
 }
 
 src_compile() {
-	emake all docs dist
+	# Disable parallel make
+	# https://bugs.gentoo.org/930093
+	# https://bugs.gentoo.org/930098
+	# https://bugs.gentoo.org/930133
+	export PROJECT_VERSION=${PV}
+	emake -j1 all docs dist
 }
 
 src_install() {
@@ -56,6 +61,8 @@ src_install() {
 
 	einfo "Installing Erlang modules to ${targetdir}"
 	insinto "${targetdir}"
+	chmod +x escript/* || die
+	insopts -m0755
 	doins -r deps/rabbit/ebin deps/rabbit/include deps/rabbit/priv escript plugins
 
 	einfo "Installing server scripts to /usr/sbin"
@@ -86,10 +93,8 @@ src_install() {
 
 pkg_preinst() {
 	if [[ -n ${REPLACING_VERSIONS} ]] && ver_test ${REPLACING_VERSIONS} -lt 3.13; then
-		elog "Upgrading to RabbitMQ 3.13 requires all feature flags"
-		elog "from 3.12 to be enabled. If any feature flags are not"
+		elog "Upgrading to RabbitMQ 4.0 requires all feature flags"
+		elog "from 3.13 to be enabled. If any feature flags are not"
 		elog "enabled, the node will refuse to start."
 	fi
-
 }
-
