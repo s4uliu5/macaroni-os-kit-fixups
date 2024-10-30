@@ -19,7 +19,7 @@ async def generate(hub, **pkginfo):
 	revision = { "9.18.1" : "3" }
 	artifacts = [
 		hub.pkgtools.ebuild.Artifact(url=url),
-		hub.pkgtools.ebuild.Artifact(url="https://s12s.host.funtoo.org/funtoo/distfiles/net-dns/bind/dyndns-samples.tbz2")
+		hub.pkgtools.ebuild.Artifact(url="https://fun.s12s.xyz/distfiles/dyndns-samples.tbz2")
 	]
 
 	bind = hub.pkgtools.ebuild.BreezyBuild(
