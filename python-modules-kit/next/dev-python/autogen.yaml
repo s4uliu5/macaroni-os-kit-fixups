@@ -103,9 +103,9 @@ autogens:
     - strict-rfc3339
     - typing-extensions:
         du_pep517: flit
-    - webcolors:
-        compat: '1.9'
-        blocker: '!<dev-python/webcolors-1.9'
+#    - webcolors:
+#        compat: '1.9'
+#        blocker: '!<dev-python/webcolors-1.9'
     - zipp:
         python_compat: python3+ pypy3
         compat: '1.2.0'
