@@ -1,0 +1,28 @@
+From c654696164268d435ad99ca35287af450da5c7d0 Mon Sep 17 00:00:00 2001
+From: Thomas Deutschmann <whissi@gentoo.org>
+Date: Sat, 23 May 2020 10:55:22 +0200
+Subject: [PATCH 2/4] libmariadb: fix mysql_st API regression
+
+Bug: https://jira.mariadb.org/browse/MDEV-12950
+Signed-off-by: Thomas Deutschmann <whissi@gentoo.org>
+---
+ libmariadb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Submodule libmariadb e1645a3efad..279b70c723a:
+diff --git a/libmariadb/include/mysql.h b/libmariadb/include/mysql.h
+index fdf6d1ba..84e409a3 100644
+--- a/libmariadb/include/mysql.h
++++ b/libmariadb/include/mysql.h
+@@ -375,7 +375,7 @@ struct st_mysql_options {
+     struct st_mysql_options options;
+     enum mysql_status status;
+     my_bool	free_me;		/* If free in mysql_close */
+-    my_bool	unused_1;
++    my_bool	reconnect;
+     char	        scramble_buff[20+ 1];
+     /* madded after 3.23.58 */
+     my_bool       unused_2;
+-- 
+2.45.2
+
