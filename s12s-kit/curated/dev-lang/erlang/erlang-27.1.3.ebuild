@@ -3,7 +3,7 @@
 EAPI=7
 WX_GTK_VER="3.0-gtk3"
 
-inherit flag-o-matic java-pkg-opt-2 toolchain-funcs systemd user wxwidgets
+inherit autotools flag-o-matic java-pkg-opt-2 toolchain-funcs systemd user wxwidgets
 
 # NOTE: If you need symlinks for binaries please tell maintainers or
 # open up a bug to let it be created.
