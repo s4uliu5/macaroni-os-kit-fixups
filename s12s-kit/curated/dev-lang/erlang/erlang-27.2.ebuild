@@ -44,7 +44,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-27-dont-ignore-LDFLAGS.patch
 	"${FILESDIR}"/${PN}-24.1.1-serial-configure.patch
 	"${FILESDIR}"/${PN}-25.1.2-c99.patch # Gentoo Bug #882887
-	"${FILESDIR}"/${PN}-26.2.4-test-errorinfo.patch
+	"${FILESDIR}"/${PN}-27.2-test-errorinfo.patch
 )
 
 SITEFILE=50"${PN}"-gentoo.el
