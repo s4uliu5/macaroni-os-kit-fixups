@@ -20,7 +20,7 @@ RESTRICT="test"
 # See https://www.rabbitmq.com/which-erlang.html for Erlang version
 # See https://github.com/rabbitmq/rabbitmq-server/blob/main/deps/rabbitmq_cli/mix.exs for Elixir version
 RDEPEND="
-	>=dev-lang/erlang-25.0[ssl] <dev-lang/erlang-27
+	>=dev-lang/erlang-25.0[ssl] <dev-lang/erlang-28
 "
 DEPEND="${RDEPEND}
 	app-arch/zip
