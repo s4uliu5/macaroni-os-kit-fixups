@@ -28,4 +28,4 @@ docker:
           user: docker
           repo: buildx
           query: releases
-        version: 0.19.2
+        version: 0.19.3
