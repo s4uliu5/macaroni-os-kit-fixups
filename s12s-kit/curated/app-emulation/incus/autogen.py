@@ -3,8 +3,8 @@ from packaging.version import Version
 
 async def generate(hub, **pkginfo):
 	supported_releases = {
-		'pre-lts': '<1.0.0',
-		'lts': '>=6.0.0,<6.1',
+		# 'pre-lts': '<1.0.0',
+		# 'lts': '>=6.0.0,<6.1',
 		'post-lts': '>=6.1',
 	}
 	github_user = "lxc"
