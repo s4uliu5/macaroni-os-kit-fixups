@@ -40,4 +40,4 @@ rust-gen_rule:
           # After the Rust 1.78.0 release, we can replace wasm32-wasi with wasm32-wasip1
           wasm-wasi:
             name: rust-std
-            chost: wasm32-wasi
+            chost: wasm32-wasip1
