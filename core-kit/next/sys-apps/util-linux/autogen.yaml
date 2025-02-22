@@ -4,6 +4,6 @@ util-linux:
     - util-linux:
         base_url: https://mirrors.edge.kernel.org/pub/linux/utils/util-linux
         dir_paths:
-          - 'v2\.40'
+          - 'v(2\.40)'
         compression: xz
 
