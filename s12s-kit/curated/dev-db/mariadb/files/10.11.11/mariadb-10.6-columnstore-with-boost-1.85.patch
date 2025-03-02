@@ -1,0 +1,258 @@
+From aa46b798058bc4b58edf5a2f1e66149c9333fd29 Mon Sep 17 00:00:00 2001
+From: Leonid Fedorov <leonid.fedorov@mariadb.com>
+Date: Tue, 26 Oct 2021 15:02:34 +0000
+Subject: [PATCH 1/2] c++17 fix
+
+Based on upstream commit [1].
+
+[1] https://github.com/mariadb-corporation/mariadb-columnstore-engine/commit/1973168e03d90d8c6da590df2f31982dd400ea0b
+---
+ storage/columnstore/columnstore | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Submodule storage/columnstore/columnstore ef0647b74ac..ed4fb42e813:
+diff --git a/storage/columnstore/columnstore/dbcon/joblist/tupleaggregatestep.cpp b/storage/columnstore/columnstore/dbcon/joblist/tupleaggregatestep.cpp
+index 16ce56113..ba83c5656 100644
+--- a/storage/columnstore/columnstore/dbcon/joblist/tupleaggregatestep.cpp
++++ b/storage/columnstore/columnstore/dbcon/joblist/tupleaggregatestep.cpp
+@@ -78,7 +78,7 @@ namespace
+ struct cmpTuple
+ {
+   bool operator()(boost::tuple<uint32_t, int, mcsv1sdk::mcsv1_UDAF*, std::vector<uint32_t>*> a,
+-                  boost::tuple<uint32_t, int, mcsv1sdk::mcsv1_UDAF*, std::vector<uint32_t>*> b)
++                  boost::tuple<uint32_t, int, mcsv1sdk::mcsv1_UDAF*, std::vector<uint32_t>*> b) const
+   {
+     uint32_t keya = boost::get<0>(a);
+     uint32_t keyb = boost::get<0>(b);
+-- 
+2.45.3
+
+
+From f6fff8151500739d4e03d81ec5b0b8feb7ea7755 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20Van=C4=9Bk?= <arkamar@atlas.cz>
+Date: Wed, 12 Feb 2025 14:09:39 +0100
+Subject: [PATCH 2/2] Migration for Boost 1.85
+
+Boost 1.85 removed some deprecated code in filesystem module which is
+still used in columnstore:
+
+- The boost/filesystem/convenience.hpp was removed but columnstore does
+  not use any functionality from that file except indirect includes.
+  Therefore this include is removed or replaced with more general
+  boost/filesystem.hpp. The convenience.hpp header file was deprecated
+  in filesystem V3 introduced in Boost 1.46.0.
+
+- `normalize` method was removed and users are suggested to replace it
+  with `lexically_normal` method, which was introduced in Boost 1.60.0.
+
+- The `copy_option` was removed in favor of `copy_options` (note the
+  trailing 's'), but enum values were renamed. Namely, `fail_if_exists`
+  is replaced with `none` and `overwrite_if_exists` is replaced with
+  `overwrite_existing`. The `copy_options` was introduced in Boost 1.74.0
+
+Upstream-PR: https://github.com/mariadb-corporation/mariadb-columnstore-engine/pull/3407
+---
+ storage/columnstore/columnstore | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Submodule storage/columnstore/columnstore ed4fb42e813..c6dd8b67b09:
+diff --git a/storage/columnstore/columnstore/oamapps/columnstoreSupport/columnstoreSupport.cpp b/storage/columnstore/columnstore/oamapps/columnstoreSupport/columnstoreSupport.cpp
+index d32496281..4b3e77ed4 100644
+--- a/storage/columnstore/columnstore/oamapps/columnstoreSupport/columnstoreSupport.cpp
++++ b/storage/columnstore/columnstore/oamapps/columnstoreSupport/columnstoreSupport.cpp
+@@ -256,11 +256,11 @@ void* reportThread(string* reporttype)
+       boost::filesystem::path configFile =
+           std::string(MCSSYSCONFDIR) + std::string("/columnstore/Columnstore.xml");
+       boost::filesystem::copy_file(configFile, "./Columnstore.xml",
+-                                   boost::filesystem::copy_option::overwrite_if_exists);
++                                   boost::filesystem::copy_options::overwrite_existing);
+       boost::filesystem::path SMconfigFile =
+           std::string(MCSSYSCONFDIR) + std::string("/columnstore/storagemanager.cnf");
+       boost::filesystem::copy_file(SMconfigFile, "./storagemanager.cnf",
+-                                   boost::filesystem::copy_option::overwrite_if_exists);
++                                   boost::filesystem::copy_options::overwrite_existing);
+       system("sed -i 's/.*aws_access_key_id.*/aws_access_key_id={PRIVATE}/' ./storagemanager.cnf");
+       system("sed -i 's/.*aws_secret_access_key.*/aws_secret_access_key={PRIVATE}/' ./storagemanager.cnf");
+       fclose(pOutputFile);
+@@ -858,7 +858,7 @@ int main(int argc, char* argv[])
+ 
+     boost::filesystem::path configFile = std::string(MCSMYCNFDIR) + "/columnstore.cnf";
+     boost::filesystem::copy_file(configFile, "./columnstore.cnf",
+-                                 boost::filesystem::copy_option::overwrite_if_exists);
++                                 boost::filesystem::copy_options::overwrite_existing);
+   }
+ 
+   int wait = 0;
+diff --git a/storage/columnstore/columnstore/storage-manager/src/LocalStorage.cpp b/storage/columnstore/columnstore/storage-manager/src/LocalStorage.cpp
+index 005e43838..8779226ae 100644
+--- a/storage/columnstore/columnstore/storage-manager/src/LocalStorage.cpp
++++ b/storage/columnstore/columnstore/storage-manager/src/LocalStorage.cpp
+@@ -94,7 +94,7 @@ inline void LocalStorage::addLatency()
+ int LocalStorage::copy(const bf::path& source, const bf::path& dest)
+ {
+   boost::system::error_code err;
+-  bf::copy_file(source, dest, bf::copy_option::fail_if_exists, err);
++  bf::copy_file(source, dest, bf::copy_options::none, err);
+   if (err)
+   {
+     errno = err.value();
+diff --git a/storage/columnstore/columnstore/storage-manager/src/Ownership.cpp b/storage/columnstore/columnstore/storage-manager/src/Ownership.cpp
+index cadcebc22..3c86503e1 100644
+--- a/storage/columnstore/columnstore/storage-manager/src/Ownership.cpp
++++ b/storage/columnstore/columnstore/storage-manager/src/Ownership.cpp
+@@ -77,7 +77,7 @@ bf::path Ownership::get(const bf::path& p, bool getOwnership)
+   bf::path::const_iterator pit;
+   int i, levels;
+ 
+-  normalizedPath.normalize();
++  normalizedPath.lexically_normal();
+   // cerr << "Ownership::get() param = " << normalizedPath.string() << endl;
+   if (prefixDepth > 0)
+   {
+diff --git a/storage/columnstore/columnstore/utils/configcpp/configcpp.cpp b/storage/columnstore/columnstore/utils/configcpp/configcpp.cpp
+index e102a0cba..a8acf207e 100644
+--- a/storage/columnstore/columnstore/utils/configcpp/configcpp.cpp
++++ b/storage/columnstore/columnstore/utils/configcpp/configcpp.cpp
+@@ -401,7 +401,7 @@ void Config::writeConfig(const string& configFile) const
+       {
+       }
+ 
+-      fs::copy_file(dcf, scft, fs::copy_option::overwrite_if_exists);
++      fs::copy_file(dcf, scft, fs::copy_options::overwrite_existing);
+ 
+       try
+       {
+diff --git a/storage/columnstore/columnstore/utils/idbdatafile/IDBPolicy.cpp b/storage/columnstore/columnstore/utils/idbdatafile/IDBPolicy.cpp
+index 01d3f65f0..6809a511f 100644
+--- a/storage/columnstore/columnstore/utils/idbdatafile/IDBPolicy.cpp
++++ b/storage/columnstore/columnstore/utils/idbdatafile/IDBPolicy.cpp
+@@ -19,7 +19,7 @@
+ #include <iostream>
+ #include <sstream>
+ #include <boost/filesystem/path.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem/operations.hpp>
+ #include <boost/thread/thread.hpp>
+ 
+ #include "configcpp.h"  // for Config
+diff --git a/storage/columnstore/columnstore/utils/idbdatafile/PosixFileSystem.cpp b/storage/columnstore/columnstore/utils/idbdatafile/PosixFileSystem.cpp
+index bd3e1c4b2..84e3431e2 100644
+--- a/storage/columnstore/columnstore/utils/idbdatafile/PosixFileSystem.cpp
++++ b/storage/columnstore/columnstore/utils/idbdatafile/PosixFileSystem.cpp
+@@ -24,8 +24,7 @@
+ #include <stdio.h>
+ #include <iostream>
+ 
+-#include <boost/filesystem/path.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ 
+ using namespace std;
+ 
+diff --git a/storage/columnstore/columnstore/writeengine/bulk/we_bulkload.cpp b/storage/columnstore/columnstore/writeengine/bulk/we_bulkload.cpp
+index ebec84dc2..e3f3ba304 100644
+--- a/storage/columnstore/columnstore/writeengine/bulk/we_bulkload.cpp
++++ b/storage/columnstore/columnstore/writeengine/bulk/we_bulkload.cpp
+@@ -34,8 +34,7 @@
+ #include <string.h>
+ #include <vector>
+ #include <sstream>
+-#include <boost/filesystem/path.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ #include <boost/uuid/uuid.hpp>
+ #include <boost/uuid/uuid_generators.hpp>
+ #include <pwd.h>
+diff --git a/storage/columnstore/columnstore/writeengine/redistribute/we_redistributeworkerthread.cpp b/storage/columnstore/columnstore/writeengine/redistribute/we_redistributeworkerthread.cpp
+index 5825ea537..cd885e6f2 100644
+--- a/storage/columnstore/columnstore/writeengine/redistribute/we_redistributeworkerthread.cpp
++++ b/storage/columnstore/columnstore/writeengine/redistribute/we_redistributeworkerthread.cpp
+@@ -32,8 +32,7 @@ using namespace std;
+ #include "boost/scoped_ptr.hpp"
+ #include "boost/scoped_array.hpp"
+ #include "boost/thread/mutex.hpp"
+-#include "boost/filesystem/path.hpp"
+-#include "boost/filesystem/operations.hpp"
++#include "boost/filesystem.hpp"
+ using namespace boost;
+ 
+ #include "installdir.h"
+diff --git a/storage/columnstore/columnstore/writeengine/server/we_ddlcommandproc.cpp b/storage/columnstore/columnstore/writeengine/server/we_ddlcommandproc.cpp
+index 3970e6c1e..56c760db9 100644
+--- a/storage/columnstore/columnstore/writeengine/server/we_ddlcommandproc.cpp
++++ b/storage/columnstore/columnstore/writeengine/server/we_ddlcommandproc.cpp
+@@ -19,8 +19,7 @@
+ // $Id: we_ddlcommandproc.cpp 3082 2011-09-26 22:00:38Z chao $
+ 
+ #include <unistd.h>
+-#include "boost/filesystem/operations.hpp"
+-#include "boost/filesystem/path.hpp"
++#include "boost/filesystem.hpp"
+ #include "boost/scoped_ptr.hpp"
+ using namespace std;
+ 
+diff --git a/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackfilecompressed.cpp b/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackfilecompressed.cpp
+index 7e2b8c509..75b9730ec 100644
+--- a/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackfilecompressed.cpp
++++ b/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackfilecompressed.cpp
+@@ -24,7 +24,6 @@
+ #include <sstream>
+ #include <boost/scoped_array.hpp>
+ #include <boost/filesystem/path.hpp>
+-#include <boost/filesystem/convenience.hpp>
+ 
+ #include "we_define.h"
+ #include "we_fileop.h"
+diff --git a/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackfilecompressedhdfs.cpp b/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackfilecompressedhdfs.cpp
+index 61f8b61f7..984417695 100644
+--- a/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackfilecompressedhdfs.cpp
++++ b/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackfilecompressedhdfs.cpp
+@@ -20,7 +20,6 @@
+ #include <sstream>
+ #include <boost/scoped_array.hpp>
+ #include <boost/filesystem/path.hpp>
+-#include <boost/filesystem/convenience.hpp>
+ 
+ #include "we_define.h"
+ #include "we_fileop.h"
+diff --git a/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackmgr.cpp b/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackmgr.cpp
+index 0fc93729f..9c02a81b5 100644
+--- a/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackmgr.cpp
++++ b/storage/columnstore/columnstore/writeengine/shared/we_bulkrollbackmgr.cpp
+@@ -30,7 +30,6 @@
+ #include <boost/scoped_array.hpp>
+ #include <boost/scoped_ptr.hpp>
+ #include <boost/filesystem/path.hpp>
+-#include <boost/filesystem/convenience.hpp>
+ 
+ #include "we_bulkrollbackmgr.h"
+ 
+diff --git a/storage/columnstore/columnstore/writeengine/shared/we_rbmetawriter.cpp b/storage/columnstore/columnstore/writeengine/shared/we_rbmetawriter.cpp
+index 98bf2cdce..7c66269f1 100644
+--- a/storage/columnstore/columnstore/writeengine/shared/we_rbmetawriter.cpp
++++ b/storage/columnstore/columnstore/writeengine/shared/we_rbmetawriter.cpp
+@@ -26,7 +26,6 @@
+ #include <sstream>
+ #include <unistd.h>
+ #include <boost/filesystem/path.hpp>
+-#include <boost/filesystem/convenience.hpp>
+ 
+ #include "we_config.h"
+ #include "we_convertor.h"
+diff --git a/storage/columnstore/columnstore/writeengine/xml/we_xmljob.cpp b/storage/columnstore/columnstore/writeengine/xml/we_xmljob.cpp
+index 2a95203df..46fd2d234 100644
+--- a/storage/columnstore/columnstore/writeengine/xml/we_xmljob.cpp
++++ b/storage/columnstore/columnstore/writeengine/xml/we_xmljob.cpp
+@@ -36,8 +36,7 @@
+ #include "we_convertor.h"
+ #include "dataconvert.h"
+ #include <boost/date_time/posix_time/posix_time.hpp>
+-#include <boost/filesystem/path.hpp>
+-#include <boost/filesystem/convenience.hpp>
++#include <boost/filesystem.hpp>
+ 
+ #include <sys/time.h>
+ 
+-- 
+2.45.3
+
