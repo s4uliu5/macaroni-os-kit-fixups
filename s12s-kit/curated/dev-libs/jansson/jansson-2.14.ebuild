@@ -14,7 +14,7 @@ KEYWORDS="*"
 IUSE="doc static-libs"
 
 BDEPEND="
-	dev-build/autoconf-archive
+	dev-util/autoconf-archive
 	doc? ( dev-python/sphinx )
 "
 

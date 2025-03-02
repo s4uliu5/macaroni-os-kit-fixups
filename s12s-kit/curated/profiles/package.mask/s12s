@@ -1,0 +1,2 @@
+# dev-db/mariadb no compatible with >=libfmt-11.1
+>=dev-libs/libfmt-11.1
