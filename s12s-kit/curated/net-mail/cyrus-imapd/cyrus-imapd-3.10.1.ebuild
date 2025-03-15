@@ -60,9 +60,9 @@ RDEPEND="${DEPEND}
 	!net-mail/courier-imap
 	!app-arch/dump"
 DEPEND+=" test? ( dev-util/cunit )"
-BDEPEND="app-alternatives/lex
+BDEPEND="sys-devel/flex
 	virtual/pkgconfig
-	app-alternatives/yacc"
+	virtual/yacc"
 
 REQUIRED_USE="afs? ( kerberos )
 	backup? ( sqlite )
