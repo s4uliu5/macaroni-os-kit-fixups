@@ -108,12 +108,12 @@ RDEPEND="${COMMON_DEPEND}
 	!dev-db/mariadb:10.8
 	!dev-db/mariadb:10.9
 	!dev-db/mariadb:10.10
+	!dev-db/mariadb:10.11
 	!dev-db/mariadb:11.0
 	!dev-db/mariadb:11.1
 	!dev-db/mariadb:11.2
 	!dev-db/mariadb:11.3
 	!dev-db/mariadb:11.4
-	!dev-db/mariadb:11.7
 	selinux? ( sec-policy/selinux-mysql )
 	server? (
 		columnstore? ( dev-db/mariadb-connector-c )
@@ -215,10 +215,13 @@ src_unpack() {
 
 src_prepare() {
 
-	eapply "${FILESDIR}/10.11.10/0001-cmake-build-without-client-libs-and-tools.patch"
-	eapply "${FILESDIR}/10.11.10/0002-libmariadb-fix-mysql_st-API-regression.patch"
-	eapply "${FILESDIR}/10.11.10/0003-libmariadb-cmake-find-GSSAPI-via-pkg-config.patch"
-	eapply "${FILESDIR}/10.11.10/0004-cmake-don-t-install-mysql-d-.service-symlinks.patch"
+	eapply "${FILESDIR}/11.4/0001-cmake-build-without-client-libs-and-tools.patch"
+	eapply "${FILESDIR}/11.4/0002-libmariadb-fix-mysql_st-API-regression.patch"
+	eapply "${FILESDIR}/11.4/0003-libmariadb-cmake-find-GSSAPI-via-pkg-config.patch"
+	eapply "${FILESDIR}/11.4/0004-cmake-don-t-install-mysql-d-.service-symlinks.patch"
+	eapply "${FILESDIR}/11.4/0005-libmariadb-do-not-install-client-plugins.patch"
+	eapply "${FILESDIR}/mariadb-10.6.11-gssapi.patch"
+	eapply "${FILESDIR}/mariadb-10.6.12-gcc-13.patch"
 
 	eapply_user
 
@@ -365,12 +368,6 @@ src_configure() {
 		mycmakeargs+=( -DWITH_SSL=system -DCLIENT_PLUGIN_SHA256_PASSWORD=STATIC )
 	else
 		mycmakeargs+=( -DWITH_SSL=bundled )
-	fi
-
-	if use systemtap && has_version "dev-debug/systemtap[-dtrace-symlink(+)]" ; then
-		mycmakeargs+=(
-			-DDTRACE="${BROOT}"/usr/bin/stap-dtrace
-		)
 	fi
 
 	# bfd.h is only used starting with 10.1 and can be controlled by NOT_FOR_DISTRIBUTION
