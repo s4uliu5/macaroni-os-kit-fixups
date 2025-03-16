@@ -113,7 +113,6 @@ RDEPEND="${COMMON_DEPEND}
 	!dev-db/mariadb:11.1
 	!dev-db/mariadb:11.2
 	!dev-db/mariadb:11.3
-	!dev-db/mariadb:11.4
 	selinux? ( sec-policy/selinux-mysql )
 	server? (
 		columnstore? ( dev-db/mariadb-connector-c )
