@@ -679,7 +679,6 @@ dev_python_compat_rule:
     - scons:
         du_pep517: generator
         blocker: '!<dev-util/scons-4.0.0'
-        pypi_name: SCons
         desc: Extensible Python-based build utility
         homepage: https://www.scons.org/
         license: MIT
@@ -878,10 +877,8 @@ dev_python_compat_rule:
             distutils-r1_src_prepare
           }
     - urllib3:
-        version: 1.26.15
+        version: 1.26.20
         python_compat: python3+ pypy3
-        revision:
-          '1.26.15': '2'
         # https://github.com/urllib3/urllib3/issues/2680
         pydeps:
           py:all:build:
@@ -1578,6 +1575,7 @@ simple_python_autogen_rule:
             - dev-python/xmltodict
         rdepend: |
           app-misc/jq
+        du_pep517: generator
 
 misc:
   defaults:
@@ -1838,6 +1836,7 @@ dev_python_simplified_rule:
         revision:
           4.0: 1
           4.8.0: 1
+        select: '4.*'
         blocker: "!<dev-python/pymongo-4.0" #block all older versions
         iuse: kerberos
         pydeps:
@@ -2106,7 +2105,19 @@ better_autogens_without_templates:
     python_compat: python3+
   generator: pypi-simple-1
   packages:
+    - pdm-pep517:
+        du_pep517: standalone
+        pydeps:
+          py:all:
+            - cerberus
+            - license-expression
+          py:all:build:
+            - packaging
+            - tomli
+            - tomli-w
+            - setuptools
     - py:
+        du_pep517: setuptools
         python_compat: python3+ pypy{,3}
         revision:
           1.11.0: 1
@@ -2284,23 +2295,7 @@ pep517_compliance_rule:
     - pyproject-metadata:
         pydeps:
           - packaging
-    - pdm-pep517:
-        du_pep517: standalone
-        pydeps:
-          - packaging
-          - cerberus
-          - license-expression
-          - tomli
-          - tomli-w
-          - setuptools
-    - cerberus:
-        pypi_name: Cerberus
-    - license-expression:
-        pydeps:
-          py:all:
-            - boolean-py
-          py:all:build:
-            - setuptools_scm
+    - cerberus
     - tomli-w:
         du_pep517: flit
     - boolean-py:
@@ -2375,7 +2370,7 @@ pep517_compliance_rule:
           py:all:build:
             - setuptools-rust
 
-meson_python_builds:
+meono_python_builds:
   defaults:
     cat: dev-python
     python_compat: python3+
@@ -2464,7 +2459,6 @@ dev_python_autogen_rule:
     - wcwidth
     - wstools:
         python_compat: python3+
-    - yarl
     - zope-component
     - zope-configuration
     - zope-deferredimport
@@ -2550,12 +2544,34 @@ ansible_deps_rule:
     - httplib2:
         pydeps:
           - pyparsing
+    - yarl:
+        du_pep517: standalone
+        pydeps:
+          py:all:build:
+            - expandvars
+          py:all:
+            - idna >= 2.0
+            - propcache >= 0.2.0
+            - multidict >= 4.0
     - netaddr
     - pynacl:
         body: |
           S="${WORKDIR}/PyNaCl-${PV}"
         rdepend: |
           dev-libs/libsodium
+    - expandvars:
+        du_pep517: hatchling
+        license: MIT
+    - propcache:
+        du_pep517: standalone
+        license: Apache-2.0
+        iuse: native-extensions
+        pydeps:
+          py:all:build:
+            - expandvars
+            - setuptools
+          use:native-extensions:build:
+            - cython
 
 yq_deps_rule:
   generator: pypi-compat-1
