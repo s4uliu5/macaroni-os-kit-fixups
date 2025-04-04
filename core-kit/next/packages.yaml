@@ -38,7 +38,6 @@ packages:
   - app-arch/lziprecover
   - app-arch/pax
   - app-arch/pbzip2
-  - app-arch/pigz
   - app-arch/pxz
   - app-arch/rar
   - app-arch/rpm2targz
@@ -84,12 +83,10 @@ packages:
   - app-eselect/eselect-ctags
   - app-eselect/eselect-electron
   - app-eselect/eselect-emacs
-  - app-eselect/eselect-fontconfig
   - app-eselect/eselect-gnome-shell-extensions
   - app-eselect/eselect-infinality
   - app-eselect/eselect-lapack
   - app-eselect/eselect-lcdfilter
-  - app-eselect/eselect-lib-bin-symlink
   - app-eselect/eselect-lua
   - app-eselect/eselect-metasploit
   - app-eselect/eselect-miniaudicle
@@ -119,7 +116,6 @@ packages:
   - app-eselect/eselect-xvmc
   - app-misc/byobu
   - app-misc/editor-wrapper
-  - app-misc/mime-types
   - app-misc/realpath
   - app-misc/vlock
   - app-portage/cfg-update
@@ -177,8 +173,6 @@ packages:
   - dev-util/ninja
   - dev-util/pkgconf
   - dev-util/re2c
-  - net-dialup/ppp
-  - net-dialup/ppp-scripts
   - net-dns/openresolv
   - net-firewall/ebtables
   - net-firewall/iptables
@@ -213,7 +207,6 @@ packages:
   - sys-apps/kbd
   - sys-apps/kmod
   - sys-apps/less
-  - sys-apps/lsb-release
   - sys-apps/net-tools
   - sys-apps/pacman
   - sys-apps/paxctl
@@ -284,7 +277,6 @@ packages:
   - sys-devel/crossdev
   - sys-devel/flex
   - sys-devel/gdb
-  - sys-devel/gnuconfig
   - sys-devel/libtool
   - sys-devel/m4
   - sys-devel/ucpp
@@ -419,7 +411,6 @@ packages:
   - sys-libs/lib-compat
   - sys-libs/lib-compat-loki
   - sys-libs/libaal
-  - sys-libs/libavc1394
   - sys-libs/libblockdev
   - sys-libs/libcap-ng
   - sys-libs/libchipcard

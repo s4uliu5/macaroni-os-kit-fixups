@@ -2,7 +2,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_8+ )
+PYTHON_COMPAT=( python3+ )
 PYTHON_REQ_USE="ncurses,readline"
 
 FIRMWARE_ABI_VERSION="7.1.0"
@@ -203,24 +203,24 @@ SEABIOS_VERSION="1.16.0"
 X86_FIRMWARE_DEPEND="
 	pin-upstream-blobs? (
 		~sys-firmware/edk2-ovmf-bin-${EDK2_OVMF_VERSION}
-		~sys-firmware/ipxe-1.21.1[binary,qemu]
 		~sys-firmware/seabios-bin-${SEABIOS_VERSION}
-		~sys-firmware/sgabios-0.1_pre10[binary]
 	)
 	!pin-upstream-blobs? (
 		>=sys-firmware/edk2-ovmf-${EDK2_OVMF_VERSION}
-		sys-firmware/ipxe[qemu]
-		>=sys-firmware/seabios-${SEABIOS_VERSION}[seavgabios]
+		|| (
+			>=sys-firmware/seabios-${SEABIOS_VERSION}[seavgabios]
 			>=sys-firmware/seabios-bin-${SEABIOS_VERSION}
-		sys-firmware/sgabios
+		)
 	)"
 PPC_FIRMWARE_DEPEND="
 	pin-upstream-blobs? (
 		~sys-firmware/seabios-bin-${SEABIOS_VERSION}
 	)
 	!pin-upstream-blobs? (
+		|| (
 			>=sys-firmware/seabios-${SEABIOS_VERSION}[seavgabios]
 			>=sys-firmware/seabios-bin-${SEABIOS_VERSION}
+		)
 	)
 "
 
@@ -250,6 +250,8 @@ CDEPEND="
 	qemu_softmmu_targets_ppc64? ( ${PPC_FIRMWARE_DEPEND} )
 "
 DEPEND="${CDEPEND}
+	sys-firmware/ipxe[qemu]
+	sys-firmware/sgabios
 	kernel_linux? ( >=sys-kernel/linux-headers-2.6.35 )
 	static? (
 		${ALL_DEPEND}

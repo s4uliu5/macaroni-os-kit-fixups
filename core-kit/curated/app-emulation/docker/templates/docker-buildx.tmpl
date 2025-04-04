@@ -31,15 +31,9 @@ src_prepare() {
 }
 
 src_compile() {
-	export CGO_CPPFLAGS="${CPPFLAGS}"
-	export CGO_CFLAGS="${CFLAGS}"
-	export CGO_CXXFLAGS="${CXXFLAGS}"
-	export CGO_LDFLAGS="${LDFLAGS}"
-	export GOFLAGS='-buildmode=pie -trimpath -mod=readonly -modcacherw'
-	export GO111MODULE=on
-	_buildx_r=github.com/docker/buildx
-	go build -mod=vendor -o docker-buildx -ldflags "-linkmode=external \
-		-compressdwarf=false \
+	local _buildx_r='github.com/docker/buildx'
+	go build -o docker-buildx \
+		-ldflags "-linkmode=external
 		-X $_buildx_r/version.Version={{version}}
 		-X $_buildx_r/version.Revision={{sha}}
 		-X $_buildx_r/version.Package=$_buildx_r" \

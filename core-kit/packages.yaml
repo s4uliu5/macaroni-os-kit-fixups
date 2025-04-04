@@ -87,7 +87,6 @@ packages:
   - app-eselect/eselect-blas
   - app-eselect/eselect-cblas
   - sys-devel/libtool
-  - sys-devel/gnuconfig
   - sys-devel/bison
   - sys-devel/m4
   - sys-devel/autogen
@@ -337,7 +336,6 @@ packages:
   - sys-block/parted
   - net-mail/mailbase
   - app-misc/editor-wrapper
-  - app-misc/mime-types
   - app-misc/realpath
   - sys-libs/pinktrace
   - sys-libs/lib-compat-loki
@@ -361,7 +359,6 @@ packages:
   - sys-libs/libkudzu
   - sys-libs/libtermcap-compat
   - sys-libs/libstdc++-v3
-  - sys-libs/libavc1394
   - sys-libs/gdbm
   - sys-libs/cygwin-crypt
   - sys-libs/e2fsprogs-libs
@@ -372,7 +369,6 @@ packages:
   - sys-libs/netbsd-csu
   - sys-libs/ncurses
   - sys-libs/gwenhywfar
-  - sys-libs/libservicelog
   - sys-libs/argp-standalone
   - sys-libs/nss_wrapper
   - sys-libs/fts-standalone
@@ -405,7 +401,6 @@ packages:
   - dev-libs/libpcre2
   - dev-libs/libpcre
   - dev-libs/libintl
-  - dev-libs/iniparser
   - dev-libs/libusb
   - dev-libs/libltdl
   - dev-libs/libusb-compat
@@ -685,8 +680,6 @@ packages:
   - sys-fs/xfsdump
   - sys-fs/bees
   - sys-fs/wpflash
-  - net-dialup/ppp
-  - net-dialup/ppp-scripts
   - sys-apps/gentoo-functions
   - sys-apps/acl
   - sys-apps/debianutils
@@ -697,7 +690,6 @@ packages:
   - sys-apps/paxctl
   - sys-apps/dbus
   - sys-apps/busybox
-  - sys-apps/hardened-shadow
   - sys-apps/kmod
   - sys-apps/which
   - sys-apps/kbd
@@ -754,6 +746,9 @@ packages:
   - virtual/libffi
   - virtual/yacc
   - virtual/mta
+  - net-firewall/iptables
+  - net-firewall/ebtables
+  - net-firewall/nftables
   - sys-cluster/ploop
   - app-eselect/eselect-scala
   - app-eselect/eselect-rust
@@ -762,7 +757,6 @@ packages:
   - app-eselect/eselect-chuck
   - app-eselect/eselect-mpg123
   - app-eselect/eselect-ctags
-  - app-eselect/eselect-lib-bin-symlink
   - app-eselect/eselect-infinality
   - app-eselect/eselect-unison
   - app-eselect/eselect-timidity
@@ -775,7 +769,6 @@ packages:
   - app-eselect/eselect-vi
   - app-eselect/eselect-opencascade
   - app-eselect/eselect-oodict
-  - app-eselect/eselect-fontconfig
   - app-eselect/eselect-miniaudicle
   - app-eselect/eselect-sndpeek
   - app-eselect/eselect-metasploit
@@ -802,6 +795,7 @@ packages:
   - net-libs/neon
   - net-libs/rpcsvc-proto
   - dev-util/cmake
+  - dev-util/gtk-doc-am
   - dev-util/re2c
   - dev-util/gperf
   - dev-util/ninja
@@ -847,7 +841,6 @@ packages:
   - app-arch/lbzip2
   - app-arch/lziprecover
   - app-arch/pbzip2
-  - app-arch/pigz
   - app-arch/pxz
   - app-arch/rar
   - app-arch/snappy
@@ -909,7 +902,6 @@ packages:
   - app-misc/vlock
   - sys-apps/etckeeper
   - sys-apps/fbset
-  - sys-apps/lsb-release
 - gentoo-staging-nov-2021:
   - sys-devel/autoconf-archive
   - sys-devel/automake
