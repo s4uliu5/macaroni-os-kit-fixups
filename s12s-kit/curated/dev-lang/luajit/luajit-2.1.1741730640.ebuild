@@ -1,7 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-GIT_COMMIT=f73e649a954b599fc184726c376476e7a5c439ca
+GIT_COMMIT=538a82133ad6fddfd0ca64de167c4aca3bc1a2da
 
 # Upstream doesn't make releases anymore and instead have a (broken) "rolling
 # git tag" model.
