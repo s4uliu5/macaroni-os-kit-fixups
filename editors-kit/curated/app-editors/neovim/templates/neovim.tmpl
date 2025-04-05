@@ -39,6 +39,7 @@ DEPEND="
 		dev-libs/libtermkey
 		>=dev-libs/unibilium-2.0.0:0=
 	)
+	>=dev-libs/libutf8proc-2.9.0:=
 "
 
 RDEPEND="
