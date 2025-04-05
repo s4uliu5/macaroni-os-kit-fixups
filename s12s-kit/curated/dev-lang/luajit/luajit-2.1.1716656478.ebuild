@@ -55,7 +55,7 @@ src_compile() {
 
 src_install() {
 	_emake install
-	dosym luajit-"${PV}" /usr/bin/luajit
+	dosym luajit /usr/bin/luajit-"${PV}"
 
 	HTML_DOCS="doc/." einstalldocs
 }
