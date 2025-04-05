@@ -26,7 +26,7 @@ debian-sources_rule:
         revisions:
           6.1.99_p1: 3
         additional_artifacts:
-          rtw89-driver: 'https://build.funtoo.org/distfiles/debian-sources/debian-sources-6.3.7_p1-rtw89-driver.tar.gz'
+          rtw89-driver: 'https://fun.s12s.xyz/distfiles/debian-sources-6.3.7_p1-rtw89-driver.tar.gz'
         patches:
           - ikconfig.patch
           - mcelog.patch
