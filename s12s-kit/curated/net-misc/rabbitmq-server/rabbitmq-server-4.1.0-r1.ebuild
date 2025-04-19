@@ -20,16 +20,20 @@ RESTRICT="test"
 # See https://www.rabbitmq.com/which-erlang.html for Erlang version
 # See https://github.com/rabbitmq/rabbitmq-server/blob/main/deps/rabbitmq_cli/mix.exs for Elixir version
 RDEPEND="
-	>=dev-lang/erlang-25.0[ssl] <dev-lang/erlang-27
+	>=dev-lang/erlang-26.0[ssl] <dev-lang/erlang-28
 "
 DEPEND="${RDEPEND}
 	app-arch/zip
 	app-arch/unzip
 	app-text/docbook-xml-dtd:4.5
 	app-text/xmlto
-	>=dev-lang/elixir-1.14 <dev-lang/elixir-1.18.0
+	>=dev-lang/elixir-1.14 <dev-lang/elixir-1.19.0
 	dev-libs/libxslt
 	$(python_gen_any_dep 'dev-python/simplejson[${PYTHON_USEDEP}]')
+"
+
+BDEPEND="
+	app-arch/p7zip
 "
 
 python_check_deps() {
