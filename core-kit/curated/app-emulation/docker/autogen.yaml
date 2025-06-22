@@ -20,7 +20,7 @@ docker:
           user: docker
           repo: compose
           query: releases
-        version: 2.36.0
+        version: 2.37.2
     - docker-buildx:
         extensions:
           - golang
