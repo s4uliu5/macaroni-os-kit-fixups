@@ -537,6 +537,12 @@ dev_python_compat_rule:
         pydeps:
           py:3,pypy3:
             - importlib_metadata
+        body: |
+          src_prepare() {
+            sed -i -e 's/license = "BSD-3-Clause"/license = { text = "BSD-3-Clause" }/' pyproject.toml || die
+            sed -i -e '/license-files/d' pyproject.toml || die
+            distutils-r1_src_prepare
+          }
     - mako:
         blocker: "!<dev-python/mako-1.2.0-r1"
         revision:
@@ -700,7 +706,7 @@ dev_python_compat_rule:
 
           }
     - setuptools:
-        version: 70.3.0
+        version: 80.9.0
         du_setuptools: 'no'
         desc: Collection of extensions to Distutils
         license: MIT
@@ -1663,6 +1669,12 @@ io_stuff_rule:
           - outcome
           - sniffio
           - exceptiongroup
+        body: |
+          src_prepare() {
+            sed -i -e 's/license = "MIT OR Apache-2.0"/license = { text = "MIT OR Apache-2.0" }/' pyproject.toml || die
+            sed -i -e '/license-files/d' pyproject.toml || die
+            distutils-r1_src_prepare
+          }
     - sortedcontainers:
         license: Apache-2.0
     - outcome:
@@ -1927,7 +1939,8 @@ dev_python_simplified_rule:
             - toml
             - typing-extensions
     - cryptography:
-        version: '42.0.8'
+        du_pep517: maturin
+        version: 43.0.3
         inherit:
           - cargo
         cargo_optional: yes
@@ -2262,7 +2275,12 @@ pep517_compliance_rule:
         pydeps:
           py:all:build:
             - calver
-    - calver
+    - calver:
+        body: |
+          src_prepare() {
+            sed -i -e 's/license = "Apache-2.0"/license = { text = "Apache-2.0" }/' pyproject.toml || die
+            distutils-r1_src_prepare
+          }
     - hatch-vcs:
         pypi_name: hatch_vcs
         du_pep517: hatchling
