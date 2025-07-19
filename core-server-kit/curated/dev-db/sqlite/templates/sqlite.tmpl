@@ -29,11 +29,6 @@ DEPEND="${RDEPEND}
 
 S="${WORKDIR}/{{ github_user }}-{{ github_repo }}-{{ sha[:7] }}"
 
-src_prepare() {
-	eapply_user
-	eautoreconf
-}
-
 src_configure() {
 	local -x CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}"
 	local options=()
@@ -171,7 +166,15 @@ src_configure() {
 		# Support ICU extension.
 		# https://sqlite.org/compile.html#enable_icu
 		append-cppflags -DSQLITE_ENABLE_ICU
-		sed -e "s/^TLIBS = @LIBS@/& -licui18n -licuuc/" -i Makefile.in || die "sed failed"
+
+		# sqlite needs a little help properly linking to ICU. Its automatic configure code
+		# doesn't seem to work, so we will use pkg-config directly to extract all libraries
+		# to link against: (See ext/icu/README.txt and auto.def for more details)
+
+		for lib in i18n io uc; do
+			pkg-config icu-$lib --libs >> $T/icu_ld.txt || die
+		done
+		options+=( --with-icu-ldflags="$(cat $T/icu_ld.txt | tr '\n' ' ' )" )
 	fi
 
 	# readline USE flag.
@@ -216,7 +219,11 @@ src_configure() {
 }
 
 src_compile() {
-	emake HAVE_TCL="$(usex tcl 1 "")" TCLLIBDIR="${EPREFIX}/usr/$(get_libdir)/${P}"
+	if use tcl || use test || use tools; then
+		emake HAVE_TCL="1" TCLLIBDIR="${EPREFIX}/usr/$(get_libdir)/${P}"
+	else
+		emake
+	fi
 
 	if use tools; then
 		emake changeset dbdump dbhash dbtotxt index_usage rbu scrub showdb showjournal showshm showstat4 showwal sqldiff sqlite3_analyzer sqlite3_checker sqlite3_expert sqltclsh
@@ -231,11 +238,19 @@ src_test() {
 
 	local -x SQLITE_HISTORY="${T}/sqlite_history_${ABI}"
 
-	emake HAVE_TCL="$(usex tcl 1 "")" $(use debug && echo fulltest || echo test)
+	if use tcl || use test || use tools; then
+		emake HAVE_TCL="1" $(use debug && echo fulltest || echo test)
+	else
+		emake $(use debug && echo fulltest || echo test)
+	fi
 }
 
 src_install() {
-	emake DESTDIR="${D}" HAVE_TCL="$(usex tcl 1 "")" TCLLIBDIR="${EPREFIX}/usr/$(get_libdir)/${P}" install
+	if use tcl || use test || use tools; then
+		emake DESTDIR="${D}" HAVE_TCL="1" TCLLIBDIR="${EPREFIX}/usr/$(get_libdir)/${P}" install
+	else
+		emake DESTDIR="${D}" install
+	fi
 
 	if use tools; then
 		install_tool() {
