@@ -7,13 +7,16 @@ async def generate(hub, **pkginfo):
 	base_url="https://downloads.powerdns.com/releases/"
 
 	release_data = await hub.pkgtools.fetch.get_page( base_url, is_json=False )
+	# print(release_data)
 	releases = re.findall(
-		f'(?<=href="{pkginfo["name"]}-)\d+\.\d+\.\d+(?=\.tar\.gz"|\.tar\.bz2"|\.tar\.xz")',
+		# f'(?<=href="{pkginfo["name"]}-)\d+\.\d+\.\d+(?=\.tar\.gz"|\.tar\.bz2"|\.tar\.xz")',
+		f'(?<=href="{pkginfo["name"]}-)(\d+\.\d+\.\d+)(\.tar\.gz|\.tar\.bz2|\.tar\.xz)"',
 		release_data
 	)
+	# print(releases)
 
-	version = releases[-1]
-	url = f"{base_url}{pkginfo['name']}-{version}.tar.bz2"
+	version, artype = releases[-1][0], releases[-1][1]
+	url = f"{base_url}{pkginfo['name']}-{version}{artype}"
 
 	artifact = hub.pkgtools.ebuild.Artifact(url=url)
 
