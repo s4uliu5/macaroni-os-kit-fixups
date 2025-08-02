@@ -395,6 +395,7 @@ dev_python_compat_rule:
     - configargparse:
         blocker: '!<dev-python/configargparse-1.7.0'
     - docutils:
+        version: 0.21.2
         du_pep517: generator
         blocker: '!<dev-python/docutils-0.19-r1'
         revision:
