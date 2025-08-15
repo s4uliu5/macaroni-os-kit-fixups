@@ -9,5 +9,5 @@ virtualenv_and_deps:
     - virtualenv:
         pydeps:
           - distlib < 1
-          - filelock < 3.19
+          # - filelock < 3.19
           - platformdirs < 5
