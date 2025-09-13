@@ -41,7 +41,7 @@ inherit toolchain-funcs
 _PYTHON_ALL_IMPLS=(
 	pypy3
 	python2_7
-	python3_6 python3_7 python3_8 python3_9 python3_10 python3_11
+	python3_6 python3_7 python3_8 python3_9 python3_10 python3_11 python3_12 python3_13
 )
 readonly _PYTHON_ALL_IMPLS
 
@@ -169,27 +169,41 @@ _python_set_impls() {
 				supp['python3_9']=1
 				supp['python3_10']=1
 				supp['python3_11']=1
+				supp['python3_12']=1
+				supp['python3_13']=1
 				;;
 			python3_8+)
 				supp['python3_8']=1
 				supp['python3_9']=1
 				supp['python3_10']=1
 				supp['python3_11']=1
+				supp['python3_12']=1
+				supp['python3_13']=1
 				;;
 			python3_9+)
 				supp['python3_9']=1
 				supp['python3_10']=1
+				supp['python3_11']=1
+				supp['python3_12']=1
+				supp['python3_13']=1
 				;;
 			python3_10+)
 				supp['python3_10']=1
 				supp['python3_11']=1
-				;;
-			python3_10+)
-				supp['python3_10']=1
-				supp['python3_11']=1
+				supp['python3_12']=1
+				supp['python3_13']=1
 				;;
 			python3_11+)
 				supp['python3_11']=1
+				supp['python3_12']=1
+				supp['python3_13']=1
+				;;
+			python3_12+)
+				supp['python3_12']=1
+				supp['python3_13']=1
+				;;
+			python3_13+)
+				supp['python3_13']=1
 				;;
 
 			# Below, new special setting that will enable python2 and
@@ -202,6 +216,8 @@ _python_set_impls() {
 				supp['python3_9']=1
 				supp['python3_10']=1
 				supp['python3_11']=1
+				supp['python3_12']=1
+				supp['python3_13']=1
 				;;
 			*)
 				# Anything else valid in the list is also supported as-is
@@ -224,7 +240,7 @@ _python_set_impls() {
 			unsupp[$i]=1
 		fi
 	done
-	
+
 	if [[ -z "${!supp_filt[@]}" ]]; then
 		die "No supported implementation in PYTHON_COMPAT."
 	fi
