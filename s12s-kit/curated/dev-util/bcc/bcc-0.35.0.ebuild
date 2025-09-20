@@ -6,10 +6,8 @@ LUA_COMPAT=( luajit )
 DISTUTILS_OPTIONAL=1
 DISTUTILS_USE_PEP517=setuptools
 PYTHON_COMPAT=( python3+ )
-LLVM_COMPAT=( {15..21} )
-LLVM_SLOT=16
 
-inherit cmake linux-info llvm-r1 lua-single distutils-r1 toolchain-funcs
+inherit cmake linux-info lua-single llvm distutils-r1 toolchain-funcs
 
 DESCRIPTION="Tools for BPF-based Linux IO analysis, networking, monitoring, and more"
 HOMEPAGE="https://iovisor.github.io/bcc/"
@@ -35,10 +33,8 @@ RDEPEND="
 	dev-libs/libffi:=
 	sys-kernel/linux-headers
 	sys-libs/ncurses:=[tinfo]
-	$(llvm_gen_dep '
-		llvm-core/clang:${LLVM_SLOT}=
-		llvm-core/llvm:${LLVM_SLOT}=
-	')
+	sys-devel/clang
+	sys-devel/llvm
 	lzma? ( || (
 		app-arch/xz-utils
 		app-arch/lzma
@@ -81,7 +77,7 @@ pkg_pretend() {
 }
 
 pkg_setup() {
-	llvm-r1_pkg_setup
+	llvm_pkg_setup
 	use python && python_setup
 }
 
