@@ -2,17 +2,6 @@ php_rule:
   generator: github-1
   packages:
     - php:
-        slot: 8.1
-        github:
-          user: php
-          repo: php-src
-          query: tags
-          match: '^(8\.1\.[0-9.]+)$'
-          transform:
-            - kind: string
-              match: 'php-'
-              replace: ''
-    - php:
         slot: 8.2
         github:
           user: php
@@ -30,6 +19,17 @@ php_rule:
           repo: php-src
           query: tags
           match: '^(8\.3\.[0-9.]+)$'
+          transform:
+            - kind: string
+              match: 'php-'
+              replace: ''
+    - php:
+        slot: 8.4
+        github:
+          user: php
+          repo: php-src
+          query: tags
+          match: '^(8\.4\.[0-9.]+)$'
           transform:
             - kind: string
               match: 'php-'
