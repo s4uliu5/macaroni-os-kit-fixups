@@ -14,7 +14,7 @@ HOMEPAGE="https://llvm.org/"
 
 LICENSE="Apache-2.0-with-LLVM-exceptions UoI-NCSA MIT"
 SLOT="$(ver_cut 1)"
-KEYWORDS="next"
+KEYWORDS="*"
 IUSE="debug default-compiler-rt default-libcxx default-lld
 	doc +extra llvm-libunwind ieee-long-double +pie +static-analyzer test xml"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
@@ -71,6 +71,13 @@ llvm.org_set_globals
 #
 # Therefore: use sys-devel/clang[${MULTILIB_USEDEP}] only if you need
 # multilib clang* libraries (not runtime, not wrappers).
+
+pkg_pretend() {
+    if [[ (-d "/usr/lib/clang/16" && -d "/usr/lib/clang/16.0.0") && (! -L "/usr/lib/clang/16.0.0") ]]; then
+      eerror "Please run: emerge -C =sys-libs/compiler-rt-sanitizers-16.0.0 =sys-libs/compiler-rt-16.0.0"
+      die "Please run: emerge -C =sys-libs/compiler-rt-sanitizers-16.0.0 =sys-libs/compiler-rt-16.0.0"
+    fi
+}
 
 pkg_setup() {
 	LLVM_MAX_SLOT=${SLOT} llvm_pkg_setup
@@ -433,6 +440,8 @@ src_install() {
 				"/usr/lib/llvm/${SLOT}/bin/${abi_chost}-${i}"
 		done
 	done
+
+	dosym "/usr/lib/clang/${clang_version}" "/usr/lib/clang/${clang_full_version}" || die
 }
 
 multilib_src_install() {
