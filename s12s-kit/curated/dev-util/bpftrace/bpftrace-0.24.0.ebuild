@@ -2,18 +2,15 @@
 
 EAPI=7
 
-LLVM_COMPAT=( {17..21} )
-RUST_MIN_VER=1.85.1
 RUST_OPTIONAL=1
 
-inherit cmake flag-o-matic linux-info llvm-r1
+inherit cmake flag-o-matic linux-info llvm
 
 DESCRIPTION="High-level tracing language for eBPF"
 HOMEPAGE="https://github.com/bpftrace/bpftrace"
 MY_PV="${PV//_/}"
 # the man page version may trail the release
 #MAN_V="0.24.0"
-LLVM_SLOT=16
 
 SRC_URI="https://github.com/bpftrace/${PN}/archive/v${MY_PV}.tar.gz -> ${P}.tar.gz"
 KEYWORDS="*"
@@ -30,13 +27,10 @@ IUSE="pcap test systemd"
 RESTRICT="!test? ( test )"
 
 RDEPEND="
-	>=dev-libs/blazesym_c-0.1.1
 	>=dev-libs/libbpf-1.5:=
 	>=dev-util/bcc-0.25.0:=
-	$(llvm_gen_dep '
-		llvm-core/clang:${LLVM_SLOT}=
-		llvm-core/llvm:${LLVM_SLOT}=[llvm_targets_BPF(+)]
-	')
+	sys-devel/clang
+	sys-devel/llvm
 	sys-process/procps
 	sys-libs/binutils-libs:=
 	virtual/libelf:=
@@ -50,8 +44,8 @@ DEPEND="
 "
 BDEPEND="
 	app-arch/xz-utils
-	app-alternatives/lex
-	app-alternatives/yacc
+	sys-devel/flex
+	virtual/yacc
 	app-editors/vim-core
 	dev-libs/cereal
 	dev-util/bpftool
@@ -82,7 +76,7 @@ pkg_pretend() {
 }
 
 pkg_setup() {
-	llvm-r1_pkg_setup
+	llvm_pkg_setup
 }
 
 src_prepare() {

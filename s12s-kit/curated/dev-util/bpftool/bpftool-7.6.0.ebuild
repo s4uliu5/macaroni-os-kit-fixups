@@ -2,11 +2,11 @@
 
 EAPI=7
 
-LLVM_COMPAT=( {15..20} )
+LLVM_COMPAT=( {15..16} )
 LLVM_OPTIONAL=1
 PYTHON_COMPAT=( python3+ )
 
-inherit bash-completion-r1 linux-info llvm-r1 python-any-r1 toolchain-funcs
+inherit bash-completion-r1 linux-info llvm python-any-r1 toolchain-funcs
 
 DESCRIPTION="Tool for inspection and simple manipulation of eBPF programs and maps"
 HOMEPAGE="https://github.com/libbpf/bpftool"
@@ -39,7 +39,7 @@ REQUIRED_USE="llvm? ( ${LLVM_REQUIRED_USE} )"
 
 RDEPEND="
 	caps? ( sys-libs/libcap:= )
-	llvm? ( $(llvm_gen_dep 'llvm-core/llvm:${LLVM_SLOT}') )
+	llvm? ( sys-devel/llvm )
 	!llvm? ( sys-libs/binutils-libs:= )
 	sys-libs/zlib:=
 	virtual/libelf:=
@@ -52,7 +52,7 @@ BDEPEND="
 	${PYTHON_DEPS}
 	app-arch/tar
 	dev-python/docutils
-	clang? ( $(llvm_gen_dep 'llvm-core/clang:${LLVM_SLOT}[llvm_targets_BPF]') )
+	clang? ( sys-devel/clang )
 	!clang? ( sys-devel/bpf-toolchain )
 "
 
@@ -60,7 +60,7 @@ CONFIG_CHECK="~DEBUG_INFO_BTF"
 
 pkg_setup() {
 	python-any-r1_pkg_setup
-	use llvm && llvm-r1_pkg_setup
+	use llvm && llvm_pkg_setup
 }
 
 src_prepare() {
