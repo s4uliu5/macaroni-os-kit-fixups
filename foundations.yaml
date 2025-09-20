@@ -266,9 +266,9 @@ kit-groups:
           - text-kit:
               source: funtoo_next
               branch: next
-          - science-kit:
-              source: funtoo_next
-              branch: next
+          # - science-kit:
+          #     source: funtoo_next
+          #     branch: next
           # - games-kit:
           #     source: funtoo_next
           #     branch: next

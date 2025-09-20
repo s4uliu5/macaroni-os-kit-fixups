@@ -117,7 +117,7 @@ release:
       - editors-kit
       - net-kit
       - text-kit
-      - science-kit
+      # - science-kit
       # - games-kit
       - java-kit
       - haskell-kit
