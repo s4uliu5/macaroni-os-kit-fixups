@@ -22,10 +22,10 @@ DEPEND="
 "
 RDEPEND="${DEPEND}"
 BDEPEND="
-	app-alternatives/lex
+	sys-devel/flex
 	test? ( dev-lang/perl )
 "
-PDEPEND="app-alternatives/yacc"
+PDEPEND="virtual/yacc"
 
 DOCS=( AUTHORS ChangeLog NEWS README THANKS TODO ) # ChangeLog-2012 ChangeLog-1998 PACKAGING README-alpha README-release
 
