@@ -1,7 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3+)
+PYTHON_COMPAT=( python3+ )
 inherit cmake python-any-r1 toolchain-funcs
 
 DESCRIPTION="New implementation of the C++ standard library, targeting C++11"
@@ -12,15 +12,15 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="static-libs clang +libcxxabi +libunwind"
 REQUIRED_USE="libunwind? ( libcxxabi )"
-DEPEND="${RDEPEND}
-	sys-devel/llvm:16
-	
-"
 BDEPEND="clang? ( sys-devel/clang:16 )
 	
 "
 RDEPEND="libcxxabi? ( ~sys-libs/libcxxabi-${PV}[static-libs?] )
 	!libcxxabi? ( sys-devel/gcc[cxx] )
+	
+"
+DEPEND="${RDEPEND}
+	sys-devel/llvm:16
 	
 "
 S="${WORKDIR}/llvm-src/runtimes"
@@ -105,6 +105,7 @@ gen_shared_ldscript() {
 	gen_ldscript "${deps}" > "${ED}/usr/${libdir}/libc++.so" || die
 }
 src_install() {
+	local libdir=$(get_libdir)
 	cmake_src_install
 	mv "${ED}/usr/${libdir}/libc++experimental.a" "${ED}/usr/${libdir}/libc++_static.a" || die
 	gen_shared_ldscript

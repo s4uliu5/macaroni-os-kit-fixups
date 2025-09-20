@@ -1,7 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3+)
+PYTHON_COMPAT=( python3+ )
 CMAKE_BUILD_TYPE=RelWithDebInfo
 SANITIZER_FLAGS=( asan dfsan lsan msan hwasan tsan ubsan safestack cfi scudo shadowcallstack gwp-asan )
 inherit cmake flag-o-matic python-any-r1 toolchain-funcs
@@ -15,13 +15,13 @@ KEYWORDS="*"
 IUSE="+clang debug elibc_glibc +libfuzzer +memprof +orc +profile +xray ${SANITIZER_FLAGS[@]/#/+}"
 REQUIRED_USE="|| ( ${SANITIZER_FLAGS[*]} libfuzzer orc profile xray )
 "
-DEPEND="sys-devel/llvm
-	
-"
 BDEPEND="dev-util/cmake
 	clang? ( sys-devel/clang )
 	elibc_glibc? ( net-libs/libtirpc )
 	${PYTHON_DEPS}
+	
+"
+DEPEND="sys-devel/llvm
 	
 "
 S="${WORKDIR}/llvm-src"

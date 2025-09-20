@@ -1,7 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3+)
+PYTHON_COMPAT=( python3+ )
 CMAKE_BUILD_TYPE=RelWithDebInfo
 inherit cmake flag-o-matic python-any-r1 toolchain-funcs
 
@@ -12,12 +12,12 @@ LICENSE="Apache-2.0-with-LLVM-exceptions || ( UoI-NCSA MIT )"
 SLOT="16"
 KEYWORDS="*"
 IUSE="+clang debug"
-DEPEND="sys-devel/llvm
-	
-"
 BDEPEND="dev-util/cmake
 	clang? ( sys-devel/clang )
 	${PYTHON_DEPS}
+	
+"
+DEPEND="sys-devel/llvm
 	
 "
 S="${WORKDIR}/llvm-src"

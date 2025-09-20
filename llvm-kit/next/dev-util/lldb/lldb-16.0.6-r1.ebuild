@@ -1,7 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3+)
+PYTHON_COMPAT=( python3+ )
 CMAKE_BUILD_TYPE=RelWithDebInfo
 inherit cmake python-single-r1
 
@@ -13,9 +13,6 @@ SLOT="16"
 KEYWORDS="*"
 IUSE="debug +libedit lzma ncurses +python +xml"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
-DEPEND="${RDEPEND}
-	
-"
 BDEPEND="dev-util/cmake
 	python? ( dev-lang/swig )
 	${PYTHON_DEPS}
@@ -33,6 +30,9 @@ RDEPEND="libedit? ( dev-libs/libedit:0= )
 	xml? ( dev-libs/libxml2:= )
 	sys-devel/clang:16
 	sys-devel/llvm:16
+	
+"
+DEPEND="${RDEPEND}
 	
 "
 S="${WORKDIR}/llvm-src/lldb"
