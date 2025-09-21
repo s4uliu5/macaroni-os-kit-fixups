@@ -113,6 +113,7 @@ release:
       #     source: funtoo_oct_2020
       # - desktop-kit
       - media-kit
+      - mark-kit
       - i18n-kit
       - editors-kit
       - net-kit
