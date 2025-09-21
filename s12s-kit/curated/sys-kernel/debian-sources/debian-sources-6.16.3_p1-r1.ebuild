@@ -1,55 +1,73 @@
 # Distributed under the terms of the GNU General Public License v2
+# Created by MARK Devkit
 
-EAPI=5
+EAPI=6
 
-inherit check-reqs eutils ego
+inherit check-reqs eutils ego savedconfig
 
-SLOT=$PF
+SLOT=sid/6.16.3_p1
 
+# NOTE: When updating: use the version from Debian testing (trixie)
+# https://packages.debian.org/trixie/linux-source
 DEB_PATCHLEVEL="1"
-KERNEL_TRIPLET="6.6.8"
-VERSION_SUFFIX="_p${DEB_PATCHLEVEL}"
+KERNEL_TRIPLET="6.16.3"
+
+# like "_p1-r1"
+#VERSION_SUFFIX="_p${DEB_PATCHLEVEL}"
 if [ ${PR} != "r0" ]; then
-	VERSION_SUFFIX+="-${PR}"
+	REVISION_SUFFIX+="-${PR}"
 fi
-EXTRAVERSION="${VERSION_SUFFIX}-${PN}"
-MOD_DIR_NAME="${KERNEL_TRIPLET}${EXTRAVERSION}"
-# Tracking: https://packages.debian.org/sid/linux-image-amd64
+
+MACARONI_KTYPE="debian"
+MACARONI_KSUFFIX="debian${DEB_PATCHLEVEL}-mark"
+# like "-r1-debian1-mark"
+EXTRAVERSION="${REVISION_SUFFIX}-${MACARONI_KSUFFIX}"
+# like "6.12.38-r1"
+MACARONI_KVER="${KERNEL_TRIPLET}${REVISION_SUFFIX}"
+# like "6.12.38-r1-debian1-mark"
+# same as ${KERNEL_TRIPLET}${EXTRAVERSION}
+MOD_DIR_NAME="${KERNEL_TRIPLET}${REVISION_SUFFIX}-${MACARONI_KSUFFIX}"
+
 # install sources to /usr/src/$LINUX_SRCDIR
 LINUX_SRCDIR=linux-${PF}
 DEB_PV="${KERNEL_TRIPLET}-${DEB_PATCHLEVEL}"
 
-
 RESTRICT="binchecks strip"
 LICENSE="GPL-2"
-KEYWORDS=""
-IUSE="acpi-ec binary btrfs custom-cflags ec2 +logo luks lvm sign-modules zfs"
-RDEPEND="
-	|| (
-		<sys-apps/gawk-5.2.0
-		>=sys-apps/gawk-5.2.1
-	)
-	binary? ( >=sys-apps/ramdisk-1.1.3 )
+KEYWORDS="*"
+IUSE="acpi-ec binary btrfs custom-cflags dracut ec2 +logo luks lvm mdadm savedconfig sshd sign-modules zfs
 "
-DEPEND="
-	virtual/libelf
-	btrfs? ( sys-fs/btrfs-progs )
-	zfs? ( sys-fs/zfs )
-	luks? ( sys-fs/cryptsetup )"
-REQUIRED_USE="
-btrfs? ( binary )
-custom-cflags? ( binary )
-logo? ( binary )
-luks? ( binary )
-lvm? ( binary )
-sign-modules? ( binary )
-zfs? ( binary )
+
+RDEPEND="sys-apps/gawk
+dracut? (
+  sys-kernel/dracut
+  virtual/dracut-mark
+)
 "
+DEPEND="virtual/libelf
+btrfs? ( sys-fs/btrfs-progs )
+zfs? ( sys-fs/zfs )
+luks? ( sys-fs/cryptsetup )
+lvm? ( sys-fs/lvm2 )
+"
+REQUIRED_USE="binary? (
+  ^^ ( dracut )
+  btrfs? ( dracut )
+  mdadm? ( dracut )
+  luks? ( dracut )
+  lvm? ( dracut )
+  sshd? ( dracut )
+)
+sshd? ( binary )
+"
+
 DESCRIPTION="Debian Sources (and optional binary kernel)"
-DEB_UPSTREAM="http://http.debian.net/debian/pool/main/l/linux"
 HOMEPAGE="https://packages.debian.org/unstable/kernel/"
-SRC_URI="https://deb.debian.org/debian/pool/main/l/linux/linux_${KERNEL_TRIPLET}.orig.tar.xz -> linux_${KERNEL_TRIPLET}.orig.tar.xz https://deb.debian.org/debian/pool/main/l/linux/linux_${DEB_PV}.debian.tar.xz -> linux_${DEB_PV}.debian.tar.xz"
+SRC_URI="
+https://deb.debian.org/debian/pool/main/l/linux/linux_6.16.3-1.debian.tar.xz -> linux_6.16.3-1.debian.tar.xz
+https://mirrors.edge.kernel.org/pub/linux/kernel/v6.x/linux-6.16.3.tar.xz -> linux-6.16.3.tar.xz"
 S="$WORKDIR/linux-${KERNEL_TRIPLET}"
+
 
 get_patch_list() {
 	[[ -z "${1}" ]] && die "No patch series file specified"
@@ -82,15 +100,19 @@ zap_config() {
 	sed -i -e "/$2/d" $1
 }
 
+get_vendor() {
+	vendor_string=$(grep vendor /proc/cpuinfo | uniq | cut -d ':' -f 2)
+	vendor=$([[ ${vendor_string^^} =~ (INTEL)|(AMD) ]] && echo ${BASH_REMATCH[0]})
+	echo $vendor
+}
+
 pkg_pretend() {
 	# Ensure we have enough disk space to compile
 	if use binary ; then
 		CHECKREQS_DISK_BUILD="6G"
 		check-reqs_pkg_setup
+		echo "binary"
 	fi
-	for unsupported in luks lvm zfs; do
-		use $unsupported && die "Currently, $unsupported is unsupported in our binary kernel/initramfs."
-	done
 }
 
 get_certs_dir() {
@@ -115,10 +137,10 @@ pkg_setup() {
 }
 
 src_prepare() {
+	default
 	for debpatch in $( get_patch_list "${WORKDIR}/debian/patches/series" ); do
 		epatch -p1 "${WORKDIR}/debian/patches/${debpatch}"
 	done
-	# end of debian-specific stuff...
 
 	# do not include debian devs certificates
 	rm -rf "${WORKDIR}"/debian/certs
@@ -133,36 +155,47 @@ src_prepare() {
 	make -s mrproper || die "make mrproper failed"
 	cd "${S}" || die
 	cp -aR "${WORKDIR}"/debian "${S}"/debian
+
+	# patches common to all kernel versions
 	epatch "${FILESDIR}"/latest/ikconfig.patch || die
 	epatch "${FILESDIR}"/latest/mcelog.patch || die
-	epatch "${FILESDIR}"/latest/extra_cpu_optimizations.patch || die
-	# revert recent changes to the rtw89 driver that cause problems for Wi-Fi:
-	#rm -rf "${S}"/drivers/net/wireless/rtw89 || die
-	#tar xzf "${DISTDIR}"/debian-sources-6.3.7_p1-rtw89-driver.tar.gz -C "${S}"/drivers/net/wireless/ || die
-	#einfo "Using debian-sources-6.3.7_p1 Wi-Fi driver to avoid latency issues..."
-	cp "${FILESDIR}"/config-extract-6.6 ./config-extract || die
-	chmod +x config-extract || die
 
-	# Set up arch-specific variables and this will fail if run in pkg_setup() since ARCH can be unset there:
+	# patches for this particular branch
+	epatch "${FILESDIR}"/6.16+/more-ISA-levels-and-uarches-for-kernel-6.16+.patch || die
+
+	if use savedconfig; then
+		einfo Restoring saved .config ...
+		restore_config .config
+	else
+		cp "${FILESDIR}"/config-extract-6.6 ./config-extract || die
+		chmod +x config-extract || die
+	fi
+
+	# Set up arch-specific variables and this will fail if run in pkg_setup()
+	# since ARCH can be unset there:
 	if [ "${REAL_ARCH}" = x86 ]; then
 		export DEB_ARCH="i386"
 		export DEB_SUBARCH="686-pae"
-		export KERN_SUFFIX="${PN}-i686-${PV}"
+		export KERN_ARCH="i686"
 	elif [ "${REAL_ARCH}" = amd64 ]; then
 		export DEB_ARCH="amd64"
 		export DEB_SUBARCH="amd64"
-		export KERN_SUFFIX="${PN}-x86_64-${PV}"
+		export KERN_ARCH="x86_64"
 	else
 		die "Architecture '${REAL_ARCH}' not handled in ebuild"
 	fi
-	[[ ${PR} != "r0" ]] && KERN_SUFFIX+="-${PR}"
+	# like "debian-x86_64-6.12.38-r1-debian1-mark"
+	export KERN_SUFFIX="${MACARONI_KTYPE}-${KERN_ARCH}-${MACARONI_KVER}-${MACARONI_KSUFFIX}"
 
-	echo "./config-extract ${DEB_ARCH} ${FEATURESET} ${DEB_SUBARCH}"
-	./config-extract ${DEB_ARCH} ${FEATURESET} ${DEB_SUBARCH} || die
+	if ! use savedconfig; then
+		./config-extract ${DEB_ARCH} ${FEATURESET} ${DEB_SUBARCH} || die
+	fi
+
 	setno_config .config CONFIG_DEBUG
 	if use acpi-ec; then
 		# most fan control tools require this
 		tweak_config .config CONFIG_ACPI_EC_DEBUGFS m
+		tweak_config .config CONFIG_DEBUG_FS y
 	fi
 	if use ec2; then
 		setyes_config .config CONFIG_BLK_DEV_NVME
@@ -171,11 +204,11 @@ src_prepare() {
 		setyes_config .config CONFIG_IXGBEVF
 	fi
 	if use logo; then
-		epatch "${FILESDIR}"/latest/funtoo_logo.patch || die
+		cp "${FILESDIR}"/latest/macaroni-os_logo_clut224.ppm "$S"/drivers/video/logo/logo_linux_clut224.ppm || die
 		tweak_config .config CONFIG_LOGO y
-		ewarn "Linux kernel frame buffer boot logo is now enabled with a custom Funtoo pixmap."
+		ewarn "Linux kernel frame buffer boot logo is now enabled with a custom MacaroniOS pixmap."
 		ewarn "The new logo can be viewed at /usr/src/linux/drivers/video/logo/logo_linux_clut224.ppm"
-		ewarn "Remove the quiet kernel parameter (from params in /etc/boot.conf, and re-run boot-update.)"
+		ewarn "Remove the quiet kernel parameter (from params in /etc/boot.conf, and re-run boot-update)."
 		ewarn "This will ensure the custom kernel logo is displayed during boot over frame buffer."
 		ewarn ""
 	fi
@@ -211,9 +244,17 @@ src_prepare() {
 	fi
 	if use custom-cflags; then
 		MARCH="$(python3 -c "import portage; print(portage.settings[\"CFLAGS\"])" | sed 's/ /\n/g' | grep "march")"
+
 		if [ -n "$MARCH" ]; then
-			CONFIG_MARCH="$(grep -m 1 -e "${MARCH}" -B 1 arch/x86/Makefile | sort -r | grep -m 1 -o CONFIG_\[^\)\]* )"
+			if [[ $MARCH =~ (native) ]] && [[ -n $(get_vendor) ]]; then
+				einfo "Detected -march=native on $(get_vendor)"
+				CONFIG_MARCH=CONFIG_MNATIVE_$(get_vendor)
+			else
+				CONFIG_MARCH="$(grep -m 1 -e "${MARCH}" -B 1 arch/x86/Makefile | sort -r | grep -m 1 -o CONFIG_\[^\)\]* )"
+			fi
+
 			if [ -n "${CONFIG_MARCH}" ]; then
+				einfo "Optimizing kernel for ${CONFIG_MARCH}"
 				tweak_config .config CONFIG_GENERIC_CPU n
 				tweak_config .config "${CONFIG_MARCH}" y
 			else
@@ -221,6 +262,17 @@ src_prepare() {
 			fi
 		fi
 	fi
+	# build generic CRC32C module into kernel, to defeat FL-11913
+	# (cannot mount ext4 filesystem in initramfs if created with recent e2fsprogs version)
+	tweak_config .config CONFIG_CRYPTO_CRC32C y
+
+	# disable module compression until the initramfs plays nicely with it
+	tweak_config .config CONFIG_MODULE_COMPRESS n
+	tweak_config .config CONFIG_MODULE_COMPRESS_XZ n
+	tweak_config .config CONFIG_MODULE_COMPRESS_GZIP n
+	tweak_config .config CONFIG_MODULE_COMPRESS_ALL n
+	tweak_config .config CONFIG_MODULE_COMPRESS_NONE y
+
 	# get config into good state:
 	yes "" | make oldconfig >/dev/null 2>&1 || die
 	cp .config "${T}"/config || die
@@ -250,8 +302,9 @@ src_install() {
 	use binary || return
 	make ${MAKEOPTS} O="${WORKDIR}"/build INSTALL_MOD_PATH="${D}" modules_install || die "modules install failure"
 	insinto /boot
-	newins ${WORKDIR}/build/arch/x86/boot/bzImage "kernel-${KERN_SUFFIX}"
-	newins ${WORKDIR}/build/System.map "System.map-${KERN_SUFFIX}"
+	newins ${WORKDIR}/build/arch/x86/boot/bzImage "vmlinuz-${KERN_SUFFIX}.tmp"
+	newins ${WORKDIR}/build/System.map "System.map-${KERN_SUFFIX}.tmp"
+	newins ${WORKDIR}/build/.config "config-${KERN_SUFFIX}.tmp"
 	make prepare || die
 	make scripts || die
 	# FL-8004: In Linux 5.10, module.lds is generated by 'modules_prepare',
@@ -269,23 +322,86 @@ src_install() {
 	cp "${WORKDIR}/build/System.map" "${D}/usr/src/${LINUX_SRCDIR}/" || die
 	cp "${WORKDIR}/build/Module.symvers" "${D}/usr/src/${LINUX_SRCDIR}/" || die
 	if use sign-modules; then
+		# TODO FIXME: check for compressed modules.
 		find "${D}"/lib/modules -iname *.ko -exec ${WORKDIR}/build/scripts/sign-file sha512 $certs_dir/signing_key.pem $certs_dir/signing_key.x509 {} \; || die
 		# install the sign-file executable for future use.
 		exeinto /usr/src/${LINUX_SRCDIR}/scripts
 		doexe ${WORKDIR}/build/scripts/sign-file
 	fi
-	/usr/bin/ramdisk \
-		--fs_root="${D}" \
-		--temp_root="${T}" \
-		--enable=btrfs \
-		--kernel=${MOD_DIR_NAME} \
-		${D}/boot/initramfs-${KERN_SUFFIX} --debug --backtrace || die "failcakes $?"
+	# The following line associates the .tmp dir with this package, so that
+	# when the package is uninstalled, the modules are not removed.
+	# Otherwise, modules for the current running kernel might be erased!
+	mv "${D}"/lib/modules/${MOD_DIR_NAME}{,.tmp}
 }
 
 pkg_postinst() {
-	if use binary && [[ -h "${ROOT}"usr/src/linux ]]; then
-		rm "${ROOT}"usr/src/linux
+	# Ensure that /boot is mounted in this phase
+	ego_pkg_preinst
+
+	# Prevent kernel and modules erasure during upgrade.
+	if use binary; then
+		# first rename the initramfs
+		if use savedconfig; then
+			if [[ -f "/boot/initramfs-${KERN_SUFFIX}" ]]; then
+				mv /boot/initramfs-${KERN_SUFFIX}{,.old} || die
+			fi
+		fi
+		# then rename everything else, and copy the new files into place
+		for i in {vmlinuz,System.map,config}; do
+			if [[ -f "/boot/$i-${KERN_SUFFIX}" ]]; then
+				# USE=savedconfig means the config might have changed!
+				# In that case, keep the old kernel around, for safety.
+				if use savedconfig; then
+					if [[ -f /boot/$i-${KERN_SUFFIX}.old ]]; then
+						rm /boot/$i-${KERN_SUFFIX}.old
+					fi
+					einfo "Preserving: mv /boot/$i-${KERN_SUFFIX}{,.old}"
+					mv /boot/$i-${KERN_SUFFIX}{,.old} || die
+				else
+					rm /boot/$i-${KERN_SUFFIX} || die
+				fi
+			fi
+			mv /boot/$i-${KERN_SUFFIX}{.tmp,} || die
+		done
+		if [[ -d "/lib/modules/${MOD_DIR_NAME}" ]]; then
+			# USE=savedconfig means the config might have changed!
+			# In that case, keep the old modules around, for safety.
+			if use savedconfig; then
+				if [[ -d "/lib/modules/${MOD_DIR_NAME}.old" ]]; then
+					rm -r /lib/modules/${MOD_DIR_NAME}.old
+				fi
+				einfo "Preserving: mv /lib/modules/${MOD_DIR_NAME}{,.old}"
+				mv /lib/modules/${MOD_DIR_NAME}{,.old} || die
+			else
+				rm -r /lib/modules/${MOD_DIR_NAME} || die
+			fi
+		fi
+		mv /lib/modules/${MOD_DIR_NAME}{.tmp,} || die
 	fi
+
+	# Finally, generate a new initramfs with dracut, via whip
+	# NOTE: For now, the initramfs is generic.
+	if use binary && use dracut; then
+		DRACUT_ADD_MODULES="
+			$(use lvm && echo lvm)
+			$(use luks && echo crypt)
+			$(use mdadm && echo dmraid)
+			$(use btrfs && echo btrfs)
+			$(use sshd && echo sshd)
+		" DRACUT_ADD_DRIVERS="
+			$(use luks && echo dm-crypt)
+		" \
+		KVER="${KERN_ARCH}-${MACARONI_KVER}" \
+		KTYPE="${MACARONI_KTYPE}" \
+		KSUFFIX="${MACARONI_KSUFFIX}" \
+		KMODDIR="/lib/modules/$MOD_DIR_NAME" \
+		whip h initramfs.generate_with_dracut || die
+	fi
+
+	if use binary && [[ -h "${ROOT}"usr/src/linux ]]; then
+		rm "${ROOT}"usr/src/linux || die
+	fi
+
 	if use binary && [[ ! -e "${ROOT}"usr/src/linux ]]; then
 		ewarn "With binary use flag enabled /usr/src/linux"
 		ewarn "symlink automatically set to debian kernel"
@@ -293,12 +409,15 @@ pkg_postinst() {
 		ewarn ""
 		ewarn "  emerge @module-rebuild"
 		ewarn ""
-		ln -sf ${LINUX_SRCDIR} "${ROOT}"usr/src/linux
+		ln -sf ${LINUX_SRCDIR} "${ROOT}"usr/src/linux || die
 	fi
 
 	if [ -e ${ROOT}lib/modules ]; then
-		depmod -a ${PV}-${PN}
+		depmod -a $MOD_DIR_NAME || die
 	fi
 
+	# Update bootloader and unmount /boot
 	ego_pkg_postinst
 }
+
+# vim: syn=ebuild noet ts=4
