@@ -2,19 +2,20 @@
 
 EAPI=7
 
-SRC_URI="https://github.com/Exiv2/exiv2/releases/download/v${PV}/${P}-Source.tar.gz"
-KEYWORDS="*"
-S="${WORKDIR}/${P}-Source"
 
 CMAKE_ECLASS=cmake
 PYTHON_COMPAT=( python3+ )
-inherit cmake-multilib python-any-r1
+inherit cmake python-any-r1
 
-DESCRIPTION="EXIF, IPTC and XMP metadata C++ library and command line utility"
-HOMEPAGE="https://www.exiv2.org/"
+DESCRIPTION="{{desc}}"
+HOMEPAGE="{{homepage}}"
+SRC_URI="{{src_uri}}"
+LICENSE="{{license}}"
 
-LICENSE="GPL-2"
-SLOT="0/27"
+S="${WORKDIR}/{{github_user}}-{{github_repo}}-{{sha[:7]}}"
+
+SLOT="0/$(ver_cut 1-2)"
+KEYWORDS="*"
 IUSE="+bmff doc examples nls +png webready +xmp"
 
 BDEPEND="
@@ -26,18 +27,19 @@ BDEPEND="
 		virtual/pkgconfig
 	)
 	nls? ( sys-devel/gettext )
+	dev-libs/inih
+	app-arch/brotli
 "
 RDEPEND="
-	virtual/libiconv[${MULTILIB_USEDEP}]
-	nls? ( virtual/libintl[${MULTILIB_USEDEP}] )
-	png? ( sys-libs/zlib[${MULTILIB_USEDEP}] )
+    >=virtual/libiconv-0-r1
+	nls? ( >=virtual/libintl-0-r1 )
+	png? ( sys-libs/zlib )
 	webready? (
-		net-libs/libssh[sftp,${MULTILIB_USEDEP}]
-		net-misc/curl[${MULTILIB_USEDEP}]
+		>net-libs/libssh-0.9.1[sftp]
+		net-misc/curl
 	)
-	xmp? ( dev-libs/expat[${MULTILIB_USEDEP}] )
+	xmp? ( dev-libs/expat )
 "
-DEPEND="${DEPEND}"
 
 DOCS=( README.md doc/ChangeLog doc/cmd.txt )
 
@@ -56,34 +58,34 @@ src_prepare() {
 	sed -e "/^include.*compilerFlags/s/^/#DONT /" -i CMakeLists.txt || die
 }
 
-multilib_src_configure() {
+src_configure() {
 	local mycmakeargs=(
 		-DCMAKE_CXX_STANDARD=14
 		-DEXIV2_BUILD_SAMPLES=NO
 		-DEXIV2_ENABLE_NLS=$(usex nls)
 		-DEXIV2_ENABLE_PNG=$(usex png)
 		-DEXIV2_ENABLE_CURL=$(usex webready)
-		-DEXIV2_ENABLE_SSH=$(usex webready)
 		-DEXIV2_ENABLE_WEBREADY=$(usex webready)
 		-DEXIV2_ENABLE_XMP=$(usex xmp)
 		-DEXIV2_ENABLE_BMFF=$(usex bmff)
-		$(multilib_is_native_abi || echo -DEXIV2_BUILD_EXIV2_COMMAND=NO)
-		$(multilib_is_native_abi && echo -DEXIV2_BUILD_DOC=$(usex doc))
+		-DEXIV2_BUILD_EXIV2_COMMAND=NO
+		-DEXIV2_BUILD_DOC=$(usex doc)
+		-DEXIV2_BUILD_UNIT_TESTS=NO
 		-DCMAKE_INSTALL_DOCDIR="${EPREFIX}"/usr/share/doc/${PF}/html
 	)
 
 	cmake_src_configure
 }
 
-multilib_src_compile() {
+src_compile() {
 	cmake_src_compile
 
-	if multilib_is_native_abi; then
-		use doc && eninja doc
-	fi
+	use doc && eninja doc
 }
 
-multilib_src_install_all() {
+src_install() {
+    cmake_src_install
+
 	use xmp && DOCS+=( doc/{COPYING-XMPSDK,README-XMP,cmdxmp.txt} )
 
 	einstalldocs
