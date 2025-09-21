@@ -56,18 +56,21 @@ sdl2libs_rule:
         github:
           repo: SDL_image
           query: releases
+          select: release-2.\d*[02468]\.\d+
     - sdl2-mixer:
         desc: An audio mixer that supports various file formats for SDL.
         homepage: https://libsdl.org/projects/SDL_mixer/
         github:
           repo: SDL_mixer
           query: releases
+          select: release-2.\d*[02468]\.\d+
     - sdl2-net:
         desc: A simple, cross-platform wrapper over TCP/IP sockets.
         homepage: https://libsdl.org/projects/SDL_mixer/
         github:
           repo: SDL_net
           query: releases
+          select: release-2.\d*[02468]\.\d+
     - sdl2-ttf:
         generator: sdl2-ttf
         desc: Support for TrueType fonts in SDL applications.
@@ -75,3 +78,4 @@ sdl2libs_rule:
         github:
           repo: SDL_ttf
           query: releases
+          select: release-2.\d*[02468]\.\d+
