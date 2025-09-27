@@ -16,7 +16,8 @@ async def generate(hub, **pkginfo):
 		if rel["draft"] == False and rel["prerelease"] == False:
 			break
 
-	url = f"http://cyberelk.net/tim/data/patchutils/stable/{github_repo}-{version}.tar.xz"
+	# url = f"http://cyberelk.net/tim/data/patchutils/stable/{github_repo}-{version}.tar.xz"
+	url = f"https://github.com/{github_user}/{github_repo}/releases/download/{version}/{github_repo}-{version}.tar.xz"
 
 	ebuild = hub.pkgtools.ebuild.BreezyBuild(
 		**pkginfo,
