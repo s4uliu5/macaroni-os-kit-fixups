@@ -2022,6 +2022,7 @@ dev_python_simplified_rule:
           - jinja
           - pyyaml
     - markupsafe:
+        version: 3.0.2
         blocker: '!<dev-python/markupsafe-2.0.0'
         pypi_name: markupsafe
         desc: Implements a XML/HTML/XHTML Markup safe string for Python
