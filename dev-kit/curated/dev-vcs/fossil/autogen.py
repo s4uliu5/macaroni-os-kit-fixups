@@ -48,7 +48,7 @@ async def generate(hub, **pkginfo):
 			version = match.group(2)
 			filename = match.group(0)
 			break
-	url = f"http://www.fossil-scm.org/home/tarball/{filename}"
+	url = f"https://www.fossil-scm.org/home/tarball/{filename}"
 	artifact = hub.pkgtools.ebuild.Artifact(url=url)
 	await artifact.fetch()
 	artifact.extract()
