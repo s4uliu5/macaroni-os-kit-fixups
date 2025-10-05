@@ -14,7 +14,7 @@ async def generate(hub, **pkginfo):
 		version = v
 		break
 	url = f"https://libvirt.org/sources/libvirt-{version}.tar.xz"
-	urlpy = f"https://libvirt.org/sources/python/libvirt-python-{version}.tar.gz"
+	urlpy = f"https://libvirt.org/sources/python/libvirt_python-{version}.tar.gz"
 	python_compat = "python3+"
 
 	ebuild = hub.pkgtools.ebuild.BreezyBuild(
