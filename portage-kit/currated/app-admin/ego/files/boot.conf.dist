@@ -1,0 +1,21 @@
+boot {
+	generate grub
+	default "Macaroni Linux"
+	timeout 3
+}
+
+"MacaroniOS Linux" {
+	kernel vmlinuz[-v]
+	initrd initramfs[-v]
+	params += rootfstype=auto
+	params += rd.luks rd.lvm
+	params += resume= rd.resume.timeout=
+}
+
+"MacaroniOS Linux (nomodeset)" {
+	kernel vmlinuz[-v]
+	initrd initramfs[-v]
+	params += rootfstype=auto nomodeset
+	params += rd.luks rd.lvm
+	params += resume= rd.resume.timeout=
+}

@@ -107,6 +107,7 @@ release:
       - core-hw-kit
       - core-server-kit
       - core-gl-kit
+      - portage-kit:
       - security-kit:
           source: funtoo_release_1.4_bump
       # - browser-kit:
