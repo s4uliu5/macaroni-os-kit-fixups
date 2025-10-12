@@ -2,13 +2,11 @@
 
 EAPI="7"
 
-WANT_AUTOMAKE="none"
-
-inherit flag-o-matic autotools
+inherit flag-o-matic autotools toolchain-funcs
 
 DESCRIPTION="The PHP language runtime engine"
-HOMEPAGE="https://secure.php.net/"
-SRC_URI="https://secure.php.net/distributions/${P}.tar.xz"
+HOMEPAGE="https://www.php.net/"
+SRC_URI="https://www.php.net/distributions/${P}.tar.xz"
 
 LICENSE="PHP-3.01
 	BSD
@@ -32,7 +30,7 @@ IUSE="${IUSE}
 IUSE="${IUSE} acl argon2 bcmath berkdb bzip2 calendar cdb cjk
 	coverage +ctype curl debug
 	enchant exif +fileinfo +filter firebird
-	flatfile ftp gd gdbm gmp +hash +iconv imap inifile
+	+flatfile ftp gd gdbm gmp +hash +iconv imap inifile
 	intl iodbc ipv6 +json kerberos ldap ldap-sasl libedit libressl lmdb
 	mhash mssql mysql mysqli nls
 	oci8-instant-client odbc +opcache pcntl pdo +phar +posix postgres qdbm
@@ -48,32 +46,31 @@ COMMON_DEPEND="
 	>=app-eselect/eselect-php-0.9.1[apache2?,fpm?]
 	>=dev-libs/libpcre-8.32[unicode]
 	fpm? ( acl? ( sys-apps/acl ) )
-	apache2? ( || ( >=www-servers/apache-2.4[apache2_modules_unixd,threads=]
-		<www-servers/apache-2.4[threads=] ) )
+	apache2? ( www-servers/apache[apache2_modules_unixd(+),threads=] )
 	argon2? ( app-crypt/argon2:= )
 	berkdb? ( || (	sys-libs/db:5.3
 					sys-libs/db:5.1
 					sys-libs/db:4.8
-
+					sys-libs/db:4.7
 					sys-libs/db:4.6
 					sys-libs/db:4.5 ) )
 	bzip2? ( app-arch/bzip2:0= )
 	cdb? ( || ( dev-db/cdb dev-db/tinycdb ) )
 	coverage? ( dev-util/lcov )
 	curl? ( >=net-misc/curl-7.10.5 )
-	enchant? ( app-text/enchant )
+	enchant? ( <app-text/enchant-2.0:0 )
 	firebird? ( dev-db/firebird )
-	gd? ( virtual/jpeg:0 media-libs/libpng:0= sys-libs/zlib )
+	gd? ( >=virtual/jpeg-0-r3:0 media-libs/libpng:0= sys-libs/zlib )
 	gdbm? ( >=sys-libs/gdbm-1.8.0:0= )
 	gmp? ( dev-libs/gmp:0= )
 	iconv? ( virtual/libiconv )
-	imap? ( virtual/imap-c-client[kerberos=,ssl=] )
+	imap? ( >=virtual/imap-c-client-2[kerberos=,ssl=] )
 	intl? ( dev-libs/icu:= )
 	iodbc? ( dev-db/libiodbc )
 	kerberos? ( virtual/krb5 )
 	ldap? ( >=net-nds/openldap-1.2.11 )
 	ldap-sasl? ( dev-libs/cyrus-sasl >=net-nds/openldap-1.2.11 )
-	libedit? ( || ( sys-freebsd/freebsd-lib dev-libs/libedit ) )
+	libedit? ( dev-libs/libedit )
 	lmdb? ( dev-db/lmdb:= )
 	mssql? ( dev-db/freetds[mssql] )
 	nls? ( sys-devel/gettext )
@@ -82,7 +79,7 @@ COMMON_DEPEND="
 	postgres? ( dev-db/postgresql:* )
 	qdbm? ( dev-db/qdbm )
 	readline? ( sys-libs/readline:0= )
-	recode? ( app-text/recode )
+	recode? ( app-text/recode:0= )
 	session-mm? ( dev-libs/mm )
 	simplexml? ( >=dev-libs/libxml2-2.6.8 )
 	snmp? ( >=net-analyzer/net-snmp-5.2 )
@@ -115,7 +112,7 @@ RDEPEND="${COMMON_DEPEND}
 	virtual/mta
 	fpm? (
 		selinux? ( sec-policy/selinux-phpfpm )
-	)"
+)"
 
 # Bison isn't actually needed when building from a release tarball
 # However, the configure script will warn if it's absent or if you
@@ -124,15 +121,17 @@ DEPEND="${COMMON_DEPEND}
 	app-arch/xz-utils
 	>=sys-devel/bison-3.0.1"
 
+BDEPEND="virtual/pkgconfig"
+
 # Without USE=readline or libedit, the interactive "php -a" CLI will hang.
 REQUIRED_USE="
 	|| ( cli cgi fpm apache2 embed phpdbg )
 	cli? ( ^^ ( readline libedit ) )
-	truetype? ( gd )
-	webp? ( gd )
-	cjk? ( gd )
-	exif? ( gd )
-	xpm? ( gd )
+	truetype? ( gd zlib )
+	webp? ( gd zlib )
+	cjk? ( gd zlib )
+	exif? ( gd zlib )
+	xpm? ( gd zlib )
 	gd? ( zlib )
 	simplexml? ( xml )
 	soap? ( xml )
@@ -147,14 +146,17 @@ REQUIRED_USE="
 	readline? ( !libedit )
 	recode? ( !imap !mysqli !mysql )
 	session-mm? ( session !threads )
-	mysql? ( || ( mysqli pdo ) )
+	mysql? ( hash || ( mysqli pdo ) )
+	mysqli? ( hash )
 	zip-encryption? ( zip )
 "
+
+RESTRICT="!test? ( test )"
+
 PATCHES=(
-	# hopefully upstream will include the same version check fixes in upcoming releases
-	# patch added 20180429
-	"${FILESDIR}/libressl-compatibility.patch"
-	"${FILESDIR}/php-7.2-freetype-2.9.1.patch"
+	"${FILESDIR}/php-freetype-2.9.1.patch"
+	"${FILESDIR}/php-7.2.13-intl-use-icu-namespace.patch"
+	"${FILESDIR}/php-7.2.34-use-after-free-bug76047.patch"
 )
 
 PHP_MV="$(ver_cut 1)"
@@ -179,7 +181,6 @@ php_install_ini() {
 	# Set the include path to point to where we want to find PEAR packages
 	sed -e 's|^;include_path = ".:/php/includes".*|include_path = ".:'"${EPREFIX}"'/usr/share/php'${PHP_MV}':'"${EPREFIX}"'/usr/share/php"|' -i "${phpinisrc}" || die
 
-	dodir "${PHP_INI_DIR#${EPREFIX}}"
 	insinto "${PHP_INI_DIR#${EPREFIX}}"
 	newins "${phpinisrc}" php.ini
 
@@ -193,7 +194,7 @@ php_install_ini() {
 		elog "Adding opcache to $PHP_EXT_INI_DIR"
 		echo "zend_extension=${PHP_DESTDIR}/$(get_libdir)/opcache.so" >> \
 			 "${D}/${PHP_EXT_INI_DIR}"/opcache.ini
-		dosym "${PHP_EXT_INI_DIR#${EPREFIX}}/opcache.ini" \
+		dosym "../ext/opcache.ini" \
 			  "${PHP_EXT_INI_DIR_ACTIVE#${EPREFIX}}/opcache.ini"
 	fi
 
@@ -227,11 +228,20 @@ src_prepare() {
 	sed -i "s~^include=.*$~include=${PHP_INI_DIR}/fpm.d/*.conf~" \
 		sapi/fpm/php-fpm.conf.in \
 		|| die 'failed to move the include directory in php-fpm.conf'
+
+	# Bug 669566 - necessary so that build tools are updated for commands like pecl
+	# Force rebuilding aclocal.m4
+	rm -f aclocal.m4 || die "failed to remove aclocal.m4 in src_prepare"
+	eautoreconf
 }
 
 src_configure() {
-	addpredict /usr/share/snmp/mibs/.index
-	addpredict /var/lib/net-snmp/mib_indexes
+	addpredict /usr/share/snmp/mibs/.index #nowarn
+	addpredict /var/lib/net-snmp/mib_indexes #nowarn
+
+	# Fix building against >=ICU-68, https://bugs.php.net/80310
+	append-cflags -DU_DEFINE_FALSE_AND_TRUE=1
+	append-cxxflags -DU_DEFINE_FALSE_AND_TRUE=1
 
 	PHP_DESTDIR="${EPREFIX}/usr/$(get_libdir)/php${SLOT}"
 
@@ -435,6 +445,8 @@ src_configure() {
 	# Support the Apache2 extras, they must be set globally for all
 	# SAPIs to work correctly, especially for external PHP extensions
 
+	local one_sapi
+	local sapi
 	mkdir -p "${WORKDIR}/sapis-build" || die
 	for one_sapi in $SAPIS ; do
 		use "${one_sapi}" || continue
@@ -490,9 +502,10 @@ src_configure() {
 
 src_compile() {
 	# snmp seems to run during src_compile, too (bug #324739)
-	addpredict /usr/share/snmp/mibs/.index
-	addpredict /var/lib/net-snmp/mib_indexes
+	addpredict /usr/share/snmp/mibs/.index #nowarn
+	addpredict /var/lib/net-snmp/mib_indexes #nowarn
 
+	local sapi
 	for sapi in ${SAPIS} ; do
 		if use "${sapi}"; then
 			cd "${WORKDIR}/sapis-build/$sapi" || \
@@ -504,10 +517,10 @@ src_compile() {
 
 src_install() {
 	# see bug #324739 for what happens when we don't have that
-	addpredict /usr/share/snmp/mibs/.index
+	addpredict /usr/share/snmp/mibs/.index #nowarn
 
 	# grab the first SAPI that got built and install common files from there
-	local first_sapi=""
+	local first_sapi="",sapi=""
 	for sapi in $SAPIS ; do
 		if use $sapi ; then
 			first_sapi=$sapi
@@ -528,7 +541,7 @@ src_install() {
 	# Create the directory where we'll put version-specific php scripts
 	keepdir "/usr/share/php${PHP_MV}"
 
-	local sapi="", file=""
+	local file=""
 	local sapi_list=""
 
 	for sapi in ${SAPIS}; do
@@ -550,6 +563,11 @@ src_install() {
 				case "$sapi" in
 					cli)
 						source="sapi/cli/php"
+						# Install the "phar" archive utility.
+						if use phar ; then
+							emake INSTALL_ROOT="${D}" install-pharcmd
+							dosym "..${dest#/usr}/bin/phar" "/usr/bin/phar${SLOT}"
+						fi
 						;;
 					cgi)
 						source="sapi/cgi/php-cgi"
@@ -573,7 +591,7 @@ src_install() {
 				else
 					dobin "${source}"
 					local name="$(basename ${source})"
-					dosym "${dest}/bin/${name}" "/usr/bin/${name}${SLOT}"
+					dosym "..${dest#/usr}/bin/${name}" "/usr/bin/${name}${SLOT}"
 				fi
 			fi
 
@@ -634,9 +652,9 @@ src_test() {
 	fi
 
 	REPORT_EXIT_STATUS=1 "${TEST_PHP_EXECUTABLE}" -n  -d \
-		"session.save_path=${T}" \
-		"${WORKDIR}/sapis-build/cli/run-tests.php" -n -q -d \
-		"session.save_path=${T}"
+					  "session.save_path=${T}" \
+					  "${WORKDIR}/sapis-build/cli/run-tests.php" -n -q -d \
+					  "session.save_path=${T}"
 
 	for name in ${EXPECTED_TEST_FAILURES}; do
 		mv "${name}.out" "${name}.out.orig" 2>/dev/null || die
@@ -683,6 +701,7 @@ pkg_postinst() {
 	fi
 
 	# Create the symlinks for php
+	local m
 	for m in ${SAPIS}; do
 		[[ ${m} == 'embed' ]] && continue;
 		if use $m ; then
