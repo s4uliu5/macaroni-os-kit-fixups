@@ -460,7 +460,6 @@ src_configure() {
 						if [[ "fpm" == "${sapi}" ]] ; then
 							sapi_conf+=(
 								$(use_with acl fpm-acl)
-								$(use_with systemd fpm-systemd)
 							)
 						fi
 					else
@@ -605,15 +604,15 @@ src_install() {
 	sed -e "s:^\(php_sapis=\)\".*\"$:\1\"${sapi_list}\":" -i \
 		"${ED}/usr/$(get_libdir)/php${SLOT}/bin/php-config" || die
 
-	if use fpm ; then
-		if use systemd; then
-			systemd_newunit "${FILESDIR}/php-fpm_at.service" \
-							"php-fpm@${SLOT}.service"
-		else
-			systemd_newunit "${FILESDIR}/php-fpm_at-simple.service" \
-							"php-fpm@${SLOT}.service"
-		fi
-	fi
+	# if use fpm ; then
+	# 	if use systemd; then
+	# 		systemd_newunit "${FILESDIR}/php-fpm_at.service" \
+	# 						"php-fpm@${SLOT}.service"
+	# 	else
+	# 		systemd_newunit "${FILESDIR}/php-fpm_at-simple.service" \
+	# 						"php-fpm@${SLOT}.service"
+	# 	fi
+	# fi
 }
 
 src_test() {
