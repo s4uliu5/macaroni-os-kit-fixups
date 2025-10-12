@@ -2,28 +2,6 @@ php_rule:
   generator: github-1
   packages:
     - php:
-        slot: 7.2
-        github:
-          user: php
-          repo: php-src
-          query: tags
-          match: '^(7\.2\.[0-9.]+)$'
-          transform:
-            - kind: string
-              match: 'php-'
-              replace: ''
-    - php:
-        slot: 7.4
-        github:
-          user: php
-          repo: php-src
-          query: tags
-          match: '^(7\.4\.[0-9.]+)$'
-          transform:
-            - kind: string
-              match: 'php-'
-              replace: ''
-    - php:
         slot: 8.0
         github:
           user: php
