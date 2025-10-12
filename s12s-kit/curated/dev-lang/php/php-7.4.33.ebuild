@@ -9,7 +9,7 @@ inherit flag-o-matic autotools
 MY_PV=${PV/_rc/RC}
 DESCRIPTION="The PHP language runtime engine"
 HOMEPAGE="https://www.php.net/"
-SRC_URI="https://www.php.net/distributions/php-7.4.33.tar.bz2 -> php-7.4.33.tar.bz2"
+SRC_URI="https://www.php.net/distributions/${P}.tar.xz"
 
 LICENSE="PHP-3.01
 	BSD
@@ -36,15 +36,16 @@ IUSE="${IUSE} acl argon2 bcmath berkdb bzip2 calendar cdb cjk
 	coverage +ctype curl debug
 	enchant exif ffi +fileinfo +filter firebird
 	+flatfile ftp gd gdbm gmp +iconv imap inifile
-	intl iodbc ipv6 +json kerberos ldap ldap-sasl libedit libressl lmdb
+	intl iodbc ipv6 +jit +json kerberos ldap ldap-sasl libedit lmdb
 	mhash mssql mysql mysqli nls
 	oci8-instant-client odbc +opcache pcntl pdo +phar +posix postgres qdbm
 	readline selinux +session session-mm sharedmem
 	+simplexml snmp soap sockets sodium spell sqlite ssl
 	sysvipc test tidy +tokenizer tokyocabinet truetype unicode webp
-	+xml xmlreader xmlwriter xmlrpc xpm xslt zip zlib -maintainer-zts"
+	+xml xmlreader xmlwriter xmlrpc xpm xslt zip zlib"
 
 # Without USE=readline or libedit, the interactive "php -a" CLI will hang.
+# The Oracle instant client provides its own incompatible ldap library.
 REQUIRED_USE="
 	|| ( cli cgi fpm apache2 embed phpdbg )
 	cli? ( ^^ ( readline libedit ) )
@@ -62,6 +63,7 @@ REQUIRED_USE="
 	xmlwriter? ( xml )
 	xslt? ( xml )
 	ldap-sasl? ( ldap )
+	oci8-instant-client? ( !ldap )
 	qdbm? ( !gdbm )
 	session-mm? ( session !threads )
 	mysql? ( || ( mysqli pdo ) )
@@ -76,51 +78,43 @@ RESTRICT="!test? ( test )"
 # the ones that can be detected to avoid a repeat of bug #564824.
 COMMON_DEPEND="
 	>=app-eselect/eselect-php-0.9.1[apache2?,fpm?]
-	>=dev-libs/libpcre2-10.30[unicode]
+	>=dev-libs/libpcre2-10.30[jit?,unicode]
 	fpm? ( acl? ( sys-apps/acl ) )
 	apache2? ( www-servers/apache[apache2_modules_unixd(+),threads=] )
 	argon2? ( app-crypt/argon2:= )
-	berkdb? ( || (	sys-libs/db:5.3
-					sys-libs/db:5.1
-					sys-libs/db:4.8
-					sys-libs/db:4.7
-					sys-libs/db:4.6
-					sys-libs/db:4.5 ) )
+	berkdb? ( || (  sys-libs/db:5.3 sys-libs/db:4.8 ) )
 	bzip2? ( app-arch/bzip2:0= )
 	cdb? ( || ( dev-db/cdb dev-db/tinycdb ) )
 	coverage? ( dev-util/lcov )
 	curl? ( >=net-misc/curl-7.10.5 )
 	enchant? ( <app-text/enchant-2.0:0 )
-	ffi? ( >=dev-libs/libffi-3.0.11 )
+	ffi? ( >=dev-libs/libffi-3.0.11:= )
 	firebird? ( dev-db/firebird )
-	gd? ( >=virtual/jpeg-0-r3:0 media-libs/libpng:0= )
+	gd? ( media-libs/libjpeg-turbo:0= media-libs/libpng:0= )
 	gdbm? ( >=sys-libs/gdbm-1.8.0:0= )
 	gmp? ( dev-libs/gmp:0= )
 	iconv? ( virtual/libiconv )
-	imap? ( >=virtual/imap-c-client-2[kerberos=,ssl=] )
+	imap? ( net-libs/c-client[kerberos=,ssl=] )
 	intl? ( dev-libs/icu:= )
 	kerberos? ( virtual/krb5 )
-	ldap? ( >=net-nds/openldap-1.2.11 )
+	ldap? ( >=net-nds/openldap-1.2.11:= )
 	ldap-sasl? ( dev-libs/cyrus-sasl )
 	libedit? ( dev-libs/libedit )
 	lmdb? ( dev-db/lmdb:= )
 	mssql? ( dev-db/freetds[mssql] )
 	nls? ( sys-devel/gettext )
-	oci8-instant-client? ( dev-db/oracle-instantclient-basic )
+	oci8-instant-client? ( dev-db/oracle-instantclient[sdk] )
 	odbc? ( iodbc? ( dev-db/libiodbc ) !iodbc? ( >=dev-db/unixODBC-1.8.13 ) )
 	postgres? ( dev-db/postgresql:* )
 	qdbm? ( dev-db/qdbm )
 	readline? ( sys-libs/readline:0= )
 	session-mm? ( dev-libs/mm )
 	snmp? ( >=net-analyzer/net-snmp-5.2 )
-	sodium? ( dev-libs/libsodium:= )
+	sodium? ( dev-libs/libsodium:=[-minimal] )
 	spell? ( >=app-text/aspell-0.50 )
 	sqlite? ( >=dev-db/sqlite-3.7.6.3 )
-	ssl? (
-		!libressl? ( >=dev-libs/openssl-1.0.1:0= )
-		libressl? ( dev-libs/libressl:0= )
-	)
-	tidy? ( || ( app-text/tidy-html5 app-text/htmltidy ) )
+	ssl? ( >=dev-libs/openssl-1.0.1:0= <dev-libs/openssl-3.0 )
+	tidy? ( app-text/htmltidy )
 	tokyocabinet? ( dev-db/tokyocabinet )
 	truetype? ( =media-libs/freetype-2* )
 	unicode? ( dev-libs/oniguruma:= )
@@ -150,9 +144,12 @@ BDEPEND="virtual/pkgconfig"
 PHP_MV="$(ver_cut 1)"
 
 PATCHES=(
-	"${FILESDIR}/php-iodbc-header-location.patch"
-	"${FILESDIR}/apache.patch"
-	"${FILESDIR}/bug81656-gcc-11.patch"
+	"${FILESDIR}"/php-iodbc-header-location.patch
+	"${FILESDIR}"/bug81656-gcc-11.patch
+	"${FILESDIR}"/php-7.4.33-CVE-2022-31631.patch
+	"${FILESDIR}"/php-7.4.33-CVE-2023-0567.patch
+	"${FILESDIR}"/php-7.4.33-CVE-2023-0568.patch
+	"${FILESDIR}"/php-7.4.33-CVE-2023-0662.patch
 )
 
 php_install_ini() {
@@ -211,16 +208,7 @@ php_set_ini_dir() {
 }
 
 src_prepare() {
-
-	if use apache2; then
-		eapply "${FILESDIR}/php-iodbc-header-location.patch" || die
-	fi
-
-	if use iodbc; then
-        eapply "${FILESDIR}/apache.patch" || die
-    fi
-
-	eapply_user
+	default
 
 	# In php-7.x, the FPM pool configuration files have been split off
 	# of the main config. By default the pool config files go in
@@ -232,15 +220,16 @@ src_prepare() {
 		sapi/fpm/php-fpm.conf.in \
 		|| die 'failed to move the include directory in php-fpm.conf'
 
-
 	# Emulate buildconf to support cross-compilation
-	# rm -fr aclocal.m4 autom4te.cache config.cache \
-	# 	configure main/php_config.h.in || die
+	rm -fr aclocal.m4 autom4te.cache config.cache \
+		configure main/php_config.h.in || die
 	eautoconf --force
 	eautoheader
 }
 
 src_configure() {
+	filter-lto # bug 855644
+
 	addpredict /usr/share/snmp/mibs/.index #nowarn
 	addpredict /var/lib/net-snmp/mib_indexes #nowarn
 
@@ -256,8 +245,8 @@ src_configure() {
 		--with-libdir="$(get_libdir)"
 		--localstatedir="${EPREFIX}/var"
 		--without-pear
-		--enable-re2c-cgoto
-		--enable-rtld-now
+		--without-valgrind
+		$(use_enable threads maintainer-zts)
 	)
 
 	our_conf+=(
@@ -279,7 +268,7 @@ src_configure() {
 		$(use_with gmp gmp "${EPREFIX}/usr")
 		$(use_with mhash mhash "${EPREFIX}/usr")
 		$(use_with iconv iconv \
-			$(use elibc_glibc || use elibc_musl || use elibc_FreeBSD || echo "${EPREFIX}/usr"))
+			$(use elibc_glibc || use elibc_musl || echo "${EPREFIX}/usr"))
 		$(use_enable intl)
 		$(use_enable ipv6)
 		$(use_enable json)
@@ -421,21 +410,14 @@ src_configure() {
 		our_conf+=( $(use_enable session) )
 	fi
 
-	if use maintainer-zts ; then
-        our_conf+=( $(use_enable maintainer-zts ) )
-    else
-        our_conf+=( --disable-zend-signals )
-    fi
-
 	# Use pic for shared modules such as apache2's mod_php
 	our_conf+=( --with-pic )
 
 	# we use the system copy of pcre
 	# --with-external-pcre affects ext/pcre
-	# Many arches don't support pcre-jit
 	our_conf+=(
 		--with-external-pcre
-		--without-pcre-jit
+		$(use_with jit pcre-jit)
 	)
 
 	# Catch CFLAGS problems
@@ -452,6 +434,8 @@ src_configure() {
 	# Support the Apache2 extras, they must be set globally for all
 	# SAPIs to work correctly, especially for external PHP extensions
 
+	local one_sapi
+	local sapi
 	mkdir -p "${WORKDIR}/sapis-build" || die
 	for one_sapi in $SAPIS ; do
 		use "${one_sapi}" || continue
@@ -510,6 +494,7 @@ src_compile() {
 	addpredict /usr/share/snmp/mibs/.index #nowarn
 	addpredict /var/lib/net-snmp/mib_indexes #nowarn
 
+	local sapi
 	for sapi in ${SAPIS} ; do
 		if use "${sapi}"; then
 			cd "${WORKDIR}/sapis-build/$sapi" || \
@@ -524,7 +509,7 @@ src_install() {
 	addpredict /usr/share/snmp/mibs/.index #nowarn
 
 	# grab the first SAPI that got built and install common files from there
-	local first_sapi=""
+	local first_sapi="", sapi=""
 	for sapi in $SAPIS ; do
 		if use $sapi ; then
 			first_sapi=$sapi
@@ -545,7 +530,7 @@ src_install() {
 	# Create the directory where we'll put version-specific php scripts
 	keepdir "/usr/share/php${PHP_MV}"
 
-	local sapi="", file=""
+	local file=""
 	local sapi_list=""
 
 	for sapi in ${SAPIS}; do
@@ -625,6 +610,16 @@ src_install() {
 	# set php-config variable correctly (bug #278439)
 	sed -e "s:^\(php_sapis=\)\".*\"$:\1\"${sapi_list}\":" -i \
 		"${ED}/usr/$(get_libdir)/php${SLOT}/bin/php-config" || die
+
+	# if use fpm ; then
+	# 	if use systemd; then
+	# 		systemd_newunit "${FILESDIR}/php-fpm_at.service" \
+	# 						"php-fpm@${SLOT}.service"
+	# 	else
+	# 		systemd_newunit "${FILESDIR}/php-fpm_at-simple.service" \
+	# 						"php-fpm@${SLOT}.service"
+	# 	fi
+	# fi
 }
 
 src_test() {
@@ -646,9 +641,9 @@ src_test() {
 	fi
 
 	REPORT_EXIT_STATUS=1 "${TEST_PHP_EXECUTABLE}" -n  -d \
-		"session.save_path=${T}" \
-		"${WORKDIR}/sapis-build/cli/run-tests.php" -n -q -d \
-		"session.save_path=${T}"
+					  "session.save_path=${T}" \
+					  "${WORKDIR}/sapis-build/cli/run-tests.php" -n -q -d \
+					  "session.save_path=${T}"
 
 	for name in ${EXPECTED_TEST_FAILURES}; do
 		mv "${name}.out" "${name}.out.orig" 2>/dev/null || die
@@ -695,6 +690,7 @@ pkg_postinst() {
 	fi
 
 	# Create the symlinks for php
+	local m
 	for m in ${SAPIS}; do
 		[[ ${m} == 'embed' ]] && continue;
 		if use $m ; then
@@ -739,14 +735,6 @@ pkg_postinst() {
 	elog
 	elog "  https://wiki.gentoo.org/wiki/PHP"
 	elog
-
-	einfo
-	einfo "Funtoo guarantees the delivery of PHP packages following their publishing cycle."
-	einfo "Details on current versions can be obtained at"
-	einfo
-	einfo "https://www.php.net/supported-versions.php"
-	einfo
-
 }
 
 pkg_postrm() {
