@@ -211,17 +211,17 @@ php_set_ini_dir() {
 }
 
 src_prepare() {
-	
+
 	if use apache2; then
-    
+
     eapply "${FILESDIR}/php-iodbc-header-location.patch" || die
-	
+
 	fi
-	
+
 	if use iodbc; then
         eapply "${FILESDIR}/apache.patch" || die
     fi
-    
+
     eapply_user
 
 	# In php-7.x, the FPM pool configuration files have been split off
@@ -739,12 +739,12 @@ pkg_postinst() {
 	elog "  https://wiki.gentoo.org/wiki/PHP"
 	elog
 
-        einfo 
+        einfo
         einfo "Funtoo guarantees the delivery of PHP packages following their publishing cycle."
         einfo "Details on current versions can be obtained at"
-        einfo 
+        einfo
         einfo "https://www.php.net/supported-versions.php"
-        einfo 
+        einfo
 
 }
 
