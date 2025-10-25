@@ -30,8 +30,15 @@ QA_PRESTRIPPED=${QA_PREBUILT}
 pkg_setup() {
 	enewgroup grafana
 	enewuser grafana -1 -1 /usr/share/grafana grafana
-	[ ! -d ${S} ] && S=${WORKDIR}/${MY_PN}-${MY_PV}
-	[ ! -d ${S} ] && S=${WORKDIR}/${MY_PN}-v${MY_PV}
+}
+
+src_unpack() {
+    if [[ -n ${A} ]]; then
+        unpack ${A}
+    fi
+    [[ ! -d ${S} ]] && S=${WORKDIR}/${MY_PN}-${MY_PV}
+    [[ ! -d ${S} ]] && S=${WORKDIR}/${MY_PN}-v${MY_PV}
+    einfo "S=${S}"
 }
 
 src_install() {
