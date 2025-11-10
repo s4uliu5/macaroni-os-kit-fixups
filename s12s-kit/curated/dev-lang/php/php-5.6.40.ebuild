@@ -23,7 +23,7 @@ SLOT="5.6"
 KEYWORDS="*"
 
 # We can build the following SAPIs in the given order
-SAPIS="embed cli -cgi fpm -apache2"
+SAPIS="embed cli cgi fpm apache2"
 
 # SAPIs and SAPI-specific USE flags (cli SAPI is default on):
 IUSE="${IUSE}
