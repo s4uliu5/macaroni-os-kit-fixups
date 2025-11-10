@@ -1,0 +1,14 @@
+--- a/main/php.h
++++ b/main/php.h
+@@ -23,6 +23,11 @@
+ #ifndef PHP_H
+ #define PHP_H
+ 
++#ifndef TRUE
++# define TRUE 1
++# define FALSE 0
++#endif
++
+ #ifdef HAVE_DMALLOC
+ #include <dmalloc.h>
+ #endif

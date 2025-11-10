@@ -1,0 +1,13 @@
+--- a/ext/intl/breakiterator/codepointiterator_internal.h
++++ b/ext/intl/breakiterator/codepointiterator_internal.h
+@@ -20,6 +20,11 @@
+ #ifndef CODEPOINTITERATOR_INTERNAL_H
+ #define CODEPOINTITERATOR_INTERNAL_H
+
++#ifndef TRUE
++# define TRUE 1
++# define FALSE 0
++#endif
++
+ #include <unicode/brkiter.h>
+ #include <unicode/unistr.h>
