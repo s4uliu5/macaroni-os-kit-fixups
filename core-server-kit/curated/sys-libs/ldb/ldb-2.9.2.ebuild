@@ -8,9 +8,10 @@ inherit python-single-r1 waf-utils
 
 DESCRIPTION="LDAP-like embedded database"
 HOMEPAGE="https://ldb.samba.org"
-SRC_URI="https://samba.org/ftp/pub/${PN}/${P}.tar.gz"
-
+SRC_URI="https://www.samba.org/ftp/ldb/ldb-2.9.2.tar.gz -> ldb-2.9.2.tar.gz
+"
 LICENSE="LGPL-3"
+
 SLOT="0/${PV}"
 KEYWORDS="*"
 IUSE="doc +ldap +lmdb python test"
