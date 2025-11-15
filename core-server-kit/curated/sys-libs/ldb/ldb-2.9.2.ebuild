@@ -56,6 +56,7 @@ PATCHES=(
 pkg_setup() {
 	# Package fails to build with distcc
 	export DISTCC_DISABLE=1
+	export PYTHONHASHSEED=1
 
 	# waf requires a python interpreter
 	python-single-r1_pkg_setup
