@@ -6,8 +6,8 @@ inherit go-module
 
 DESCRIPTION="OpenSMTPD filter for putting emails through rspamd"
 HOMEPAGE="https://github.com/poolpOrg/filter-rspamd"
-SRC_URI="https://github.com/docker/compose/archive/v${MY_PV}.tar.gz -> ${P}.tar.gz
-https://s12s.host.funtoo.org/funtoo/distfiles/${CATEGORY}/${PN}/${P}-deps.tar.xz"
+SRC_URI="https://github.com/poolpOrg/filter-rspamd/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
+https://fun.s12s.xyz/distfiles/${P}-deps.tar.xz"
 
 LICENSE="ISC"
 SLOT="0"
