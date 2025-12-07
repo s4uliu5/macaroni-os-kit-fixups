@@ -7,12 +7,24 @@ docker:
           repo: moby
           query: releases
         version: 28.5.2
+    - docker:
+        github:
+          user: moby
+          repo: moby
+          query: releases
+        version: 29.1.2
     - docker-cli:
         github:
           user: docker
           repo: cli
           query: tags
         version: 28.5.2
+    - docker-cli:
+        github:
+          user: docker
+          repo: cli
+          query: tags
+        version: 29.1.2
     - docker-compose:
         extensions:
           - golang
