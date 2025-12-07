@@ -33,6 +33,14 @@ docker:
           repo: compose
           query: releases
         version: 2.40.3
+    - docker-compose:
+        extensions:
+          - golang
+        github:
+          user: docker
+          repo: compose
+          query: releases
+        version: 5.0.0
     - docker-buildx:
         extensions:
           - golang
