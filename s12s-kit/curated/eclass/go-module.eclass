@@ -1,4 +1,4 @@
-# Copyright 2019-2022 Gentoo Authors
+# Copyright 2019-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: go-module.eclass
@@ -26,7 +26,9 @@
 # If the software has a directory named vendor in its
 # top level directory, the only thing you need to do is inherit the
 # eclass. If it doesn't, you need to also create a dependency tarball and
-# host it somewhere, for example in your dev space.
+# host it somewhere, for example in your dev space. It's recommended that
+# a format supporting parallel decompression is used and developers should
+# use higher levels of compression like '-9' for xz.
 #
 # Here is an example of how to create a dependency tarball.
 # The base directory in the GOMODCACHE setting must be go-mod in order
@@ -36,14 +38,14 @@
 #
 # $ cd /path/to/project
 # $ GOMODCACHE="${PWD}"/go-mod go mod download -modcacherw
-# $ tar -acf project-1.0-deps.tar.xz go-mod
+# $ XZ_OPT='-T0 -9' tar -acf project-1.0-deps.tar.xz go-mod
 #
 # @CODE
 #
 # Since Go programs are statically linked, it is important that your ebuild's
 # LICENSE= setting includes the licenses of all statically linked
 # dependencies. So please make sure it is accurate.
-# You can use a utility like dev-go/golicense (network connectivity is
+# You can use a utility like dev-go/lichen (network connectivity is
 # required) to extract this information from the compiled binary.
 #
 # @EXAMPLE:
@@ -63,22 +65,19 @@ case ${EAPI} in
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-if [[ -z ${_GO_MODULE} ]]; then
+if [[ -z ${_GO_MODULE_ECLASS} ]]; then
+_GO_MODULE_ECLASS=1
 
-inherit xdg-utils
-
-_GO_MODULE=1
+inherit multiprocessing toolchain-funcs go-env
 
 if [[ ! ${GO_OPTIONAL} ]]; then
-	BDEPEND=">=dev-lang/go-1.16"
+	BDEPEND=">=dev-lang/go-1.20:="
 
 	# Workaround for pkgcheck false positive: https://github.com/pkgcore/pkgcheck/issues/214
 	# MissingUnpackerDep: version ...: missing BDEPEND="app-arch/unzip"
 	# Added here rather than to each affected package, so it can be cleaned up just
 	# once when pkgcheck is improved.
 	BDEPEND+=" app-arch/unzip"
-
-	EXPORT_FUNCTIONS src_unpack
 fi
 
 # Force go to build in module mode.
@@ -95,16 +94,15 @@ export GOCACHE="${T}/go-build"
 export GOMODCACHE="${WORKDIR}/go-mod"
 
 # The following go flags should be used for all builds.
+# -buildmode=pie builds position independent executables
+# -buildvcs=false omits version control information
 # -modcacherw makes the build cache read/write
 # -v prints the names of packages as they are compiled
 # -x prints commands as they are executed
-export GOFLAGS="-modcacherw -v -x"
+export GOFLAGS="-buildvcs=false -modcacherw -v -x"
 
 # Do not complain about CFLAGS etc since go projects do not use them.
 QA_FLAGS_IGNORED='.*'
-
-# Go packages should not be stripped with strip(1).
-RESTRICT+=" strip"
 
 # @ECLASS_VARIABLE: EGO_SUM
 # @DEPRECATED: none
@@ -118,13 +116,13 @@ RESTRICT+=" strip"
 #
 # You can use some combination of sed/awk/cut to extract the
 # contents of EGO_SUM or use the dev-go/get-ego-vendor tool.
-#
+# 
 # One manual way to do this is the following:
 #
 # @CODE
 #
 # cat go.sum | cut -d" " -f1,2 | awk '{print "\t\"" $0 "\""}'
-#
+# 
 # @CODE
 #
 # The format of go.sum is described upstream here:
@@ -261,7 +259,22 @@ go-module_set_globals() {
 			continue
 		fi
 
-		_dir=$(_go-module_gomod_encode "${module}")
+		# Encode the name(path) of a Golang module in the format expected by Goproxy.
+		# Upper letters are replaced by their lowercase version with a '!' prefix.
+		# The transformed result of 'module' is stored in the '_dir' variable.
+		#
+		## Python:
+		# return re.sub('([A-Z]{1})', r'!\1', s).lower()
+		## Sed:
+		## This uses GNU Sed extension \l to downcase the match
+		# echo "${module}" |sed 's,[A-Z],!\l&,g'
+		local re _dir lower
+		_dir="${module}"
+		re='(.*)([A-Z])(.*)'
+		while [[ ${_dir} =~ ${re} ]]; do
+			lower='!'"${BASH_REMATCH[2],}"
+			_dir="${BASH_REMATCH[1]}${lower}${BASH_REMATCH[3]}"
+		done
 
 		for _ext in "${exts[@]}" ; do
 			# Relative URI within a GOPROXY for a file
@@ -306,7 +319,7 @@ go-module_set_globals() {
 # It sets up the go module proxy in the appropriate location.
 go-module_setup_proxy() {
 	# shellcheck disable=SC2120
-	debug-print-function "${FUNCNAME}" "$@"
+	debug-print-function ${FUNCNAME} "$@"
 
 	if [[ ! ${_GO_MODULE_SET_GLOBALS_CALLED} ]]; then
 		die "go-module_set_globals must be called in global scope"
@@ -342,13 +355,20 @@ go-module_setup_proxy() {
 
 # @FUNCTION: go-module_src_unpack
 # @DESCRIPTION:
-# If EGO_SUM is set, unpack the base tarball(s) and set up the
-#   local go proxy. Also warn that this usage is deprecated.
-# - Otherwise, if EGO_VENDOR is set, bail out.
-# - Otherwise do a normal unpack.
+# Sets up GOFLAGS for the system and then unpacks based on the following rules:
+# 1. If EGO_SUM is set, unpack the base tarball(s) and set up the
+#    local go proxy.  This mode is deprecated.
+# 2. Otherwise, if EGO_VENDOR is set, bail out, as this functionality was removed.
+# 3. Otherwise, call 'ego mod verify' and then do a normal unpack.
+# Set compile env via go-env.
 go-module_src_unpack() {
+	if use amd64 || use arm || use arm64 ||
+		( use ppc64 && [[ $(tc-endian) == "little" ]] ) || use s390 || use x86; then
+			GOFLAGS="-buildmode=pie ${GOFLAGS}"
+	fi
+	GOFLAGS="${GOFLAGS} -p=$(makeopts_jobs)"
 	if [[ "${#EGO_SUM[@]}" -gt 0 ]]; then
-		eqawarn "This ebuild uses EGO_SUM which is deprecated"
+		eqawarn "QA Notice: This ebuild uses EGO_SUM which is deprecated"
 		eqawarn "Please migrate to a dependency tarball"
 		eqawarn "This will become a fatal error in the future"
 		_go-module_src_unpack_gosum
@@ -357,15 +377,16 @@ go-module_src_unpack() {
 		die "Please update this ebuild"
 	else
 		default
+		if [[ ! -d "${S}"/vendor ]]; then
+			cd "${S}"
+			local nf
+			[[ -n ${NONFATAL_VERIFY} ]] && nf=nonfatal
+			${nf} ego mod verify
+		fi
 	fi
-}
 
-go-module_src_prepare() {
-	# See Funtoo Linux bug FL-6885,FL-9561 for why this is needed:
-	xdg_environment_reset
-	default
+	go-env_set_compile_environment
 }
-
 
 # @FUNCTION: _go-module_src_unpack_gosum
 # @DEPRECATED: none
@@ -377,7 +398,7 @@ go-module_src_prepare() {
 # directory correctly.
 _go-module_src_unpack_gosum() {
 	# shellcheck disable=SC2120
-	debug-print-function "${FUNCNAME}" "$@"
+	debug-print-function ${FUNCNAME} "$@"
 
 	if [[ ! ${_GO_MODULE_SET_GLOBALS_CALLED} ]]; then
 		die "go-module_set_globals must be called in global scope"
@@ -448,7 +469,7 @@ _go-module_gosum_synthesize_files() {
 # the package, without actually building it yet.
 _go-module_src_unpack_verify_gosum() {
 	# shellcheck disable=SC2120
-	debug-print-function "${FUNCNAME}" "$@"
+	debug-print-function ${FUNCNAME} "$@"
 
 	if [[ ! ${_GO_MODULE_SET_GLOBALS_CALLED} ]]; then
 		die "go-module_set_globals must be called in global scope"
@@ -475,7 +496,7 @@ _go-module_src_unpack_verify_gosum() {
 # This function is used in live ebuilds to vendor the dependencies when
 # upstream doesn't vendor them.
 go-module_live_vendor() {
-	debug-print-function "${FUNCNAME}" "$@"
+	debug-print-function ${FUNCNAME} "$@"
 
 	# shellcheck disable=SC2086
 	has live ${PROPERTIES} ||
@@ -490,31 +511,8 @@ go-module_live_vendor() {
 	popd >& /dev/null || die
 }
 
-# @FUNCTION: _go-module_gomod_encode
-# @DEPRECATED: none
-# @DESCRIPTION:
-# Encode the name(path) of a Golang module in the format expected by Goproxy.
-#
-# Upper letters are replaced by their lowercase version with a '!' prefix.
-#
-_go-module_gomod_encode() {
-	## Python:
-	# return re.sub('([A-Z]{1})', r'!\1', s).lower()
+fi
 
-	## Sed:
-	## This uses GNU Sed extension \l to downcase the match
-	#echo "${module}" |sed 's,[A-Z],!\l&,g'
-	#
-	# Bash variant:
-	debug-print-function "${FUNCNAME}" "$@"
-	#local re input lower
-	re='(.*)([A-Z])(.*)'
-	input="${1}"
-	while [[ ${input} =~ ${re} ]]; do
-		lower='!'"${BASH_REMATCH[2],}"
-		input="${BASH_REMATCH[1]}${lower}${BASH_REMATCH[3]}"
-	done
-	echo "${input}"
-}
-
+if [[ ! ${GO_OPTIONAL} ]]; then
+	EXPORT_FUNCTIONS src_unpack
 fi

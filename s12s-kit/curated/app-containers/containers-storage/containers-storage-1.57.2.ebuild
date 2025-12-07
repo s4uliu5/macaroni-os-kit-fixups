@@ -1,0 +1,26 @@
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+
+DESCRIPTION="Default config and docs related to Containers' storage"
+HOMEPAGE="https://github.com/containers/storage"
+
+SRC_URI="https://github.com/containers/storage/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+S="${WORKDIR}/${P#containers-}"
+KEYWORDS="*"
+
+LICENSE="Apache-2.0"
+SLOT="0"
+
+BDEPEND=">=dev-go/go-md2man-2.0.2"
+
+src_compile() {
+	emake -C docs GOMD2MAN=go-md2man containers-storage.conf.5
+}
+
+src_install() {
+	emake DESTDIR="${ED}" -C docs install
+
+	insinto /usr/share/containers
+	doins storage.conf
+}
