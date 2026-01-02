@@ -5,7 +5,7 @@ GLOBAL_DEFAULTS = {}
 
 async def generate(hub, **pkginfo):
 	artifact = hub.pkgtools.ebuild.Artifact(
-		url=f"https://storage.googleapis.com/golang/go{pkginfo['version']}.src.tar.gz"
+		url=f"https://dl.google.com/go/go{pkginfo['version']}.src.tar.gz"
 	)
 	ebuild = hub.pkgtools.ebuild.BreezyBuild(**pkginfo, artifacts=[artifact])
 	ebuild.push()
