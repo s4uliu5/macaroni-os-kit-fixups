@@ -13,6 +13,12 @@ docker:
           repo: moby
           query: releases
         version: 29.1.2
+    - docker:
+        github:
+          user: moby
+          repo: moby
+          query: releases
+        version: 29.1.3
     - docker-cli:
         github:
           user: docker
@@ -25,6 +31,12 @@ docker:
           repo: cli
           query: tags
         version: 29.1.2
+    - docker-cli:
+        github:
+          user: docker
+          repo: cli
+          query: tags
+        version: 29.1.3
     - docker-compose:
         extensions:
           - golang
