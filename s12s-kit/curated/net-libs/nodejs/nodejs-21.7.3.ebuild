@@ -8,13 +8,11 @@ inherit python-any-r1
 
 DESCRIPTION="Node.js JavaScript runtime"
 HOMEPAGE="https://nodejs.org"
-# SRC_URI="https://api.github.com/repos/nodejs/node/tarball/v18.12.1 -> nodejs-18.12.1.tar.gz"
-SRC_URI="https://nodejs.org/dist/v${PV}/node-v${PV}.tar.xz"
-
+SRC_URI="https://api.github.com/repos/nodejs/node/tarball/v21.7.3 -> nodejs-21.7.3.tar.gz"
 
 LICENSE="Apache-1.1 Apache-2.0 BSD BSD-2 MIT"
 SLOT="0"
-KEYWORDS="*"
+KEYWORDS=""
 IUSE=""
 
 DEPEND=""
@@ -24,7 +22,7 @@ BDEPEND="
 "
 
 post_src_unpack() {
-	mv "${WORKDIR}"/node-v${PV} "${S}" || die
+	mv "${WORKDIR}"/nodejs-node-* "${S}" || die
 }
 
 src_configure() {
