@@ -113,7 +113,7 @@ COMMON_DEPEND="
 	sodium? ( dev-libs/libsodium:=[-minimal] )
 	spell? ( >=app-text/aspell-0.50 )
 	sqlite? ( >=dev-db/sqlite-3.7.6.3 )
-	ssl? ( >=dev-libs/openssl-1.0.1:0= <dev-libs/openssl-3.0 )
+	ssl? ( dev-libs/openssl )
 	tidy? ( || ( app-text/tidy-html5 app-text/htmltidy ) )
 	tokyocabinet? ( dev-db/tokyocabinet )
 	truetype? ( =media-libs/freetype-2* )
@@ -125,6 +125,7 @@ COMMON_DEPEND="
 	zip? ( >=dev-libs/libzip-1.2.0:= )
 	zlib? ( >=sys-libs/zlib-1.2.0.4:0= )
 "
+# ssl? ( >=dev-libs/openssl-1.0.1:0= <dev-libs/openssl-3.0 )
 
 RDEPEND="${COMMON_DEPEND}
 	virtual/mta
