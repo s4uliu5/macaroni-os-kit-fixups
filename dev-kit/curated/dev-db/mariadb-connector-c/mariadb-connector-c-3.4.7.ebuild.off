@@ -72,7 +72,7 @@ src_configure() {
 	# bug #943757
 	append-cflags -std=gnu17
 
-	cmake-multilib_src_configure
+	cmake-src_configure
 }
 
 src_configure() {
