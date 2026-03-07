@@ -17,11 +17,11 @@ SLOT="0/21"
 IUSE="ldap static-libs"
 
 RDEPEND="
-	>=app-arch/lz4-1.9.4
+	>=app-arch/lz4-1.9.3
 	app-arch/zstd
 	dev-libs/openssl
 	net-libs/libtirpc
-	>=virtual/zlib-1.2.13
+	>=sys-libs/zlib-1.2.13
 	ldap? ( dev-libs/cyrus-sasl )
 "
 DEPEND="${RDEPEND}"
