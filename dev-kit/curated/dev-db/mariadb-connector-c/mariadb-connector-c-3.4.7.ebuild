@@ -18,7 +18,7 @@ RESTRICT="!test? ( test )"
 
 DEPEND="
 	app-arch/zstd
-	virtual/zlib
+	sys-libs/zlib
 	virtual/libiconv
 	curl? ( net-misc/curl )
 	gnutls? ( >=net-libs/gnutls-3.3.24 )
